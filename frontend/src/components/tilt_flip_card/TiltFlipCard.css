@@ -3,119 +3,128 @@
   height: var(--card-h);
   perspective: 1200px;
   cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.tfc-card {
-  width:100%;
-  height:100%;
-  position:relative;
-  transform-style:preserve-3d;
-  transition: transform 0.25s ease;
+.tfc-scene:focus {
+  outline: none;
+}
+
+.tfc-tilt {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
 
   transform:
-    translateZ(calc(var(--hover,0)*25px))
-    rotateX(var(--rx,0deg))
-    rotateY(var(--ry,0deg));
+    perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(calc(var(--hover, 0) * var(--pop-out))) scale(calc(1 + var(--hover, 0) * 0.035));
 
-  border-radius:18px;
+  transition:
+    box-shadow 280ms cubic-bezier(.22, .61, .36, 1),
+    filter 280ms cubic-bezier(.22, .61, .36, 1),
+    transform 120ms linear;
 }
 
-.tfc-card.is-flipped{
+.tfc-flip {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 320ms cubic-bezier(.22, .61, .36, 1);
+}
+
+.tfc-flip.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.tfc-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  overflow: hidden;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.05));
+
+  backdrop-filter: blur(10px);
+}
+
+.tfc-front {
+  transform: translateZ(calc(var(--hover, 0) * var(--pop-out)));
+}
+
+.tfc-back {
   transform:
-    translateZ(calc(var(--hover,0)*25px))
-    rotateX(var(--rx,0deg))
-    rotateY(calc(var(--ry,0deg) + 180deg));
-}
-
-.tfc-face{
-  position:absolute;
-  inset:0;
-  border-radius:18px;
-  overflow:hidden;
-
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  padding:20px;
-
-  background:linear-gradient(
-    135deg,
-    rgba(255,255,255,0.15),
-    rgba(255,255,255,0.05)
-  );
-
-  backdrop-filter:blur(10px);
-}
-
-.tfc-back{
-  transform:rotateY(180deg);
+    rotateY(180deg) translateZ(calc(var(--hover, 0) * var(--pop-out)));
 }
 
 /* CONTENT ALWAYS ABOVE GLARE */
-.tfc-content{
-  position:relative;
-  z-index:2;
-  text-align:center;
+.tfc-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  transform: translateZ(calc(var(--hover, 0) * 12px));
 }
 
 /* GLARE */
-.tfc-glare{
-  position:absolute;
-  inset:-40%;
-  z-index:1;
-  pointer-events:none;
+.tfc-glare {
+  position: absolute;
+  inset: -40%;
+  z-index: 1;
+  pointer-events: none;
 
-  opacity:calc(var(--glare-o,0)*0.6);
+  opacity: calc(var(--glare-o, 0)*0.6);
 
-  background:radial-gradient(
-    circle at var(--glare-x,50%) var(--glare-y,50%),
-    rgba(255,255,255,0.6),
-    rgba(255,255,255,0.2) 18%,
-    rgba(255,255,255,0.05) 35%,
-    rgba(255,255,255,0) 60%
-  );
+  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgba(255, 255, 255, 0.6),
+      rgba(255, 255, 255, 0.2) 18%,
+      rgba(255, 255, 255, 0.05) 35%,
+      rgba(255, 255, 255, 0) 60%);
 
-  transform:translateZ(2px);
+  transform: translateZ(2px);
 }
 
-.card-bg-image{
-  position:absolute;
-  inset:0;
+.card-bg-image {
+  position: absolute;
+  inset: 0;
 
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 
-  object-fit:cover;
-  border-radius:18px;
+  object-fit: cover;
+  border-radius: 18px;
 
-  z-index:0;
+  z-index: 0;
 }
 
-/* dark overlay so text stays readable */
-.card-overlay{
-  position:relative;
-  z-index:2;
+.card-overlay {
+  position: relative;
+  z-index: 2;
 
-  height:100%;
-  width:100%;
+  height: 100%;
+  width: 100%;
 
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-  text-align:center;
+  text-align: center;
 
-  background:linear-gradient(
-    rgba(0,0,0,0.2),
-    rgba(0,0,0,0.6)
-  );
-}
-
-.card-logo{
-  width:60px;
-  margin-bottom:16px;
+  background: linear-gradient(rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.6));
 }

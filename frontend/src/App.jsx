@@ -34,6 +34,9 @@ function App() {
                 <li>Role: Game Dev</li>
                 <li>Tech: Unity, C#</li>
                 <li>Status: Completed</li>
+                <li>Status: Completed</li>
+                <li>Status: Completed</li>
+                <li>Status: Completed</li>
               </ul>
             </>
           }
@@ -41,13 +44,14 @@ function App() {
         />
 
         <TiltFlipCard
-          frontImg="/vite.svg"
+          frontImg="/modem.jpg"
           front={
             <>
               <h3>Project Two</h3>
               <p>Another project.</p>
             </>
           }
+          backImg="/modem.jpg"
           back={
             <>
               <h3>Details</h3>

@@ -76,7 +76,7 @@ export default function TiltFlipCard({
   width = 320,
   height = 420,
   maxTilt = 12,
-  popOut = 18
+  popOut = 50
 }) {
   const sceneRef = useRef(null);
   const tiltRef = useRef(null);

@@ -60,6 +60,9 @@
   z-index: 20;
   background: var(--tfc-backdrop-bg);
   backdrop-filter: blur(6px);
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tfc-tilt {
@@ -109,7 +112,6 @@
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
-  padding: 20px;
   border-radius: var(--tfc-radius);
 
   /* solid card shell */

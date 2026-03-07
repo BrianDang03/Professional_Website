@@ -1,36 +1,18 @@
-/* ----------------------------- */
-/* TILT FLIP CARD - CLEANED CSS  */
-/* ----------------------------- */
-
 :root {
-  --tfc-ease: cubic-bezier(.22, .61, .36, 1);
+  --tfc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --tfc-speed: 420ms;
   --tfc-radius: 18px;
+  --tfc-backdrop-bg: rgba(0, 0, 0, 0.45);
+  --tfc-close-bg: rgba(0, 0, 0, 0.45);
+  --tfc-overlay-front: rgba(0, 0, 0, 0.25);
+  --tfc-overlay-back: rgba(0, 0, 0, 0.65);
+  --tfc-glare-strong: rgba(255, 255, 255, 0.6);
+  --tfc-glare-medium: rgba(255, 255, 255, 0.2);
+  --tfc-glare-soft: rgba(255, 255, 255, 0.05);
+  --tfc-text-light: #fff;
 }
 
-.tfc-scene.is-expanded,
-.tfc-scene.is-closing {
-  z-index: 10001;
-}
-
-.tfc-tilt {
-  z-index: 1;
-}
-
-.tfc-tilt.is-expanded,
-.tfc-tilt.is-closing {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10001;
-  width: var(--card-w);
-  height: var(--card-h);
-  transform:
-    translate(var(--expand-x, 0px), var(--expand-y, 0px))
-    scale(var(--expand-scale, 1));
-}
-
-/* Core 3D performance */
+/* Shared 3D optimization */
 .tfc-scene,
 .tfc-tilt,
 .tfc-flip,
@@ -40,11 +22,11 @@
 }
 
 .tfc-scene {
+  position: relative;
   width: var(--card-w);
   height: var(--card-h);
-  perspective: 1200px;
-  position: relative;
   z-index: 0;
+  perspective: 1200px;
   cursor: pointer;
   user-select: none;
   touch-action: pan-y;
@@ -59,37 +41,33 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: rgba(0, 0, 0, 0.45);
+  background: var(--tfc-backdrop-bg);
   backdrop-filter: blur(6px);
 }
 
 .tfc-tilt {
   position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
-  z-index: 1;
   transition:
     transform var(--tfc-speed) var(--tfc-ease),
     box-shadow 280ms var(--tfc-ease),
     filter 280ms var(--tfc-ease);
   transform:
-    perspective(1000px)
-    rotateX(var(--rx, 0deg))
-    rotateY(var(--ry, 0deg))
-    translateZ(calc(var(--hover, 0) * var(--pop-out)))
-    scale(calc(1 + var(--hover, 0) * 0.035));
+    perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(calc(var(--hover, 0) * var(--pop-out))) scale(calc(1 + var(--hover, 0) * 0.035));
 }
 
 .tfc-tilt.is-expanded {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 999999;
+  z-index: 10001;
   width: var(--card-w);
   height: var(--card-h);
+  transform-origin: top left;
   transform:
-    translate(var(--expand-x, 0px), var(--expand-y, 0px))
-    scale(var(--expand-scale, 1));
+    translate(var(--expand-x, 0px), var(--expand-y, 0px)) scale(var(--expand-scale, 1));
 }
 
 .tfc-flip {
@@ -109,16 +87,14 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 20px;
   overflow: hidden;
+  padding: 20px;
   border-radius: var(--tfc-radius);
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.05));
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.15),
-    rgba(255, 255, 255, 0.05)
-  );
 }
 
 .tfc-front {
@@ -150,16 +126,13 @@
   pointer-events: none;
   opacity: calc(var(--glare-o, 0) * 0.6);
   transform: translateZ(2px);
-  background: radial-gradient(
-    circle at var(--glare-x, 50%) var(--glare-y, 50%),
-    rgba(255, 255, 255, 0.6),
-    rgba(255, 255, 255, 0.2) 18%,
-    rgba(255, 255, 255, 0.05) 35%,
-    rgba(255, 255, 255, 0) 60%
-  );
+  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      var(--tfc-glare-strong),
+      var(--tfc-glare-medium) 18%,
+      var(--tfc-glare-soft) 35%,
+      rgba(255, 255, 255, 0) 60%);
 }
 
-/* Background image */
 .card-bg-image {
   position: absolute;
   inset: 0;
@@ -170,16 +143,11 @@
   border-radius: var(--tfc-radius);
 }
 
-/* Front / back overlays */
 .card-overlay,
 .back-overlay {
   position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    rgba(0, 0, 0, 0.25),
-    rgba(0, 0, 0, 0.65)
-  );
 }
 
 .card-overlay {
@@ -188,13 +156,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(var(--tfc-overlay-front),
+      var(--tfc-overlay-back));
   text-align: center;
 }
 
 .tfc-back-expanded {
-  padding: 0;
   align-items: stretch;
   justify-content: stretch;
+  padding: 0;
 }
 
 .back-overlay {
@@ -202,34 +172,32 @@
   overflow-x: hidden;
   overflow-y: auto;
   padding: 64px 24px 24px;
+  background: linear-gradient(var(--tfc-overlay-front),
+      var(--tfc-overlay-back));
   text-align: left;
   -webkit-overflow-scrolling: touch;
 }
 
-/* Close button */
 .tfc-close-btn {
   position: absolute;
   top: 14px;
   right: 14px;
   z-index: 20;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 40px;
   height: 40px;
   padding: 0;
-  border: none;
+  border: 0;
   border-radius: 8px;
-
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
+  background: var(--tfc-close-bg);
+  color: var(--tfc-text-light);
   font-size: 24px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: none;
   outline: none;
+  box-shadow: none;
 }
 
 .tfc-close-btn span {
@@ -248,7 +216,6 @@
   box-shadow: none;
 }
 
-/* Expanded mode optimizations */
 .tfc-scene.is-expanded .tfc-glare,
 .tfc-scene.is-expanded .tfc-front .card-overlay {
   display: none;
@@ -258,7 +225,6 @@
   transform: none;
 }
 
-/* Mobile */
 @media (max-width: 768px) {
   .back-overlay {
     padding: 64px 18px 18px;

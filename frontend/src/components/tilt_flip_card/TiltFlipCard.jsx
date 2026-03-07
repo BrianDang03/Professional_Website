@@ -8,9 +8,12 @@ import React, {
 } from "react";
 import "./TiltFlipCard.css";
 
-const MOVE_THRESHOLD = 10;
+const MOVE_THRESHOLD_PX = 10;
+const DEFAULT_EXPAND_SCALE_MAX = 2.2;
+const DEFAULT_EDGE_GAP_PX = 48;
+const DEFAULT_EDGE_GAP_RATIO = 0.06;
 
-const POINTER_DEFAULT = {
+const POINTER_INITIAL_STATE = {
   isDown: false,
   moved: false,
   startX: 0,
@@ -18,7 +21,7 @@ const POINTER_DEFAULT = {
   activePointerId: null
 };
 
-const VISUAL_DEFAULT = {
+const VISUAL_INITIAL_STATE = {
   "--hover": "0",
   "--rx": "0deg",
   "--ry": "0deg",
@@ -29,6 +32,41 @@ const VISUAL_DEFAULT = {
   "--expand-y": "0px",
   "--expand-scale": "1"
 };
+
+function getDistance(x1, y1, x2, y2) {
+  return Math.hypot(x2 - x1, y2 - y1);
+}
+
+function getExpandedMetrics(rect) {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  const edgeGap = Math.min(
+    DEFAULT_EDGE_GAP_PX,
+    viewportWidth * DEFAULT_EDGE_GAP_RATIO
+  );
+
+  const maxWidth = viewportWidth - edgeGap * 2;
+  const maxHeight = viewportHeight - edgeGap * 2;
+
+  const scale = Math.min(
+    maxWidth / rect.width,
+    maxHeight / rect.height,
+    DEFAULT_EXPAND_SCALE_MAX
+  );
+
+  const scaledWidth = rect.width * scale;
+  const scaledHeight = rect.height * scale;
+
+  const targetLeft = (viewportWidth - scaledWidth) / 2;
+  const targetTop = (viewportHeight - scaledHeight) / 2;
+
+  return {
+    x: `${targetLeft - rect.left}px`,
+    y: `${targetTop - rect.top}px`,
+    scale: `${scale}`
+  };
+}
 
 export default function TiltFlipCard({
   frontImg,
@@ -43,12 +81,12 @@ export default function TiltFlipCard({
   const sceneRef = useRef(null);
   const tiltRef = useRef(null);
   const rafRef = useRef(0);
-  const pointerRef = useRef({ ...POINTER_DEFAULT });
+  const pointerStateRef = useRef({ ...POINTER_INITIAL_STATE });
 
-  const [expanded, setExpanded] = useState(false);
-  const [flipped, setFlipped] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
-  const styleVars = useMemo(
+  const cssVars = useMemo(
     () => ({
       "--card-w": `${width}px`,
       "--card-h": `${height}px`,
@@ -57,121 +95,111 @@ export default function TiltFlipCard({
     [width, height, popOut]
   );
 
-  const applyVars = useCallback((vars) => {
-    const el = tiltRef.current;
-    if (!el) return;
+  const applyCssVars = useCallback((vars) => {
+    const element = tiltRef.current;
+    if (!element) return;
 
-    for (const [key, value] of Object.entries(vars)) {
-      el.style.setProperty(key, value);
-    }
+    Object.entries(vars).forEach(([key, value]) => {
+      element.style.setProperty(key, value);
+    });
   }, []);
 
   const resetPointerState = useCallback(() => {
-    pointerRef.current = { ...POINTER_DEFAULT };
+    pointerStateRef.current = { ...POINTER_INITIAL_STATE };
   }, []);
 
   const resetVisualState = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
-    applyVars(VISUAL_DEFAULT);
-  }, [applyVars]);
+    applyCssVars(VISUAL_INITIAL_STATE);
+  }, [applyCssVars]);
 
-  const fullReset = useCallback(() => {
+  const resetAllState = useCallback(() => {
     resetPointerState();
     resetVisualState();
   }, [resetPointerState, resetVisualState]);
 
   const updateTilt = useCallback(
     (clientX, clientY) => {
-      if (expanded) return;
+      if (isExpanded) return;
 
-      const el = tiltRef.current;
-      if (!el) return;
+      const element = tiltRef.current;
+      if (!element) return;
 
       cancelAnimationFrame(rafRef.current);
 
       rafRef.current = requestAnimationFrame(() => {
-        const rect = el.getBoundingClientRect();
+        const rect = element.getBoundingClientRect();
         if (!rect.width || !rect.height) return;
 
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        const localX = clientX - rect.left;
+        const localY = clientY - rect.top;
 
-        const nx = x / rect.width - 0.5;
-        const ny = y / rect.height - 0.5;
+        const normalizedX = localX / rect.width - 0.5;
+        const normalizedY = localY / rect.height - 0.5;
 
-        const tiltX = -ny * maxTilt;
-        const tiltY = nx * maxTilt;
+        const rotateX = -normalizedY * maxTilt;
+        const rotateY = normalizedX * maxTilt;
 
-        applyVars({
+        applyCssVars({
           "--hover": "1",
-          "--rx": `${tiltX}deg`,
-          "--ry": `${tiltY}deg`,
-          "--glare-x": `${(x / rect.width) * 100}%`,
-          "--glare-y": `${(y / rect.height) * 100}%`,
+          "--rx": `${rotateX}deg`,
+          "--ry": `${rotateY}deg`,
+          "--glare-x": `${(localX / rect.width) * 100}%`,
+          "--glare-y": `${(localY / rect.height) * 100}%`,
           "--glare-o": "1"
         });
       });
     },
-    [expanded, maxTilt, applyVars]
+    [applyCssVars, isExpanded, maxTilt]
   );
 
   const computeExpandedTransform = useCallback(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
+    const sceneElement = sceneRef.current;
+    if (!sceneElement) return;
 
-    const rect = scene.getBoundingClientRect();
-    const viewportW = window.innerWidth;
-    const viewportH = window.innerHeight;
+    const rect = sceneElement.getBoundingClientRect();
+    const metrics = getExpandedMetrics(rect);
 
-    const edgeGap = Math.min(48, viewportW * 0.06);
-    const maxW = viewportW - edgeGap * 2;
-    const maxH = viewportH - edgeGap * 2;
-
-    const scale = Math.min(maxW / rect.width, maxH / rect.height, 2.2);
-
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-
-    applyVars({
-      "--expand-x": `${viewportW / 2 - centerX}px`,
-      "--expand-y": `${viewportH / 2 - centerY}px`,
-      "--expand-scale": `${scale}`
+    applyCssVars({
+      "--expand-x": metrics.x,
+      "--expand-y": metrics.y,
+      "--expand-scale": metrics.scale
     });
-  }, [applyVars]);
+  }, [applyCssVars]);
 
-  const openInspect = useCallback(() => {
+  const openInspectView = useCallback(() => {
     computeExpandedTransform();
 
-    applyVars({
+    applyCssVars({
       "--hover": "0",
       "--rx": "0deg",
       "--ry": "0deg",
       "--glare-o": "0"
     });
 
-    setExpanded(true);
-    setFlipped(true);
-  }, [computeExpandedTransform, applyVars]);
+    setIsExpanded(true);
+    setIsFlipped(true);
+  }, [applyCssVars, computeExpandedTransform]);
 
-  const closeInspect = useCallback(() => {
-    setExpanded(false);
-    setFlipped(false);
+  const closeInspectView = useCallback(() => {
+    setIsExpanded(false);
+    setIsFlipped(false);
 
     requestAnimationFrame(() => {
-      fullReset();
+      resetAllState();
     });
-  }, [fullReset]);
+  }, [resetAllState]);
 
-  const endPointerInteraction = useCallback(() => {
+  const endInteraction = useCallback(() => {
     resetPointerState();
 
-    if (!expanded) {
+    if (!isExpanded) {
       resetVisualState();
     }
-  }, [expanded, resetPointerState, resetVisualState]);
+  }, [isExpanded, resetPointerState, resetVisualState]);
 
   useLayoutEffect(() => {
-    if (!expanded) return;
+    if (!isExpanded) return;
 
     const handleResize = () => {
       computeExpandedTransform();
@@ -183,185 +211,233 @@ export default function TiltFlipCard({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [expanded, computeExpandedTransform]);
+  }, [isExpanded, computeExpandedTransform]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && expanded) {
-        closeInspect();
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" && isExpanded) {
+        closeInspectView();
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = expanded ? "hidden" : "";
+    document.body.style.overflow = isExpanded ? "hidden" : "";
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
       cancelAnimationFrame(rafRef.current);
     };
-  }, [expanded, closeInspect]);
+  }, [isExpanded, closeInspectView]);
 
-  const onPointerEnter = useCallback(
-    (e) => {
-      if (expanded || e.pointerType !== "mouse") return;
-      updateTilt(e.clientX, e.clientY);
+  const handlePointerEnter = useCallback(
+    (event) => {
+      if (isExpanded || event.pointerType !== "mouse") return;
+      updateTilt(event.clientX, event.clientY);
     },
-    [expanded, updateTilt]
+    [isExpanded, updateTilt]
   );
 
-  const onPointerDown = useCallback(
-    (e) => {
-      if (expanded) return;
+  const handlePointerDown = useCallback(
+    (event) => {
+      if (isExpanded) return;
 
-      pointerRef.current = {
+      pointerStateRef.current = {
         isDown: true,
         moved: false,
-        startX: e.clientX,
-        startY: e.clientY,
-        activePointerId: e.pointerId
+        startX: event.clientX,
+        startY: event.clientY,
+        activePointerId: event.pointerId
       };
 
-      if (e.pointerType === "touch" || e.pointerType === "pen") {
-        updateTilt(e.clientX, e.clientY);
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+
+      if (event.pointerType === "touch" || event.pointerType === "pen") {
+        updateTilt(event.clientX, event.clientY);
       }
     },
-    [expanded, updateTilt]
+    [isExpanded, updateTilt]
   );
 
-  const onPointerMove = useCallback(
-    (e) => {
-      if (expanded) return;
+  const handlePointerMove = useCallback(
+    (event) => {
+      if (isExpanded) return;
 
-      const state = pointerRef.current;
+      const pointerState = pointerStateRef.current;
 
-      if (e.pointerType === "mouse") {
-        updateTilt(e.clientX, e.clientY);
+      if (event.pointerType === "mouse") {
+        updateTilt(event.clientX, event.clientY);
         return;
       }
 
-      if (!state.isDown || state.activePointerId !== e.pointerId) return;
-
-      const dx = e.clientX - state.startX;
-      const dy = e.clientY - state.startY;
-
-      if (Math.hypot(dx, dy) > MOVE_THRESHOLD) {
-        state.moved = true;
+      if (!pointerState.isDown || pointerState.activePointerId !== event.pointerId) {
+        return;
       }
 
-      updateTilt(e.clientX, e.clientY);
+      const distance = getDistance(
+        pointerState.startX,
+        pointerState.startY,
+        event.clientX,
+        event.clientY
+      );
+
+      if (distance > MOVE_THRESHOLD_PX) {
+        pointerState.moved = true;
+      }
+
+      updateTilt(event.clientX, event.clientY);
     },
-    [expanded, updateTilt]
+    [isExpanded, updateTilt]
   );
 
-  const onPointerUp = useCallback(
-    (e) => {
-      if (expanded) return;
+  const handlePointerUp = useCallback(
+    (event) => {
+      if (isExpanded) return;
 
-      const state = pointerRef.current;
+      const pointerState = pointerStateRef.current;
+      const distance = getDistance(
+        pointerState.startX,
+        pointerState.startY,
+        event.clientX,
+        event.clientY
+      );
 
-      if (e.pointerType === "mouse") {
-        openInspect();
-        endPointerInteraction();
+      const movedEnough = distance > MOVE_THRESHOLD_PX;
+
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+
+      if (event.pointerType === "mouse") {
+        if (!movedEnough) {
+          openInspectView();
+        }
+        endInteraction();
         return;
       }
 
       const wasTap =
-        state.isDown &&
-        state.activePointerId === e.pointerId &&
-        !state.moved;
+        pointerState.isDown &&
+        pointerState.activePointerId === event.pointerId &&
+        !pointerState.moved &&
+        !movedEnough;
 
       if (wasTap) {
-        openInspect();
-      } else {
-        endPointerInteraction();
+        openInspectView();
       }
+
+      endInteraction();
     },
-    [expanded, openInspect, endPointerInteraction]
+    [isExpanded, openInspectView, endInteraction]
   );
 
-  const onPointerLeave = useCallback(
-    (e) => {
-      if (expanded) return;
-      if (e.pointerType === "mouse") {
+  const handlePointerLeave = useCallback(
+    (event) => {
+      if (isExpanded) return;
+
+      if (event.pointerType === "mouse") {
         resetVisualState();
       }
     },
-    [expanded, resetVisualState]
+    [isExpanded, resetVisualState]
   );
 
-  const onPointerCancel = useCallback(() => {
-    endPointerInteraction();
-  }, [endPointerInteraction]);
+  const handlePointerCancel = useCallback(
+    (event) => {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+      endInteraction();
+    },
+    [endInteraction]
+  );
+
+  const handleBackdropClick = useCallback(() => {
+    closeInspectView();
+  }, [closeInspectView]);
+
+  const handleCloseButtonClick = useCallback(
+    (event) => {
+      event.stopPropagation();
+      closeInspectView();
+    },
+    [closeInspectView]
+  );
 
   return (
     <>
-      {expanded && <div className="tfc-backdrop" onClick={closeInspect} />}
+      {isExpanded && (
+        <div
+          className="tfc-backdrop"
+          onClick={handleBackdropClick}
+          aria-hidden="true"
+        />
+      )}
 
       <div
         ref={sceneRef}
-        className={`tfc-scene ${expanded ? "is-expanded" : ""}`}
-        style={styleVars}
-        onPointerEnter={onPointerEnter}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerLeave={onPointerLeave}
-        onPointerCancel={onPointerCancel}
+        className={`tfc-scene ${isExpanded ? "is-expanded" : ""}`}
+        style={cssVars}
+        onPointerEnter={handlePointerEnter}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
+        onPointerCancel={handlePointerCancel}
       >
         <div
           ref={tiltRef}
-          className={`tfc-tilt ${expanded ? "is-expanded" : ""}`}
+          className={`tfc-tilt ${isExpanded ? "is-expanded" : ""}`}
         >
-          <div
-            className={`tfc-flip ${flipped ? "is-flipped" : ""} ${expanded ? "is-expanded" : ""}`}
-          >
+          <div className={`tfc-flip ${isFlipped ? "is-flipped" : ""}`}>
             <div className="tfc-face tfc-front">
               {frontImg && (
                 <img
                   src={frontImg}
-                  alt="card background"
+                  alt=""
                   className="card-bg-image"
                   loading="lazy"
                   decoding="async"
                 />
               )}
 
-              {!expanded && <div className="tfc-glare" />}
+              {!isExpanded && <div className="tfc-glare" />}
 
-              {!expanded && (
+              {!isExpanded && (
                 <div className="card-overlay">
                   <div className="tfc-content">{front}</div>
                 </div>
               )}
             </div>
 
-            <div className={`tfc-face tfc-back ${expanded ? "tfc-back-expanded" : ""}`}>
+            <div
+              className={`tfc-face tfc-back ${isExpanded ? "tfc-back-expanded" : ""
+                }`}
+            >
               {backImg && (
                 <img
                   src={backImg}
-                  alt="card background"
+                  alt=""
                   className="card-bg-image"
                   loading="lazy"
                   decoding="async"
                 />
               )}
 
-              {!expanded && <div className="tfc-glare" />}
+              {!isExpanded && <div className="tfc-glare" />}
 
-              <div className={`card-overlay ${expanded ? "back-overlay" : ""}`}>
-                {expanded && (
+              <div className={`card-overlay ${isExpanded ? "back-overlay" : ""}`}>
+                {isExpanded && (
                   <button
                     className="tfc-close-btn"
-                    onClick={closeInspect}
+                    onClick={handleCloseButtonClick}
                     aria-label="Close expanded card"
                     type="button"
                   >
-                    <span>x</span>
+                    <span aria-hidden="true">×</span>
                   </button>
                 )}
 
-                <div className={`tfc-content ${expanded ? "tfc-scroll-content" : ""}`}>
+                <div
+                  className={`tfc-content ${isExpanded ? "tfc-scroll-content" : ""
+                    }`}
+                >
                   {back}
                 </div>
               </div>

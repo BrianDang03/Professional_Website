@@ -12,12 +12,6 @@
   --tfc-text-light: #fff;
 }
 
-/* Shared 3D optimization */
-.tfc-face {
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
 .tfc-face,
 .card-overlay,
 .back-overlay,

@@ -33,6 +33,20 @@ const VISUAL_INITIAL_STATE = {
   "--expand-scale": "1"
 };
 
+// Mobile browsers can emit delayed synthetic hover/mouse events after touch taps.
+// Use a short global suppression window so closing one expanded card cannot
+// accidentally tilt another card behind it.
+let globalPointerSuppressionUntil = 0;
+
+function suppressGlobalPointer(ms = 320) {
+  const now = performance.now();
+  globalPointerSuppressionUntil = Math.max(globalPointerSuppressionUntil, now + ms);
+}
+
+function isGlobalPointerSuppressed() {
+  return performance.now() < globalPointerSuppressionUntil;
+}
+
 function getDistance(x1, y1, x2, y2) {
   return Math.hypot(x2 - x1, y2 - y1);
 }
@@ -85,6 +99,13 @@ export default function TiltFlipCard({
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+
+  const supportsMouseHover = useCallback(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return true;
+    }
+    return window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  }, []);
 
   const cssVars = useMemo(
     () => ({
@@ -182,6 +203,8 @@ export default function TiltFlipCard({
   }, [applyCssVars, computeExpandedTransform]);
 
   const closeInspectView = useCallback(() => {
+    suppressGlobalPointer(320);
+
     // Reset visual state immediately to prevent tilt effects on underlying cards
     resetVisualState();
 
@@ -234,15 +257,16 @@ export default function TiltFlipCard({
 
   const handlePointerEnter = useCallback(
     (event) => {
-      if (isExpanded || event.pointerType !== "mouse") return;
+      if (isExpanded || isGlobalPointerSuppressed() || event.pointerType !== "mouse") return;
+      if (!supportsMouseHover()) return;
       updateTilt(event.clientX, event.clientY);
     },
-    [isExpanded, updateTilt]
+    [isExpanded, supportsMouseHover, updateTilt]
   );
 
   const handlePointerDown = useCallback(
     (event) => {
-      if (isExpanded) return;
+      if (isExpanded || isGlobalPointerSuppressed()) return;
 
       pointerStateRef.current = {
         isDown: true,
@@ -263,11 +287,12 @@ export default function TiltFlipCard({
 
   const handlePointerMove = useCallback(
     (event) => {
-      if (isExpanded) return;
+      if (isExpanded || isGlobalPointerSuppressed()) return;
 
       const pointerState = pointerStateRef.current;
 
       if (event.pointerType === "mouse") {
+        if (!supportsMouseHover()) return;
         updateTilt(event.clientX, event.clientY);
         return;
       }
@@ -289,12 +314,12 @@ export default function TiltFlipCard({
 
       updateTilt(event.clientX, event.clientY);
     },
-    [isExpanded, updateTilt]
+    [isExpanded, supportsMouseHover, updateTilt]
   );
 
   const handlePointerUp = useCallback(
     (event) => {
-      if (isExpanded) return;
+      if (isExpanded || isGlobalPointerSuppressed()) return;
 
       const pointerState = pointerStateRef.current;
       const distance = getDistance(
@@ -309,6 +334,10 @@ export default function TiltFlipCard({
       event.currentTarget.releasePointerCapture?.(event.pointerId);
 
       if (event.pointerType === "mouse") {
+        if (!supportsMouseHover()) {
+          endInteraction();
+          return;
+        }
         if (!movedEnough) {
           openInspectView();
         }
@@ -328,18 +357,19 @@ export default function TiltFlipCard({
 
       endInteraction();
     },
-    [isExpanded, openInspectView, endInteraction]
+    [isExpanded, openInspectView, endInteraction, supportsMouseHover]
   );
 
   const handlePointerLeave = useCallback(
     (event) => {
-      if (isExpanded) return;
+      if (isExpanded || isGlobalPointerSuppressed()) return;
 
       if (event.pointerType === "mouse") {
+        if (!supportsMouseHover()) return;
         resetVisualState();
       }
     },
-    [isExpanded, resetVisualState]
+    [isExpanded, resetVisualState, supportsMouseHover]
   );
 
   const handlePointerCancel = useCallback(
@@ -350,7 +380,16 @@ export default function TiltFlipCard({
     [endInteraction]
   );
 
-  const handleBackdropClick = useCallback(() => {
+  const handleBackdropPointerDown = useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    suppressGlobalPointer(420);
+  }, []);
+
+  const handleBackdropClick = useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    suppressGlobalPointer(420);
     closeInspectView();
   }, [closeInspectView]);
 
@@ -381,6 +420,7 @@ export default function TiltFlipCard({
       {isExpanded && (
         <div
           className="tfc-backdrop"
+          onPointerDown={handleBackdropPointerDown}
           onClick={handleBackdropClick}
           aria-hidden="true"
         />

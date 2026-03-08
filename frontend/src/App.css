@@ -35,13 +35,19 @@
 
 [data-theme="light"] body {
     background:
-        radial-gradient(circle at 18% 10%, rgba(100, 120, 200, 0.08), transparent 35%),
-        radial-gradient(circle at 88% 72%, rgba(100, 120, 200, 0.06), transparent 38%),
-        linear-gradient(180deg, #f0f3f7 0%, #ffffff 54%, #f5f8fb 100%);
+        radial-gradient(circle at 18% 10%, rgba(64, 110, 230, 0.38), transparent 42%),
+        radial-gradient(circle at 88% 72%, rgba(82, 150, 245, 0.32), transparent 44%),
+        radial-gradient(circle at 50% 36%, rgba(102, 170, 255, 0.2), transparent 46%),
+        linear-gradient(180deg, #dbe9ff 0%, #eef5ff 52%, #e3eeff 100%);
 }
 
 [data-theme="light"] body::before {
-    opacity: 0.15;
+    opacity: 0.32;
+    background-image:
+        radial-gradient(circle at 20% 25%, rgba(18, 34, 54, 0.72) 1px, transparent 2px),
+        radial-gradient(circle at 70% 40%, rgba(18, 34, 54, 0.66) 1px, transparent 2px),
+        radial-gradient(circle at 90% 75%, rgba(18, 34, 54, 0.72) 1px, transparent 2px),
+        radial-gradient(circle at 32% 68%, rgba(18, 34, 54, 0.66) 1px, transparent 2px);
 }
 
 [data-theme="light"] .orb {
@@ -54,7 +60,7 @@
 }
 
 [data-theme="light"] .site-header {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.6));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.16));
     border-bottom-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -64,7 +70,7 @@
 }
 
 [data-theme="light"] .site-footer {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.85));
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.42));
     border-top-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -94,6 +100,11 @@
 [data-theme="light"] .brand-ring {
     border-color: rgba(26, 45, 67, 0.7);
     background: rgba(26, 45, 67, 0.08);
+}
+
+[data-theme="light"] .home-bottom-line {
+    background: linear-gradient(90deg, transparent, rgba(26, 45, 67, 0.6), transparent);
+    box-shadow: 0 0 18px rgba(26, 45, 67, 0.2);
 }
 
 * {
@@ -210,7 +221,7 @@ body::before {
     top: 0;
     z-index: 15;
     backdrop-filter: blur(12px);
-    background: linear-gradient(180deg, rgba(13, 18, 26, 0.72), rgba(13, 18, 26, 0.34));
+    background: linear-gradient(180deg, rgba(13, 18, 26, 0.34), rgba(13, 18, 26, 0.08));
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
@@ -646,7 +657,8 @@ ul {
 .site-footer {
     margin-top: auto;
     border-top: 1px solid rgba(255, 255, 255, 0.18);
-    background: linear-gradient(180deg, rgba(16, 22, 31, 0.48), rgba(16, 22, 31, 0.78));
+    backdrop-filter: blur(10px);
+    background: linear-gradient(180deg, rgba(16, 22, 31, 0.1), rgba(16, 22, 31, 0.32));
     padding: 2.1rem 0 1.5rem;
 }
 

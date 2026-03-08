@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,9 +65,12 @@ export default function Navbar() {
                         </NavLink>
                     </div>
 
-                    <a href="mailto:briandang730@gmail.com" className="nav-cta" onClick={closeMenu}>
-                        Contact
-                    </a>
+                    <div className="nav-actions">
+                        <a href="mailto:briandang730@gmail.com" className="nav-cta" onClick={closeMenu}>
+                            Contact
+                        </a>
+                        <ThemeToggle />
+                    </div>
                 </div>
             </nav>
         </header>

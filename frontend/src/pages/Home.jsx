@@ -45,7 +45,7 @@ export default function Home({ name, job }) {
         />
 
         <TiltFlipCard
-          frontImg="/modem.jpg"
+          frontImg="./modem.jpg"
           front={
             <>
               <h2>Portfolio</h2>
@@ -62,7 +62,7 @@ export default function Home({ name, job }) {
               </h3>
             </>
           }
-          backImg="/modem.jpg"
+          backImg="./modem.jpg"
           back={
             <>
               <h3>Details</h3>

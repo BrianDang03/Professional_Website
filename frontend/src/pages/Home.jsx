@@ -16,7 +16,7 @@ export default function Home({ name, job }) {
       <JobTitle job={job} />
       <div className="card-container">
         <TiltFlipCard
-          frontImg="./headshot.jpg"
+          frontImg={`${import.meta.env.BASE_URL}headshot.jpg`}
           front={
             <>
               <h2>About Me</h2>
@@ -45,7 +45,7 @@ export default function Home({ name, job }) {
         />
 
         <TiltFlipCard
-          frontImg="./modem.jpg"
+          frontImg={`${import.meta.env.BASE_URL}modem.jpg`}
           front={
             <>
               <h2>Portfolio</h2>
@@ -62,7 +62,7 @@ export default function Home({ name, job }) {
               </h3>
             </>
           }
-          backImg="./modem.jpg"
+          backImg={`${import.meta.env.BASE_URL}modem.jpg`}
           back={
             <>
               <h3>Details</h3>
@@ -73,7 +73,7 @@ export default function Home({ name, job }) {
         />
 
         <TiltFlipCard
-          frontImg="./contact.png"
+          frontImg={`${import.meta.env.BASE_URL}contact.png`}
           front={
             <>
               <h2>Contact Me</h2>
@@ -91,7 +91,7 @@ export default function Home({ name, job }) {
               </h3>
             </>
           }
-          backImg="./vite.svg"
+          backImg={`${import.meta.env.BASE_URL}vite.svg`}
           back={
             <>
               <h3>Details</h3>

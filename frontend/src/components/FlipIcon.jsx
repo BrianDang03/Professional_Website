@@ -12,7 +12,7 @@ export default function FlipIcon() {
             }}
         >
             <img
-                src="./flipIcon.png"
+                src={`${import.meta.env.BASE_URL}./flipIcon.png`}
                 alt="flip icon"
                 style={{
                     width: "24px",

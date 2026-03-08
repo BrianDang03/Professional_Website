@@ -1,5 +1,6 @@
 :root {
-  --tfc-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --tfc-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --tfc-tilt-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --tfc-speed: 700ms;
   --tfc-radius: 18px;
   --tfc-backdrop-bg: rgba(8, 12, 18, 0.3);
@@ -28,7 +29,8 @@
   width: var(--card-w);
   height: var(--card-h);
   z-index: 0;
-  perspective: 1200px;
+  perspective: 1600px;
+  perspective-origin: center center;
   cursor: pointer;
   user-select: none;
   touch-action: pan-y;
@@ -54,6 +56,19 @@
   -webkit-user-drag: none;
   -webkit-user-select: none;
   user-select: none;
+  animation: fadeIn 900ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+
+  to {
+    opacity: 1;
+    backdrop-filter: blur(6px);
+  }
 }
 
 .tfc-tilt {
@@ -63,12 +78,24 @@
   height: 100%;
   overflow: hidden;
   border-radius: var(--tfc-radius);
+  will-change: transform, box-shadow;
   transition:
-    transform var(--tfc-speed) var(--tfc-ease),
-    box-shadow 280ms var(--tfc-ease),
-    filter 280ms var(--tfc-ease);
+    transform 1200ms cubic-bezier(0.19, 1, 0.22, 1),
+    box-shadow 400ms cubic-bezier(0.19, 1, 0.22, 1) 1100ms,
+    filter 400ms var(--tfc-ease),
+    top 900ms cubic-bezier(0.19, 1, 0.22, 1),
+    left 900ms cubic-bezier(0.19, 1, 0.22, 1),
+    width 900ms cubic-bezier(0.19, 1, 0.22, 1),
+    height 900ms cubic-bezier(0.19, 1, 0.22, 1),
+    position 0ms 900ms;
   transform:
-    perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(calc(var(--hover, 0) * var(--pop-out))) scale(calc(1 + var(--hover, 0) * 0.035));
+    perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(calc(var(--hover, 0) * var(--pop-out))) scale(calc(1 + var(--hover, 0) * 0.04));
+  box-shadow:
+    var(--shadow-x, 0px) var(--shadow-y, 0px) var(--shadow-blur, 20px) rgba(0, 0, 0, 0.3),
+    0 calc(var(--hover, 0) * 30px) calc(var(--hover, 0) * 40px) rgba(0, 0, 0, 0.25),
+    0 calc(var(--hover, 0) * 10px) calc(var(--hover, 0) * 20px) rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, calc(var(--hover, 0) * 0.15));
+  transform-style: preserve-3d;
 }
 
 .tfc-tilt.is-expanded {
@@ -82,14 +109,24 @@
   transform:
     translate(var(--expand-x, 0px), var(--expand-y, 0px)) scale(var(--expand-scale, 1));
   pointer-events: auto;
+  box-shadow: none;
+  transition:
+    transform 900ms cubic-bezier(0.19, 1, 0.22, 1),
+    box-shadow 200ms ease-out,
+    top 0ms,
+    left 0ms,
+    width 0ms,
+    height 0ms,
+    position 0ms;
 }
 
 .tfc-flip {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform var(--tfc-speed) var(--tfc-ease);
+  transition: transform 1100ms cubic-bezier(0.19, 1, 0.22, 1);
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .tfc-flip.is-flipped {
@@ -130,7 +167,9 @@
   width: 100%;
   max-width: 100%;
   padding: 0 18px;
-  transform: translateZ(calc(var(--hover, 0) * 12px));
+  transform: translateZ(calc(var(--hover, 0) * 20px));
+  transition: transform 900ms cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: transform;
 }
 
 .tfc-scroll-content {
@@ -145,16 +184,28 @@
 
 .tfc-glare {
   position: absolute;
-  inset: -40%;
+  inset: -50%;
   z-index: 1;
   pointer-events: none;
-  opacity: calc(var(--glare-o, 0) * 0.6);
+  opacity: var(--glare-o, 0);
   transform: translateZ(2px);
-  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 50%),
-      var(--tfc-glare-strong),
-      var(--tfc-glare-medium) 18%,
-      var(--tfc-glare-soft) 35%,
-      rgba(255, 255, 255, 0) 60%);
+  background:
+    radial-gradient(ellipse 400px 400px at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.3) 8%,
+      rgba(255, 255, 255, 0.2) 18%,
+      rgba(255, 255, 255, 0.1) 30%,
+      rgba(255, 255, 255, 0.05) 45%,
+      rgba(255, 255, 255, 0) 60%),
+    radial-gradient(ellipse 800px 600px at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(255, 255, 255, 0.1) 20%,
+      rgba(255, 255, 255, 0.05) 35%,
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(255, 255, 255, 0) 70%);
+  mix-blend-mode: overlay;
+  transition: opacity 900ms cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: opacity;
 }
 
 .card-bg-image {
@@ -186,6 +237,7 @@
   background: linear-gradient(var(--tfc-overlay-front),
       var(--tfc-overlay-back));
   text-align: center;
+  transition: opacity 900ms cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .tfc-back-expanded {
@@ -206,6 +258,16 @@
   -webkit-touch-callout: none;
   -webkit-user-drag: none;
   user-select: none;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .tfc-close-btn {
@@ -234,6 +296,19 @@
     0 6px 16px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
   transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  animation: fadeInButton 900ms cubic-bezier(0.19, 1, 0.22, 1) 300ms both;
+}
+
+@keyframes fadeInButton {
+  from {
+    opacity: 0;
+    transform: scale(0.7) translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .tfc-close-btn span {
@@ -262,11 +337,13 @@
 
 .tfc-scene.is-expanded .tfc-glare,
 .tfc-scene.is-expanded .tfc-front .card-overlay {
-  display: none;
+  opacity: 0;
+  transition: opacity 900ms cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .tfc-scene.is-expanded .tfc-content {
   transform: none;
+  transition: transform 900ms cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 @media (max-width: 768px) {

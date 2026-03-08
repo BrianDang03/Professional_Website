@@ -12,6 +12,7 @@ const MOVE_THRESHOLD_PX = 10;
 const DEFAULT_EXPAND_SCALE_MAX = 2.2;
 const DEFAULT_EDGE_GAP_PX = 48;
 const DEFAULT_EDGE_GAP_RATIO = 0.06;
+const LERP_FACTOR = 0.12; // Smoothness: lower = smoother but slower
 
 const POINTER_INITIAL_STATE = {
   isDown: false,
@@ -28,6 +29,9 @@ const VISUAL_INITIAL_STATE = {
   "--glare-o": "0",
   "--glare-x": "50%",
   "--glare-y": "50%",
+  "--shadow-x": "0px",
+  "--shadow-y": "0px",
+  "--shadow-blur": "20px",
   "--expand-x": "0px",
   "--expand-y": "0px",
   "--expand-scale": "1"
@@ -97,6 +101,33 @@ export default function TiltFlipCard({
   const rafRef = useRef(0);
   const pointerStateRef = useRef({ ...POINTER_INITIAL_STATE });
 
+  // Lerp state: current and target values
+  const lerpStateRef = useRef({
+    current: {
+      rx: 0,
+      ry: 0,
+      glareX: 50,
+      glareY: 50,
+      glareO: 0,
+      shadowX: 0,
+      shadowY: 0,
+      shadowBlur: 20,
+      hover: 0
+    },
+    target: {
+      rx: 0,
+      ry: 0,
+      glareX: 50,
+      glareY: 50,
+      glareO: 0,
+      shadowX: 0,
+      shadowY: 0,
+      shadowBlur: 20,
+      hover: 0
+    }
+  });
+  const isAnimatingRef = useRef(false);
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -131,6 +162,22 @@ export default function TiltFlipCard({
 
   const resetVisualState = useCallback(() => {
     cancelAnimationFrame(rafRef.current);
+    isAnimatingRef.current = false;
+
+    // Reset lerp state
+    lerpStateRef.current.target = {
+      rx: 0,
+      ry: 0,
+      glareX: 50,
+      glareY: 50,
+      glareO: 0,
+      shadowX: 0,
+      shadowY: 0,
+      shadowBlur: 20,
+      hover: 0
+    };
+    lerpStateRef.current.current = { ...lerpStateRef.current.target };
+
     applyCssVars(VISUAL_INITIAL_STATE);
   }, [applyCssVars]);
 
@@ -139,6 +186,63 @@ export default function TiltFlipCard({
     resetVisualState();
   }, [resetPointerState, resetVisualState]);
 
+  // Lerp animation loop
+  const lerp = (start, end, factor) => {
+    return start + (end - start) * factor;
+  };
+
+  const animateLerp = useCallback(() => {
+    if (!isAnimatingRef.current) return;
+
+    const state = lerpStateRef.current;
+    const { current, target } = state;
+
+    // Lerp all values
+    current.rx = lerp(current.rx, target.rx, LERP_FACTOR);
+    current.ry = lerp(current.ry, target.ry, LERP_FACTOR);
+    current.glareX = lerp(current.glareX, target.glareX, LERP_FACTOR);
+    current.glareY = lerp(current.glareY, target.glareY, LERP_FACTOR);
+    current.glareO = lerp(current.glareO, target.glareO, LERP_FACTOR);
+    current.shadowX = lerp(current.shadowX, target.shadowX, LERP_FACTOR);
+    current.shadowY = lerp(current.shadowY, target.shadowY, LERP_FACTOR);
+    current.shadowBlur = lerp(current.shadowBlur, target.shadowBlur, LERP_FACTOR);
+    current.hover = lerp(current.hover, target.hover, LERP_FACTOR);
+
+    // Apply the lerped values
+    applyCssVars({
+      "--hover": current.hover.toString(),
+      "--rx": `${current.rx}deg`,
+      "--ry": `${current.ry}deg`,
+      "--glare-x": `${current.glareX}%`,
+      "--glare-y": `${current.glareY}%`,
+      "--glare-o": current.glareO.toString(),
+      "--shadow-x": `${current.shadowX}px`,
+      "--shadow-y": `${current.shadowY}px`,
+      "--shadow-blur": `${current.shadowBlur}px`
+    });
+
+    // Check if we're close enough to stop animating
+    const threshold = 0.001;
+    const isClose =
+      Math.abs(current.rx - target.rx) < threshold &&
+      Math.abs(current.ry - target.ry) < threshold &&
+      Math.abs(current.glareO - target.glareO) < threshold &&
+      Math.abs(current.hover - target.hover) < threshold;
+
+    if (!isClose) {
+      rafRef.current = requestAnimationFrame(animateLerp);
+    } else {
+      isAnimatingRef.current = false;
+    }
+  }, [applyCssVars]);
+
+  const startLerpAnimation = useCallback(() => {
+    if (!isAnimatingRef.current) {
+      isAnimatingRef.current = true;
+      rafRef.current = requestAnimationFrame(animateLerp);
+    }
+  }, [animateLerp]);
+
   const updateTilt = useCallback(
     (clientX, clientY) => {
       if (isExpanded) return;
@@ -146,32 +250,93 @@ export default function TiltFlipCard({
       const element = tiltRef.current;
       if (!element) return;
 
-      cancelAnimationFrame(rafRef.current);
+      const rect = element.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
 
-      rafRef.current = requestAnimationFrame(() => {
-        const rect = element.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
+      const localX = clientX - rect.left;
+      const localY = clientY - rect.top;
 
-        const localX = clientX - rect.left;
-        const localY = clientY - rect.top;
+      const normalizedX = localX / rect.width - 0.5;
+      const normalizedY = localY / rect.height - 0.5;
 
-        const normalizedX = localX / rect.width - 0.5;
-        const normalizedY = localY / rect.height - 0.5;
+      const rotateX = -normalizedY * maxTilt;
+      const rotateY = normalizedX * maxTilt;
 
-        const rotateX = -normalizedY * maxTilt;
-        const rotateY = normalizedX * maxTilt;
+      // Realistic light and reflection calculation
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
 
-        applyCssVars({
-          "--hover": "1",
-          "--rx": `${rotateX}deg`,
-          "--ry": `${rotateY}deg`,
-          "--glare-x": `${(localX / rect.width) * 100}%`,
-          "--glare-y": `${(localY / rect.height) * 100}%`,
-          "--glare-o": "1"
-        });
-      });
+      // Convert tilt angles to radians
+      const tiltRadX = (rotateX * Math.PI) / 180;
+      const tiltRadY = (rotateY * Math.PI) / 180;
+
+      // Calculate surface normal based on card tilt
+      const normalX = Math.sin(tiltRadY);
+      const normalY = -Math.sin(tiltRadX);
+      const normalZ = Math.cos(tiltRadX) * Math.cos(tiltRadY);
+
+      // Light direction: from card center to mouse position (normalized)
+      const lightDirX = (localX - centerX) / rect.width;
+      const lightDirY = (localY - centerY) / rect.height;
+      const lightDirZ = 1.0;
+
+      const lightLength = Math.sqrt(lightDirX * lightDirX + lightDirY * lightDirY + lightDirZ * lightDirZ);
+      const lightX = lightDirX / lightLength;
+      const lightY = lightDirY / lightLength;
+      const lightZ = lightDirZ / lightLength;
+
+      // View direction
+      const viewX = 0;
+      const viewY = 0;
+      const viewZ = 1;
+
+      // Calculate halfway vector (Blinn-Phong)
+      const halfX = lightX + viewX;
+      const halfY = lightY + viewY;
+      const halfZ = lightZ + viewZ;
+
+      const halfLength = Math.sqrt(halfX * halfX + halfY * halfY + halfZ * halfZ);
+      const hX = halfX / halfLength;
+      const hY = halfY / halfLength;
+      const hZ = halfZ / halfLength;
+
+      // Dot product: normal · halfway
+      const specular = Math.max(0, normalX * hX + normalY * hY + normalZ * hZ);
+
+      const shininess = 18;
+      const specularIntensity = Math.pow(specular, shininess);
+
+      // Calculate reflection
+      const dotNL = normalX * lightX + normalY * lightY + normalZ * lightZ;
+      const reflectX = 2 * dotNL * normalX - lightX;
+      const reflectY = 2 * dotNL * normalY - lightY;
+
+      const glareX = 50 + reflectX * 80;
+      const glareY = 50 + reflectY * 80;
+      const intensity = Math.min(1, specularIntensity * 3.5);
+
+      // Calculate dynamic shadow
+      const shadowX = normalizedY * 25;
+      const shadowY = -normalizedX * 25;
+      const shadowBlur = 25 + Math.abs(normalizedX * 15) + Math.abs(normalizedY * 15);
+
+      // Update target values for lerping
+      lerpStateRef.current.target = {
+        rx: rotateX,
+        ry: rotateY,
+        glareX: glareX,
+        glareY: glareY,
+        glareO: intensity,
+        shadowX: shadowX,
+        shadowY: shadowY,
+        shadowBlur: shadowBlur,
+        hover: 1
+      };
+
+      // Start the lerp animation
+      startLerpAnimation();
     },
-    [applyCssVars, isExpanded, maxTilt]
+    [isExpanded, maxTilt, startLerpAnimation]
   );
 
   const computeExpandedTransform = useCallback(() => {
@@ -195,7 +360,10 @@ export default function TiltFlipCard({
       "--hover": "0",
       "--rx": "0deg",
       "--ry": "0deg",
-      "--glare-o": "0"
+      "--glare-o": "0",
+      "--shadow-x": "0px",
+      "--shadow-y": "0px",
+      "--shadow-blur": "20px"
     });
 
     setIsExpanded(true);
@@ -219,9 +387,21 @@ export default function TiltFlipCard({
     resetPointerState();
 
     if (!isExpanded) {
-      resetVisualState();
+      // Lerp back to rest state instead of instant reset
+      lerpStateRef.current.target = {
+        rx: 0,
+        ry: 0,
+        glareX: 50,
+        glareY: 50,
+        glareO: 0,
+        shadowX: 0,
+        shadowY: 0,
+        shadowBlur: 20,
+        hover: 0
+      };
+      startLerpAnimation();
     }
-  }, [isExpanded, resetPointerState, resetVisualState]);
+  }, [isExpanded, resetPointerState, startLerpAnimation]);
 
   useLayoutEffect(() => {
     if (!isExpanded) return;
@@ -366,10 +546,22 @@ export default function TiltFlipCard({
 
       if (event.pointerType === "mouse") {
         if (!supportsMouseHover()) return;
-        resetVisualState();
+        // Lerp back to rest state
+        lerpStateRef.current.target = {
+          rx: 0,
+          ry: 0,
+          glareX: 50,
+          glareY: 50,
+          glareO: 0,
+          shadowX: 0,
+          shadowY: 0,
+          shadowBlur: 20,
+          hover: 0
+        };
+        startLerpAnimation();
       }
     },
-    [isExpanded, resetVisualState, supportsMouseHover]
+    [isExpanded, supportsMouseHover, startLerpAnimation]
   );
 
   const handlePointerCancel = useCallback(

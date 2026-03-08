@@ -1,45 +1,41 @@
 import TiltFlipCard from "../components/tilt_flip_card/TiltFlipCard";
 import FlipIcon from "../components/FlipIcon";
 
-function NameTitle({ name }) {
-  return (<h1>{name}</h1>);
-}
-
-function JobTitle({ job }) {
-  return (<h2>{job}</h2>);
-}
-
 export default function Home({ name, job }) {
   return (
-    <div>
-      <NameTitle name={name} />
-      <JobTitle job={job} />
+    <section className="home-shell">
+      <div className="hero-block">
+        <p className="hero-kicker">Atmospheric Interface Engineer</p>
+        <h1>{name}</h1>
+        <h2>{job}</h2>
+        <p className="hero-lead">
+          I build clean, high-performance products that feel cinematic,
+          intentional, and alive across desktop and mobile surfaces.
+        </p>
+      </div>
+
       <div className="card-container">
         <TiltFlipCard
           frontImg={`${import.meta.env.BASE_URL}headshot.jpg`}
           front={
-            <>
-              <h2>About Me</h2>
+            <div className="card-copy-front">
+              <h3>About Me</h3>
 
-              <h3
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px"
-                }}
-              >
+              <p className="card-hint">
                 Tap to Learn More
                 <FlipIcon />
-              </h3>
-            </>
+              </p>
+            </div>
           }
           back={
-            <>
-              <h3>Details</h3>
+            <div className="card-copy-back">
+              <h3>Core Profile</h3>
               <ul>
+                <li>Software engineer focused on polished front-end systems.</li>
+                <li>Builds interactions with motion, depth, and clarity.</li>
+                <li>Comfortable from UI architecture to deployment.</li>
               </ul>
-            </>
+            </div>
           }
           maxTilt={20}
         />
@@ -47,27 +43,24 @@ export default function Home({ name, job }) {
         <TiltFlipCard
           frontImg={`${import.meta.env.BASE_URL}modem.jpg`}
           front={
-            <>
-              <h2>Portfolio</h2>
-              <h3
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px"
-                }}
-              >
+            <div className="card-copy-front">
+              <h3>Portfolio</h3>
+              <p className="card-hint">
                 Tap to Learn More
                 <FlipIcon />
-              </h3>
-            </>
+              </p>
+            </div>
           }
           backImg={`${import.meta.env.BASE_URL}modem.jpg`}
           back={
-            <>
-              <h3>Details</h3>
-              <p>More info here</p>
-            </>
+            <div className="card-copy-back">
+              <h3>Recent Systems</h3>
+              <ul>
+                <li>Interactive front-end builds with custom 3D card motion.</li>
+                <li>Mobile-first website architecture and route-ready layouts.</li>
+                <li>Component-driven UI libraries for reusable shipping speed.</li>
+              </ul>
+            </div>
           }
           maxTilt={20}
         />
@@ -75,33 +68,31 @@ export default function Home({ name, job }) {
         <TiltFlipCard
           frontImg={`${import.meta.env.BASE_URL}contact.png`}
           front={
-            <>
-              <h2>Contact Me</h2>
+            <div className="card-copy-front">
+              <h3>Contact Me</h3>
 
-              <h3
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px"
-                }}
-              >
+              <p className="card-hint">
                 Tap to Learn More
                 <FlipIcon />
-              </h3>
-            </>
+              </p>
+            </div>
           }
-          backImg={`${import.meta.env.BASE_URL}vite.svg`}
+          backImg={`${import.meta.env.BASE_URL}contact.png`}
           back={
-            <>
-              <h3>Details</h3>
+            <div className="card-copy-back">
+              <h3>Channels</h3>
               <ul>
+                <li>Email: hello@briandang.dev</li>
+                <li>GitHub: github.com</li>
+                <li>LinkedIn: linkedin.com</li>
               </ul>
-            </>
+            </div>
           }
           maxTilt={20}
         />
       </div>
-    </div>
+
+      <div className="home-bottom-line" aria-hidden="true" />
+    </section>
   );
 }

@@ -1,25 +1,10 @@
 export default function FlipIcon() {
     return (
-        <span
-            style={{
-                width: "22px",
-                height: "24px",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-            }}
-        >
+        <span className="flip-icon-shell" aria-hidden="true">
             <img
-                src={`${import.meta.env.BASE_URL}./flipIcon.png`}
-                alt="flip icon"
-                style={{
-                    width: "24px",
-                    height: "24px",
-                    objectFit: "contain",
-                    marginLeft: "-2px"
-                }}
+                src={`${import.meta.env.BASE_URL}flipIcon.png`}
+                alt=""
+                className="flip-icon-img"
             />
         </span>
     );

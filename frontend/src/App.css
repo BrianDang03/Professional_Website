@@ -160,30 +160,9 @@ html {
     height: 100%;
 }
 
-body,
-#root {
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-}
-
-#root {
-    display: flex;
-    flex-direction: column;
-    min-height: 100dvh;
-}
-
-html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-}
-
 body {
+    margin: 0;
+    min-height: 100%;
     font-family: "Manrope", "Segoe UI", sans-serif;
     background:
         radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.22), transparent 35%),
@@ -192,6 +171,7 @@ body {
     background-attachment: fixed;
     color: var(--text-main);
     overflow-x: hidden;
+    text-size-adjust: 100%;
 }
 
 body::before {
@@ -207,6 +187,20 @@ body::before {
         radial-gradient(circle at 32% 68%, rgba(255, 255, 255, 0.75) 1px, transparent 2px);
     background-size: 360px 360px;
     pointer-events: none;
+}
+
+#root {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+}
+
+img {
+    max-width: 100%;
+    display: block;
 }
 
 .site-root {
@@ -312,46 +306,46 @@ body::before {
 @keyframes led-pulse {
     0% {
         stroke-width: 1px;
-        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.3));
-        opacity: 0.4;
+        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.36));
+        opacity: 0.42;
     }
 
     50% {
         stroke-width: 2.5px;
-        filter: drop-shadow(0 0 6px rgba(100, 180, 255, 0.7)) drop-shadow(0 0 16px rgba(100, 180, 255, 0.5)) drop-shadow(0 0 25px rgba(150, 200, 255, 0.3));
-        opacity: 0.9;
+        filter: drop-shadow(0 0 7px rgba(100, 180, 255, 0.68)) drop-shadow(0 0 16px rgba(100, 180, 255, 0.44)) drop-shadow(0 0 26px rgba(150, 200, 255, 0.24));
+        opacity: 0.82;
     }
 
     100% {
         stroke-width: 1px;
-        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.3));
-        opacity: 0.4;
+        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.36));
+        opacity: 0.42;
     }
 }
 
 @keyframes led-pulse-2 {
     0% {
         stroke-width: 1px;
-        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.3));
-        opacity: 0.4;
+        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.36));
+        opacity: 0.42;
     }
 
     60% {
         stroke-width: 1px;
-        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.3));
-        opacity: 0.4;
+        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.36));
+        opacity: 0.42;
     }
 
     85% {
         stroke-width: 2.5px;
-        filter: drop-shadow(0 0 6px rgba(100, 180, 255, 0.7)) drop-shadow(0 0 16px rgba(100, 180, 255, 0.5)) drop-shadow(0 0 25px rgba(150, 200, 255, 0.3));
-        opacity: 0.9;
+        filter: drop-shadow(0 0 7px rgba(100, 180, 255, 0.68)) drop-shadow(0 0 16px rgba(100, 180, 255, 0.44)) drop-shadow(0 0 26px rgba(150, 200, 255, 0.24));
+        opacity: 0.82;
     }
 
     100% {
         stroke-width: 1px;
-        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.3));
-        opacity: 0.4;
+        filter: drop-shadow(0 0 3px rgba(100, 180, 255, 0.36));
+        opacity: 0.42;
     }
 }
 
@@ -371,17 +365,43 @@ body::before {
     0% {
         stroke-dasharray: 3200 1600;
         stroke-dashoffset: 520;
-        stroke-width: 2.6px;
-        filter: drop-shadow(0 0 9px rgba(120, 205, 255, 0.82)) drop-shadow(0 0 28px rgba(120, 205, 255, 0.48));
-        opacity: 1;
     }
 
     100% {
         stroke-dasharray: 3200 1600;
         stroke-dashoffset: -4280;
-        stroke-width: 2.6px;
-        filter: drop-shadow(0 0 9px rgba(120, 205, 255, 0.82)) drop-shadow(0 0 28px rgba(120, 205, 255, 0.48));
-        opacity: 1;
+    }
+}
+
+@keyframes wave-glow-flow {
+    0% {
+        stroke-width: 2.02px;
+        filter: drop-shadow(0 0 6px rgba(120, 205, 255, 0.44)) drop-shadow(0 0 14px rgba(120, 205, 255, 0.24));
+        opacity: 0.62;
+    }
+
+    25% {
+        stroke-width: 2.28px;
+        filter: drop-shadow(0 0 8px rgba(120, 205, 255, 0.62)) drop-shadow(0 0 18px rgba(120, 205, 255, 0.34));
+        opacity: 0.74;
+    }
+
+    50% {
+        stroke-width: 2.5px;
+        filter: drop-shadow(0 0 10px rgba(120, 205, 255, 0.78)) drop-shadow(0 0 22px rgba(120, 205, 255, 0.42));
+        opacity: 0.84;
+    }
+
+    75% {
+        stroke-width: 2.28px;
+        filter: drop-shadow(0 0 8px rgba(120, 205, 255, 0.62)) drop-shadow(0 0 18px rgba(120, 205, 255, 0.34));
+        opacity: 0.74;
+    }
+
+    100% {
+        stroke-width: 2.02px;
+        filter: drop-shadow(0 0 6px rgba(120, 205, 255, 0.44)) drop-shadow(0 0 14px rgba(120, 205, 255, 0.24));
+        opacity: 0.62;
     }
 }
 
@@ -634,53 +654,34 @@ body::before {
 
 
 
-[data-theme="light"] .wave-line {
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    opacity: 0;
-}
-
-[data-theme="light"] .wave-line-2 {
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    animation-delay: 0.4s, 0s;
-    opacity: 0;
-}
-
-[data-theme="light"] .wave-line-3 {
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    animation-delay: 0.8s, 0s;
-    opacity: 0;
-}
-
-[data-theme="light"] .wave-line-4 {
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    animation-delay: 1.2s, 0s;
-    opacity: 0;
-}
-
-
 /* Override global pulse: travel highlight from left to right. */
 .wave-line {
     stroke-dasharray: 360 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    opacity: 0;
+    stroke-width: 2.1px;
+    filter: drop-shadow(0 0 7px rgba(120, 205, 255, 0.52)) drop-shadow(0 0 16px rgba(120, 205, 255, 0.3));
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 3.8s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    opacity: 1;
 }
 
 .wave-line-2 {
     stroke-dasharray: 320 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    animation-delay: 0.4s, 0s;
+    animation: pulse-ltr-scan 7.28s linear infinite, wave-glow-flow 4.2s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation-delay: 0.16s, 0.22s, 0s;
+    opacity: 1;
 }
 
 .wave-line-3 {
     stroke-dasharray: 330 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    animation-delay: 0.8s, 0s;
+    animation: pulse-ltr-scan 7.34s linear infinite, wave-glow-flow 3.6s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation-delay: 0.32s, 0.12s, 0s;
+    opacity: 1;
 }
 
 .wave-line-4 {
     stroke-dasharray: 390 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
-    animation-delay: 1.2s, 0s;
+    animation: pulse-ltr-scan 7.24s linear infinite, wave-glow-flow 4s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation-delay: 0.48s, 0.34s, 0s;
+    opacity: 1;
 }
 
 
@@ -688,7 +689,7 @@ body::before {
 [data-theme="light"] .wave-line-2,
 [data-theme="light"] .wave-line-3,
 [data-theme="light"] .wave-line-4 {
-    filter: drop-shadow(0 0 7px rgba(36, 82, 150, 0.7)) drop-shadow(0 0 16px rgba(64, 120, 200, 0.38));
+    filter: drop-shadow(0 0 7px rgba(36, 82, 150, 0.58)) drop-shadow(0 0 15px rgba(64, 120, 200, 0.34));
 }
 
 .orb,

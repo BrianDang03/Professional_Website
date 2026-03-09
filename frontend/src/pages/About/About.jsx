@@ -1,7 +1,7 @@
-import SEO from '../components/SEO';
-import PageTransition from '../components/PageTransition';
-import SkillsGrid from '../components/SkillsGrid';
-import ContactForm from '../components/ContactForm';
+import SEO from '../../components/SEO';
+import PageTransition from '../../components/PageTransition';
+import SkillsGrid from '../../components/SkillsGrid/SkillsGrid';
+import ContactForm from '../../components/ContactForm/ContactForm';
 import './About.css';
 
 export default function About() {

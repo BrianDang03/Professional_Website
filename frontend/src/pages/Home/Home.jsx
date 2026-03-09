@@ -1,14 +1,14 @@
 import { Suspense, lazy, useEffect } from "react";
 import { Link } from "react-router-dom";
-import FlipIcon from "../components/FlipIcon";
-import SEO from "../components/SEO";
-import PageTransition from "../components/PageTransition";
+import FlipIcon from "../../components/FlipIcon/FlipIcon";
+import SEO from "../../components/SEO";
+import PageTransition from "../../components/PageTransition";
 import "./Home.css";
-import "../components/ActionButton.css";
+import "../../components/ActionButton.css";
 
 const ASSET_BASE = import.meta.env.BASE_URL;
 const CARD_HINT_TEXT = "Tap to Learn More";
-const TiltFlipCard = lazy(() => import("../components/tilt_flip_card/TiltFlipCard"));
+const TiltFlipCard = lazy(() => import("../../components/tilt_flip_card/TiltFlipCard"));
 const HERO_IMAGES = ["modem.jpg", "headshot.jpg", "contact.png"];
 
 function CardFallback() {
@@ -59,6 +59,8 @@ export default function Home({ name, job }) {
           <Suspense fallback={<CardFallback />}>
             <TiltFlipCard
               frontImg={`${ASSET_BASE}modem.jpg`}
+              entranceFrom="left"
+              entranceOrder={0}
               front={
                 <div className="card-copy-front">
                   <h3>Portfolio</h3>
@@ -100,6 +102,8 @@ export default function Home({ name, job }) {
           <Suspense fallback={<CardFallback />}>
             <TiltFlipCard
               frontImg={`${ASSET_BASE}headshot.jpg`}
+              entranceFrom="top"
+              entranceOrder={0}
               front={
                 <div className="card-copy-front">
                   <h3>About Me</h3>
@@ -130,6 +134,8 @@ export default function Home({ name, job }) {
           <Suspense fallback={<CardFallback />}>
             <TiltFlipCard
               frontImg={`${ASSET_BASE}contact.png`}
+              entranceFrom="right"
+              entranceOrder={0}
               front={
                 <div className="card-copy-front">
                   <h3>Contact Me</h3>

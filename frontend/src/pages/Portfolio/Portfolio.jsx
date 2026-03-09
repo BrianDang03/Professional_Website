@@ -1,6 +1,6 @@
-import SEO from '../components/SEO';
-import PageTransition from '../components/PageTransition';
-import ProjectCard from '../components/ProjectCard';
+import SEO from '../../components/SEO';
+import PageTransition from '../../components/PageTransition';
+import ProjectCard from '../../components/ProjectCard/ProjectCard';
 import './Portfolio.css';
 
 const projects = [

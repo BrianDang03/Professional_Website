@@ -2,16 +2,16 @@ import './App.css';
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Footer from "./components/Footer";
+import Navbar from "./components/Navbar/Navbar";
+import Home from "./pages/Home/Home";
+import Footer from "./components/Footer/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
-import SkipToContent from "./components/SkipToContent";
+import SkipToContent from "./components/SkipToContent/SkipToContent";
 import PageTransition from "./components/PageTransition";
 import SEO from "./components/SEO";
 
-const Portfolio = lazy(() => import("./pages/Portfolio"));
-const About = lazy(() => import("./pages/About"));
+const Portfolio = lazy(() => import("./pages/Portfolio/Portfolio"));
+const About = lazy(() => import("./pages/About/About"));
 
 function App() {
   const location = useLocation();
@@ -57,7 +57,6 @@ function App() {
                     <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
                   </linearGradient>
                 </defs>
-                {/* Simple intertwined wave lines */}
                 <path
                   d="M 0,250 Q 380,210 780,310 T 1560,250 T 2320,300 T 3000,260"
                   stroke="url(#wave-gradient)"
@@ -88,7 +87,6 @@ function App() {
                 />
               </svg>
               <span className="orb orb-left" />
-              <span className="orb orb-right" />
               <span className="orb orb-nav-cut orb-nav-1" />
               <span className="orb orb-nav-cut orb-nav-2" />
               <span className="beam beam-two" />
@@ -101,47 +99,12 @@ function App() {
               <span className="hexagon hex-7" />
               <span className="hexagon hex-8" />
               <span className="orb orb-3" />
-              <span className="orb orb-4" />
-              <span className="orb orb-5" />
-              <span className="orb orb-6" />
-              <span className="orb orb-7" />
               <span className="orb orb-8" />
-              <span className="orb orb-9" />
               <span className="orb orb-10" />
-              <span className="orb orb-11" />
-              <span className="orb orb-12" />
-              <span className="orb orb-13" />
-              <span className="orb orb-14" />
-              <span className="orb orb-15" />
-              <span className="orb orb-16" />
-              <span className="orb orb-17" />
-              <span className="orb orb-18" />
-              <span className="orb orb-19" />
-              <span className="orb orb-20" />
               <span className="floating-plus plus-1" />
-              <span className="floating-plus plus-2" />
-              <span className="floating-plus plus-3" />
               <span className="floating-plus plus-4" />
-              <span className="floating-plus plus-5" />
               <span className="floating-plus plus-6" />
               <span className="floating-plus plus-7" />
-              <span className="floating-plus plus-8" />
-              <span className="floating-plus plus-9" />
-              <span className="floating-plus plus-10" />
-              <span className="floating-plus plus-11" />
-              <span className="floating-plus plus-12" />
-              <span className="floating-plus plus-13" />
-              <span className="floating-plus plus-14" />
-              <span className="floating-plus plus-15" />
-              <span className="floating-plus plus-16" />
-              <span className="floating-plus plus-17" />
-              <span className="floating-plus plus-18" />
-              <span className="floating-plus plus-19" />
-              <span className="floating-plus plus-20" />
-              <span className="floating-plus plus-21" />
-              <span className="floating-plus plus-22" />
-              <span className="floating-plus plus-23" />
-              <span className="floating-plus plus-24" />
             </>
           )}
         </div>

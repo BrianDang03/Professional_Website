@@ -62,6 +62,8 @@ function App() {
           </svg>
           <span className="orb orb-left" />
           <span className="orb orb-right" />
+          <span className="orb orb-nav-cut orb-nav-1" />
+          <span className="orb orb-nav-cut orb-nav-2" />
           <span className="beam beam-two" />
           <span className="hexagon hex-1" />
           <span className="hexagon hex-2" />
@@ -79,6 +81,16 @@ function App() {
           <span className="orb orb-8" />
           <span className="orb orb-9" />
           <span className="orb orb-10" />
+          <span className="orb orb-11" />
+          <span className="orb orb-12" />
+          <span className="orb orb-13" />
+          <span className="orb orb-14" />
+          <span className="orb orb-15" />
+          <span className="orb orb-16" />
+          <span className="orb orb-17" />
+          <span className="orb orb-18" />
+          <span className="orb orb-19" />
+          <span className="orb orb-20" />
           <span className="floating-plus plus-1" />
           <span className="floating-plus plus-2" />
           <span className="floating-plus plus-3" />
@@ -89,6 +101,20 @@ function App() {
           <span className="floating-plus plus-8" />
           <span className="floating-plus plus-9" />
           <span className="floating-plus plus-10" />
+          <span className="floating-plus plus-11" />
+          <span className="floating-plus plus-12" />
+          <span className="floating-plus plus-13" />
+          <span className="floating-plus plus-14" />
+          <span className="floating-plus plus-15" />
+          <span className="floating-plus plus-16" />
+          <span className="floating-plus plus-17" />
+          <span className="floating-plus plus-18" />
+          <span className="floating-plus plus-19" />
+          <span className="floating-plus plus-20" />
+          <span className="floating-plus plus-21" />
+          <span className="floating-plus plus-22" />
+          <span className="floating-plus plus-23" />
+          <span className="floating-plus plus-24" />
         </div>
 
         <Navbar />

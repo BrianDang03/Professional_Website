@@ -280,6 +280,16 @@ body::before {
     }
 }
 
+@keyframes wave-fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 @keyframes gap-pulse {
 
     0%,
@@ -339,6 +349,340 @@ body::before {
     }
 }
 
+@keyframes float-in-from-top {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5 - 180px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    }
+}
+
+@keyframes float-in-from-left {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45 - 220px), calc(var(--space-scroll-y, 0px) * 1.5 - 80px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    }
+}
+
+@keyframes float-in-from-right {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45 + 240px), calc(var(--space-scroll-y, 0px) * 1.5 - 60px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    }
+}
+
+@keyframes float-in-diagonal {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * -0.3 - 140px), calc(var(--space-scroll-y, 0px) * 1.15 - 140px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * -0.3), calc(var(--space-scroll-y, 0px) * 1.15), 0);
+    }
+}
+
+@keyframes plus-float-in-from-top {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95 - 180px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    }
+}
+
+@keyframes plus-float-in-from-left {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85 - 220px), calc(var(--space-scroll-y, 0px) * 1.95 - 80px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    }
+}
+
+@keyframes plus-float-in-from-right {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85 + 240px), calc(var(--space-scroll-y, 0px) * 1.95 - 60px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    }
+}
+
+.orb,
+.hexagon,
+.floating-plus {
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.orb {
+    transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    animation: float-in-from-top 2.4s cubic-bezier(0.16, 0.84, 0.44, 1) backwards;
+}
+
+.orb:nth-child(odd) {
+    animation-name: float-in-from-left;
+}
+
+.orb:nth-child(even) {
+    animation-name: float-in-from-right;
+}
+
+.hexagon {
+    display: none;
+    transform: translate3d(calc(var(--space-base-x, 0px) * -0.3), calc(var(--space-scroll-y, 0px) * 1.15), 0);
+    animation: float-in-diagonal 2.6s cubic-bezier(0.16, 0.84, 0.44, 1) backwards;
+}
+
+.floating-plus {
+    transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    animation: plus-float-in-from-top 2.2s cubic-bezier(0.16, 0.84, 0.44, 1) backwards;
+}
+
+.floating-plus:nth-child(3n) {
+    animation-name: plus-float-in-from-right;
+}
+
+.floating-plus:nth-child(3n+1) {
+    animation-name: plus-float-in-from-left;
+}
+
+/* Stagger entrance delays */
+.orb-left {
+    animation-delay: 0.1s;
+}
+
+.orb-right {
+    animation-delay: 0.3s;
+}
+
+.orb-3 {
+    animation-delay: 0.5s;
+}
+
+.orb-4 {
+    animation-delay: 0.2s;
+}
+
+.orb-5 {
+    animation-delay: 0.4s;
+}
+
+.orb-6 {
+    animation-delay: 0.6s;
+}
+
+.orb-7 {
+    animation-delay: 0.35s;
+}
+
+.orb-8 {
+    animation-delay: 0.15s;
+}
+
+.orb-9 {
+    animation-delay: 0.45s;
+}
+
+.orb-10 {
+    animation-delay: 0.25s;
+}
+
+.orb-11 {
+    animation-delay: 0.55s;
+}
+
+.orb-12 {
+    animation-delay: 0.2s;
+}
+
+.orb-13 {
+    animation-delay: 0.4s;
+}
+
+.orb-14 {
+    animation-delay: 0.3s;
+}
+
+.orb-15 {
+    animation-delay: 0.5s;
+}
+
+.orb-16 {
+    animation-delay: 0.35s;
+}
+
+.orb-17 {
+    animation-delay: 0.15s;
+}
+
+.orb-18 {
+    animation-delay: 0.45s;
+}
+
+.orb-19 {
+    animation-delay: 0.25s;
+}
+
+.orb-20 {
+    animation-delay: 0.55s;
+}
+
+.orb-nav-1 {
+    animation-delay: 0.6s;
+}
+
+.orb-nav-2 {
+    animation-delay: 0.65s;
+}
+
+.hexagon {
+    animation-delay: 0.2s;
+}
+
+.hex-1 {
+    animation-delay: 0.3s;
+}
+
+.hex-2 {
+    animation-delay: 0.5s;
+}
+
+.hex-3 {
+    animation-delay: 0.4s;
+}
+
+.hex-4 {
+    animation-delay: 0.35s;
+}
+
+.hex-5 {
+    animation-delay: 0.45s;
+}
+
+.hex-6 {
+    animation-delay: 0.25s;
+}
+
+.hex-7 {
+    animation-delay: 0.55s;
+}
+
+.hex-8 {
+    animation-delay: 0.15s;
+}
+
+.floating-plus {
+    animation-delay: 0.1s;
+}
+
+.plus-1 {
+    animation-delay: 0.2s;
+}
+
+.plus-2 {
+    animation-delay: 0.35s;
+}
+
+.plus-3 {
+    animation-delay: 0.15s;
+}
+
+.plus-4 {
+    animation-delay: 0.4s;
+}
+
+.plus-5 {
+    animation-delay: 0.25s;
+}
+
+.plus-6 {
+    animation-delay: 0.5s;
+}
+
+.plus-7 {
+    animation-delay: 0.3s;
+}
+
+.plus-8 {
+    animation-delay: 0.45s;
+}
+
+.plus-9 {
+    animation-delay: 0.2s;
+}
+
+.plus-10 {
+    animation-delay: 0.55s;
+}
+
+.plus-11 {
+    animation-delay: 0.35s;
+}
+
+.plus-12 {
+    animation-delay: 0.15s;
+}
+
+.plus-13 {
+    animation-delay: 0.45s;
+}
+
+.plus-14 {
+    animation-delay: 0.25s;
+}
+
+.plus-15 {
+    animation-delay: 0.5s;
+}
+
+.plus-16 {
+    animation-delay: 0.3s;
+}
+
+.plus-17 {
+    animation-delay: 0.4s;
+}
+
+.plus-18 {
+    animation-delay: 0.2s;
+}
+
+.plus-19 {
+    animation-delay: 0.55s;
+}
+
+.plus-20 {
+    animation-delay: 0.35s;
+}
+
+.plus-21 {
+    animation-delay: 0.45s;
+}
+
+.plus-22 {
+    animation-delay: 0.25s;
+}
+
+.plus-23 {
+    animation-delay: 0.5s;
+}
+
+.plus-24 {
+    animation-delay: 0.15s;
+}
+
+
 .flowing-wave {
     position: fixed;
     top: 50%;
@@ -351,70 +695,78 @@ body::before {
 }
 
 .wave-line {
-    animation: led-pulse 8s ease-in-out infinite;
+    animation: led-pulse 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
     stroke-linecap: round;
     stroke-linejoin: round;
+    opacity: 0;
 }
 
 .wave-line-2 {
-    animation: led-pulse-2 8s ease-in-out infinite;
-    animation-delay: 0.4s;
+    animation: led-pulse-2 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.4s, 0s;
     stroke-dasharray: 4, 8;
+    opacity: 0;
 }
 
 .wave-line-3 {
-    animation: led-pulse 8s ease-in-out infinite;
-    animation-delay: 0.8s;
+    animation: led-pulse 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.8s, 0s;
     stroke-dasharray: 2, 4;
-    opacity: 0.6;
+    opacity: 0;
 }
 
 .wave-line-4 {
-    animation: led-pulse-2 8s ease-in-out infinite;
-    animation-delay: 1.2s;
+    animation: led-pulse-2 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 1.2s, 0s;
+    opacity: 0;
 }
 
 .wave-line-5 {
-    animation: led-pulse 8s ease-in-out infinite;
-    animation-delay: 1.6s;
+    animation: led-pulse 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 1.6s, 0s;
     stroke-dasharray: 8, 12;
+    opacity: 0;
 }
 
 .wave-line-6 {
-    animation: led-pulse-2 8s ease-in-out infinite;
-    animation-delay: 2s;
+    animation: led-pulse-2 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2s, 0s;
     stroke-dasharray: 2, 6;
-    opacity: 0.7;
+    opacity: 0;
 }
 
 .wave-line-7 {
-    animation: led-pulse 8s ease-in-out infinite;
-    animation-delay: 2.4s;
+    animation: led-pulse 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2.4s, 0s;
+    opacity: 0;
 }
 
 .wave-line-8 {
-    animation: led-pulse-2 8s ease-in-out infinite;
-    animation-delay: 2.8s;
+    animation: led-pulse-2 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2.8s, 0s;
     stroke-dasharray: 6, 10;
+    opacity: 0;
 }
 
 .wave-line-9 {
-    animation: led-pulse 8s ease-in-out infinite, dash-flow 10s linear infinite;
-    animation-delay: 3.2s, 0s;
+    animation: led-pulse 8s ease-in-out infinite, dash-flow 10s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 3.2s, 0s, 0s;
     stroke-dasharray: 2, 3;
-    opacity: 0.5;
+    opacity: 0;
 }
 
 .wave-line-10 {
-    animation: led-pulse-2 8s ease-in-out infinite, gap-pulse 6s ease-in-out infinite;
-    animation-delay: 3.6s, 0s;
+    animation: led-pulse-2 8s ease-in-out infinite, gap-pulse 6s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 3.6s, 0s, 0s;
+    opacity: 0;
 }
 
 .dotted-track {
     stroke-dasharray: 0.5 9;
     stroke-linecap: round;
-    animation: led-pulse-2 8s ease-in-out infinite, dash-flow 11s linear infinite;
-    animation-delay: 0.4s, 0s;
+    animation: led-pulse-2 8s ease-in-out infinite, dash-flow 11s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.4s, 0s, 0s;
+    opacity: 0;
 }
 
 .broken-track {
@@ -437,52 +789,62 @@ body::before {
 }
 
 [data-theme="light"] .wave-line {
-    animation: pulse-ltr-scan 7.2s linear infinite;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-2 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 0.4s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.4s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-3 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 0.8s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.8s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-4 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 1.2s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 1.2s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-5 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 1.6s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 1.6s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-6 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 2s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-7 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 2.4s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2.4s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-8 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 2.8s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2.8s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-9 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 3.2s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 3.2s, 0s;
+    opacity: 0;
 }
 
 [data-theme="light"] .wave-line-10 {
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 3.6s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 3.6s, 0s;
+    opacity: 0;
 }
 
 @keyframes led-pulse-light {
@@ -508,76 +870,78 @@ body::before {
 /* Override global pulse: travel highlight from left to right. */
 .wave-line {
     stroke-dasharray: 360 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
     opacity: 0;
 }
 
 .wave-line-2 {
     stroke-dasharray: 320 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 0.4s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.4s, 0s;
 }
 
 .wave-line-3 {
     stroke-dasharray: 330 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 0.8s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.8s, 0s;
 }
 
 .wave-line-4 {
     stroke-dasharray: 390 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 1.2s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 1.2s, 0s;
 }
 
 .wave-line-5 {
     stroke-dasharray: 350 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 1.6s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 1.6s, 0s;
 }
 
 .wave-line-6 {
     stroke-dasharray: 335 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 2s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2s, 0s;
 }
 
 .wave-line-7 {
     stroke-dasharray: 380 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 2.4s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2.4s, 0s;
 }
 
 .wave-line-8 {
     stroke-dasharray: 345 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 2.8s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 2.8s, 0s;
 }
 
 .wave-line-9 {
     stroke-dasharray: 300 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 3.2s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 3.2s, 0s;
 }
 
 .wave-line-10 {
     stroke-dasharray: 350 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, gap-pulse 6s ease-in-out infinite;
-    animation-delay: 3.6s, 0s;
+    animation: pulse-ltr-scan 7.2s linear infinite, gap-pulse 6s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 3.6s, 0s, 0s;
 }
 
 .dotted-track {
     stroke-dasharray: 290 2600;
     stroke-linecap: round;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 0.4s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 0.4s, 0s;
+    opacity: 0;
 }
 
 .broken-track {
     stroke-dasharray: 375 2600;
     stroke-linecap: butt;
-    animation: pulse-ltr-scan 7.2s linear infinite;
-    animation-delay: 1.2s;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-fade-in 8s ease-out backwards;
+    animation-delay: 1.2s, 0s;
+    opacity: 0;
 }
 
 .stitched-track {
@@ -620,6 +984,30 @@ body::before {
     filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.18));
 }
 
+.orb-nav-cut {
+    z-index: 12;
+}
+
+.orb-nav-1 {
+    width: 210px;
+    aspect-ratio: 1;
+    top: -146px;
+    left: 64%;
+    right: auto;
+    bottom: auto;
+    border-width: 1.5px;
+}
+
+.orb-nav-2 {
+    width: 130px;
+    aspect-ratio: 1;
+    top: -96px;
+    left: 31%;
+    right: auto;
+    bottom: auto;
+    border-width: 1px;
+}
+
 .orb-left {
     width: 290px;
     aspect-ratio: 1;
@@ -644,44 +1032,40 @@ body::before {
     width: 132px;
     aspect-ratio: 1;
     top: 36%;
-    right: 9%;
+    right: 4%;
     left: auto;
     bottom: auto;
     border-width: 2px;
-    opacity: 0.38;
 }
 
 .orb-4 {
     width: 74px;
     aspect-ratio: 1;
     bottom: 7%;
-    left: 19%;
+    left: 24%;
     right: auto;
     top: auto;
     border-width: 1.5px;
-    opacity: 0.24;
 }
 
 .orb-5 {
     width: 58px;
     aspect-ratio: 1;
     top: 14%;
-    right: 31%;
+    right: 36%;
     left: auto;
     bottom: auto;
     border-width: 1px;
-    opacity: 0.44;
 }
 
 .orb-6 {
     width: 46px;
     aspect-ratio: 1;
-    bottom: 34%;
-    left: 43%;
+    bottom: 20%;
+    left: 56%;
     right: auto;
     top: auto;
     border-width: 2px;
-    opacity: 0.3;
 }
 
 .orb-7 {
@@ -692,29 +1076,26 @@ body::before {
     left: auto;
     bottom: auto;
     border-width: 1px;
-    opacity: 0.2;
 }
 
 .orb-8 {
     width: 96px;
     aspect-ratio: 1;
-    top: 22%;
-    left: 9%;
+    top: 26%;
+    left: 8%;
     right: auto;
     bottom: auto;
     border-width: 1.5px;
-    opacity: 0.3;
 }
 
 .orb-9 {
     width: 56px;
     aspect-ratio: 1;
     top: 46%;
-    left: 14%;
+    left: 10%;
     right: auto;
     bottom: auto;
     border-width: 2px;
-    opacity: 0.26;
 }
 
 .orb-10 {
@@ -725,14 +1106,112 @@ body::before {
     right: auto;
     top: auto;
     border-width: 1px;
-    opacity: 0.24;
+}
+
+.orb-11 {
+    width: 116px;
+    aspect-ratio: 1;
+    top: -18%;
+    left: 12%;
+    right: auto;
+    bottom: auto;
+    border-width: 1px;
+}
+
+.orb-12 {
+    width: 68px;
+    aspect-ratio: 1;
+    top: -10%;
+    right: 6%;
+    left: auto;
+    bottom: auto;
+    border-width: 1.5px;
+}
+
+.orb-13 {
+    width: 154px;
+    aspect-ratio: 1;
+    top: -28%;
+    right: -42px;
+    left: auto;
+    bottom: auto;
+    border-width: 1px;
+}
+
+.orb-14 {
+    width: 88px;
+    aspect-ratio: 1;
+    top: -24%;
+    left: 15%;
+    right: auto;
+    bottom: auto;
+    border-width: 2px;
+}
+
+.orb-15 {
+    width: 60px;
+    aspect-ratio: 1;
+    top: -8%;
+    left: -24px;
+    right: auto;
+    bottom: auto;
+    border-width: 1.5px;
+}
+
+.orb-16 {
+    width: 86px;
+    aspect-ratio: 1;
+    top: -42%;
+    left: 10%;
+    right: auto;
+    bottom: auto;
+    border-width: 1px;
+}
+
+.orb-17 {
+    width: 54px;
+    aspect-ratio: 1;
+    top: -36%;
+    left: 56%;
+    right: auto;
+    bottom: auto;
+    border-width: 1.5px;
+}
+
+.orb-18 {
+    width: 122px;
+    aspect-ratio: 1;
+    top: -44%;
+    right: 8%;
+    left: auto;
+    bottom: auto;
+    border-width: 1px;
+}
+
+.orb-19 {
+    width: 72px;
+    aspect-ratio: 1;
+    top: -12%;
+    right: 42%;
+    left: auto;
+    bottom: auto;
+    border-width: 2px;
+}
+
+.orb-20 {
+    width: 94px;
+    aspect-ratio: 1;
+    top: -30%;
+    right: 10%;
+    left: auto;
+    bottom: auto;
+    border-width: 1px;
 }
 
 .beam {
     width: 46vw;
     height: 2px;
     background: linear-gradient(90deg, transparent 0%, var(--line-strong) 40%, transparent 100%);
-    opacity: 0.6;
     margin: 0;
 }
 
@@ -766,12 +1245,39 @@ body::before {
     padding: 0;
 }
 
+/* Hide small shapes to reduce clutter */
+.orb-4,
+.orb-5,
+.orb-6,
+.orb-7,
+.orb-9,
+.orb-12,
+.orb-15,
+.orb-17,
+.orb-19,
+.orb-right,
+.plus-2,
+.plus-3,
+.plus-5,
+.plus-8,
+.plus-9,
+.plus-10,
+.plus-11,
+.plus-12,
+.plus-15,
+.plus-18,
+.plus-19,
+.plus-20,
+.plus-21,
+.plus-22 {
+    display: none;
+}
+
 .hex-1 {
     top: 15%;
     left: 8%;
     width: 50px;
     height: 50px;
-    opacity: 0.4;
     right: auto;
     bottom: auto;
     margin: 0;
@@ -780,7 +1286,6 @@ body::before {
 .hex-2 {
     top: 35%;
     right: 5%;
-    opacity: 0.35;
     left: auto;
     bottom: auto;
     margin: 0;
@@ -789,7 +1294,6 @@ body::before {
 .hex-3 {
     bottom: 25%;
     right: 8%;
-    opacity: 0.3;
     width: 35px;
     height: 35px;
     top: auto;
@@ -800,7 +1304,6 @@ body::before {
 .hex-4 {
     bottom: 15%;
     left: 12%;
-    opacity: 0.35;
     right: auto;
     top: auto;
     margin: 0;
@@ -809,7 +1312,6 @@ body::before {
 .hex-5 {
     top: 50%;
     left: 3%;
-    opacity: 0.25;
     width: 30px;
     height: 30px;
     right: auto;
@@ -823,7 +1325,6 @@ body::before {
     z-index: -2;
     width: 20px;
     height: 20px;
-    opacity: 0.35;
     margin: 0;
     padding: 0;
 }
@@ -875,7 +1376,7 @@ body::before {
 
 .plus-4 {
     top: 28%;
-    right: 25%;
+    right: 10%;
     left: auto;
     bottom: auto;
     margin: 0;
@@ -890,8 +1391,8 @@ body::before {
 }
 
 .plus-6 {
-    top: 25%;
-    left: 22%;
+    top: 18%;
+    left: 12%;
     right: auto;
     bottom: auto;
     margin: 0;
@@ -899,7 +1400,7 @@ body::before {
 
 .plus-7 {
     top: 45%;
-    right: 28%;
+    right: 12%;
     left: auto;
     bottom: auto;
     margin: 0;
@@ -915,7 +1416,7 @@ body::before {
 
 .plus-9 {
     bottom: 50%;
-    left: 35%;
+    left: 40%;
     right: auto;
     top: auto;
     margin: 0;
@@ -929,10 +1430,121 @@ body::before {
     margin: 0;
 }
 
+.plus-11 {
+    top: -16%;
+    left: 7%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-12 {
+    top: -22%;
+    left: 29%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-13 {
+    top: -14%;
+    right: 9%;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-14 {
+    top: -30%;
+    right: 8%;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-15 {
+    top: -10%;
+    left: 58%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-16 {
+    top: -26%;
+    right: -12px;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-17 {
+    top: -6%;
+    left: 6%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-18 {
+    top: -34%;
+    left: 82%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-19 {
+    top: -40%;
+    left: 6%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-20 {
+    top: -46%;
+    left: 34%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-21 {
+    top: -38%;
+    right: 14%;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-22 {
+    top: -22%;
+    left: 48%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-23 {
+    top: -50%;
+    right: 36%;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-24 {
+    top: -28%;
+    left: 88%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
 .hex-6 {
     top: 8%;
     right: 18%;
-    opacity: 0.3;
     width: 35px;
     height: 35px;
     left: auto;
@@ -943,7 +1555,6 @@ body::before {
 .hex-7 {
     bottom: 40%;
     right: 20%;
-    opacity: 0.25;
     width: 28px;
     height: 28px;
     top: auto;
@@ -954,7 +1565,6 @@ body::before {
 .hex-8 {
     top: 68%;
     right: 35%;
-    opacity: 0.2;
     width: 32px;
     height: 32px;
     left: auto;

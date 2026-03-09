@@ -16,11 +16,13 @@ const About = lazy(() => import("./pages/About/About"));
 function App() {
   const location = useLocation();
   const [showDecorations, setShowDecorations] = useState(false);
+  const [isWavePaintReady, setIsWavePaintReady] = useState(false);
   const [areShapesLocked, setAreShapesLocked] = useState(false);
   const [isBootReady, setIsBootReady] = useState(false);
   const [showLoader, setShowLoader] = useState(true);
   const [isLoaderExiting, setIsLoaderExiting] = useState(false);
   const hasLoggedBootMeasureRef = useRef(false);
+  const canRevealApp = isBootReady && isWavePaintReady;
 
   useEffect(() => {
     if (!import.meta.env.DEV || typeof performance === "undefined") {
@@ -143,6 +145,31 @@ function App() {
       return;
     }
 
+    let rafA;
+    let rafB;
+    let isCancelled = false;
+
+    // Wait an extra paint cycle after mounting waves so reveal starts with lines already rendered.
+    rafA = window.requestAnimationFrame(() => {
+      rafB = window.requestAnimationFrame(() => {
+        if (!isCancelled) {
+          setIsWavePaintReady(true);
+        }
+      });
+    });
+
+    return () => {
+      isCancelled = true;
+      window.cancelAnimationFrame(rafA);
+      window.cancelAnimationFrame(rafB);
+    };
+  }, [showDecorations]);
+
+  useEffect(() => {
+    if (!showDecorations) {
+      return;
+    }
+
     const lockTimeout = window.setTimeout(() => {
       setAreShapesLocked(true);
     }, 3600);
@@ -153,7 +180,7 @@ function App() {
   }, [showDecorations]);
 
   useEffect(() => {
-    if (!isBootReady) {
+    if (!canRevealApp) {
       return;
     }
 
@@ -169,12 +196,12 @@ function App() {
       window.cancelAnimationFrame(rafId);
       window.clearTimeout(hideLoaderTimeout);
     };
-  }, [isBootReady]);
+  }, [canRevealApp]);
 
   return (
     <ErrorBoundary>
       <>
-        <div className={`site-root ${isBootReady ? "site-root-enter" : "site-root-preboot"}`}>
+        <div className={`site-root ${canRevealApp ? "site-root-enter" : "site-root-preboot"}`}>
           <SkipToContent />
 
           <div className={`theme-bg ${showDecorations ? "is-ready" : "is-deferred"} ${areShapesLocked ? "is-locked" : ""}`} aria-hidden="true">
@@ -288,7 +315,7 @@ function App() {
             className={`app-loader ${isLoaderExiting ? "is-exiting" : ""}`}
             role="status"
             aria-live="polite"
-            aria-busy={!isBootReady}
+            aria-busy={!canRevealApp}
           >
             <div className="app-loader-mark" aria-hidden="true" />
             <p className="app-loader-text">Loading experience...</p>

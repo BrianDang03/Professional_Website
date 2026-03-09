@@ -665,21 +665,21 @@ img {
 
 .wave-line-2 {
     stroke-dasharray: 320 2600;
-    animation: pulse-ltr-scan 7.28s linear infinite, wave-glow-flow 4.2s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 4.2s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.16s, 0.22s, 0s;
     opacity: 1;
 }
 
 .wave-line-3 {
     stroke-dasharray: 330 2600;
-    animation: pulse-ltr-scan 7.34s linear infinite, wave-glow-flow 3.6s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 3.6s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.32s, 0.12s, 0s;
     opacity: 1;
 }
 
 .wave-line-4 {
     stroke-dasharray: 390 2600;
-    animation: pulse-ltr-scan 7.24s linear infinite, wave-glow-flow 4s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 4s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.48s, 0.34s, 0s;
     opacity: 1;
 }

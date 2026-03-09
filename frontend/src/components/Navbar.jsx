@@ -9,10 +9,34 @@ export default function Navbar() {
         `nav-link ${isActive ? "is-active" : ""}`;
 
     useEffect(() => {
-        document.body.style.overflow = isMenuOpen ? "hidden" : "";
+        if (!isMenuOpen) {
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.left = "";
+            document.body.style.right = "";
+            document.body.style.width = "";
+            return;
+        }
+
+        const scrollY = window.scrollY;
+        document.body.dataset.lockScrollY = String(scrollY);
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = "0";
+        document.body.style.right = "0";
+        document.body.style.width = "100%";
 
         return () => {
-            document.body.style.overflow = "";
+            const lockedY = Number.parseInt(document.body.dataset.lockScrollY || "0", 10) || 0;
+            document.body.style.position = "";
+            document.body.style.top = "";
+            document.body.style.left = "";
+            document.body.style.right = "";
+            document.body.style.width = "";
+            delete document.body.dataset.lockScrollY;
+            if (isMenuOpen) {
+                window.scrollTo(0, lockedY);
+            }
         };
     }, [isMenuOpen]);
 

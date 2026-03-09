@@ -20,10 +20,75 @@ function App() {
         <SkipToContent />
 
         <div className="theme-bg" aria-hidden="true">
+          <svg className="flowing-wave" viewBox="0 0 3000 1000" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(255, 255, 255, 0)" />
+                <stop offset="20%" stopColor="rgba(100, 180, 255, 0.2)" />
+                <stop offset="50%" stopColor="rgba(100, 200, 255, 0.25)" />
+                <stop offset="80%" stopColor="rgba(100, 180, 255, 0.2)" />
+                <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
+              </linearGradient>
+            </defs>
+            {/* Simple intertwined wave lines */}
+            <path
+              d="M 0,250 Q 380,210 780,310 T 1560,250 T 2320,300 T 3000,260"
+              stroke="url(#wave-gradient)"
+              strokeWidth="2"
+              fill="none"
+              className="wave-line"
+            />
+            <path
+              d="M 0,330 Q 360,390 760,280 T 1540,350 T 2300,290 T 3000,340"
+              stroke="url(#wave-gradient)"
+              strokeWidth="2"
+              fill="none"
+              className="wave-line wave-line-2"
+            />
+            <path
+              d="M 0,430 Q 400,370 820,470 T 1620,410 T 2360,480 T 3000,430"
+              stroke="url(#wave-gradient)"
+              strokeWidth="2"
+              fill="none"
+              className="wave-line wave-line-3"
+            />
+            <path
+              d="M 0,510 Q 380,560 800,460 T 1600,530 T 2360,470 T 3000,520"
+              stroke="url(#wave-gradient)"
+              strokeWidth="2"
+              fill="none"
+              className="wave-line wave-line-4"
+            />
+          </svg>
           <span className="orb orb-left" />
           <span className="orb orb-right" />
-          <span className="beam beam-one" />
           <span className="beam beam-two" />
+          <span className="hexagon hex-1" />
+          <span className="hexagon hex-2" />
+          <span className="hexagon hex-3" />
+          <span className="hexagon hex-4" />
+          <span className="hexagon hex-5" />
+          <span className="hexagon hex-6" />
+          <span className="hexagon hex-7" />
+          <span className="hexagon hex-8" />
+          <span className="orb orb-3" />
+          <span className="orb orb-4" />
+          <span className="orb orb-5" />
+          <span className="orb orb-6" />
+          <span className="orb orb-7" />
+          <span className="orb orb-8" />
+          <span className="orb orb-9" />
+          <span className="orb orb-10" />
+          <span className="floating-plus plus-1" />
+          <span className="floating-plus plus-2" />
+          <span className="floating-plus plus-3" />
+          <span className="floating-plus plus-4" />
+          <span className="floating-plus plus-5" />
+          <span className="floating-plus plus-6" />
+          <span className="floating-plus plus-7" />
+          <span className="floating-plus plus-8" />
+          <span className="floating-plus plus-9" />
+          <span className="floating-plus plus-10" />
         </div>
 
         <Navbar />

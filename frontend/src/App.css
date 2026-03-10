@@ -243,7 +243,10 @@ img {
 }
 
 .site-root-enter {
-    animation: app-root-reveal 320ms ease-out both;
+    /* Short duration: the loader fade (260ms) handles reveal perception.
+       Running this for 320ms alongside the loader fade causes two simultaneous
+       stacking-context composites competing for GPU bandwidth. */
+    animation: app-root-reveal 160ms ease-out both;
 }
 
 .app-loader-mark {
@@ -300,7 +303,10 @@ img {
     z-index: -2;
     overflow: visible;
     pointer-events: none;
-    filter: brightness(var(--theme-brightness));
+    /* No CSS filter here — a filter on the container creates a compositing stacking
+       context that flattens all children into one layer, preventing the SVG from
+       getting its own independent GPU layer and causing full-layer invalidation on
+       every RAF frame. Brightness is applied directly to .flowing-wave instead. */
     --nav-orb-left-x: -64px;
     --nav-orb-left-y: 10%;
     --nav-orb-left-size: 290px;
@@ -317,7 +323,6 @@ img {
     z-index: -2;
     overflow: visible;
     pointer-events: none;
-    filter: brightness(var(--theme-brightness));
 }
 
 @keyframes wave-startup-clamp {
@@ -534,14 +539,24 @@ img {
     height: 100%;
     z-index: -1;
     pointer-events: none;
+    /* will-change promotes the SVG to its own GPU compositing layer so that */
+    /* path mutations in the RAF loop don't invalidate the parent layer.      */
+    will-change: transform;
+    /* Dark-mode brightness boost (was on parent .theme-bg, moved here so   */
+    /* the parent has no CSS filter and cannot collapse child GPU layers).    */
+    filter: brightness(1.15);
 }
 
 .theme-bg.is-deferred {
-    opacity: 0;
+    /* 0.001 not 0: opacity:0 lets the browser skip GPU compositing entirely
+       (occlusion culling behind the opaque loader). opacity:0.001 is invisible
+       but forces the compositor to process the wave layer while the loader is
+       still showing, so GPU filter buffers are warm before the reveal frame. */
+    opacity: 0.001;
 }
 
 .theme-bg-footer.is-deferred {
-    opacity: 0;
+    opacity: 0.001;
 }
 
 .theme-bg.is-ready {

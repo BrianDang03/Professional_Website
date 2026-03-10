@@ -264,19 +264,15 @@ function AnimatedWaves() {
           <stop offset="80%" stopColor="rgba(100, 180, 255, 0.38)" />
           <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
         </linearGradient>
-        {/* SVG filters: applied as attributes so they paint inline with geometry */}
-        {/* instead of creating a separate CSS compositing layer that flickers.   */}
-        <filter id="wave-glow-base" x="-5%" y="-15%" width="110%" height="130%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="2" result="blur"/>
+        {/* Scan glow: single-pass blur in absolute SVG coords (filterUnits="userSpaceOnUse").   */}
+        {/* Using bbox-% would cover ~3500×500px per wave — far too much GPU work per frame.    */}
+        {/* Wave sits at y≈500 ±152 SVG units → bound filter to y 320–680 (400px at 1080p).    */}
+        <filter id="wave-glow-scan" filterUnits="userSpaceOnUse" x="-20" y="320" width="3040" height="360" colorInterpolationFilters="sRGB">
+          <feGaussianBlur stdDeviation="6" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <filter id="wave-glow-scan" x="-5%" y="-40%" width="110%" height="180%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="4" result="blur1"/>
-          <feGaussianBlur stdDeviation="9" result="blur2"/>
-          <feMerge><feMergeNode in="blur2"/><feMergeNode in="blur1"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="wave-glow-scan-lite" x="-5%" y="-28%" width="110%" height="156%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="5" result="blur"/>
+        <filter id="wave-glow-scan-lite" filterUnits="userSpaceOnUse" x="-20" y="320" width="3040" height="360" colorInterpolationFilters="sRGB">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
         {/* Clip rects control the visible window for each scan overlay */}
@@ -285,11 +281,11 @@ function AnimatedWaves() {
         <clipPath id="scan-clip-2"><rect ref={cr2} x="0" y="-200" width="0" height="1400" /></clipPath>
         <clipPath id="scan-clip-3"><rect ref={cr3} x="0" y="-200" width="0" height="1400" /></clipPath>
       </defs>
-      {/* Base lines – always visible; share the same JS-driven path geometry */}
-      <path ref={b0} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base" filter="url(#wave-glow-base)" />
-      <path ref={b1} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-2" filter="url(#wave-glow-base)" />
-      {!simpleMotion && <path ref={b2} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-3" filter="url(#wave-glow-base)" />}
-      {!simpleMotion && <path ref={b3} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base wave-base-4" filter="url(#wave-glow-base)" />}
+      {/* Base lines – always visible; no SVG filter needed at 0.32 opacity (saves 4 blur passes/frame) */}
+      <path ref={b0} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base" />
+      <path ref={b1} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-2" />
+      {!simpleMotion && <path ref={b2} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-3" />}
+      {!simpleMotion && <path ref={b3} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base wave-base-4" />}
       {/* Scan highlights – clipPath reveals only the dots inside the window */}
       <path ref={r0} d="" stroke="url(#wave-gradient)" strokeWidth="2.9" fill="none" className="wave-line" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-0)" />
       <path ref={r1} d="" stroke="url(#wave-gradient)" strokeWidth="2.8" fill="none" className="wave-line wave-line-2" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-1)" />

@@ -73,14 +73,28 @@ function AnimatedWaves() {
   const rafRef = useRef(0);
 
   useEffect(() => {
+    // Stratified random phases: divide [0, 2π] into N equal bands, pick one
+    // random value per band, then shuffle — guarantees even spread every load.
+    function stratifiedPhases(n) {
+      const step = (Math.PI * 2) / n;
+      const phases = Array.from({ length: n }, (_, i) => i * step + Math.random() * step);
+      for (let i = phases.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [phases[i], phases[j]] = [phases[j], phases[i]];
+      }
+      return phases;
+    }
+    const sPhases = stratifiedPhases(4);
+    const ePhases = stratifiedPhases(4);
+
     // Each wave has independent start-Y and end-Y oscillators at different periods
     // and phases. As they drift apart or together the chord tilts and the
     // concavity of the wave shape changes naturally on its own.
     const WAVES = [
-      { r: r0, b: b0, baseY: 250, sAmp: 45, sFreq: 1.55e-4, sPhase: 0.0, eAmp: 38, eFreq: 1.95e-4, ePhase: 2.1, wAmp: 46, wSpeed: 6.5e-5, wOff: 0.0 },
-      { r: r1, b: b1, baseY: 340, sAmp: 40, sFreq: 1.78e-4, sPhase: 1.3, eAmp: 44, eFreq: 1.28e-4, ePhase: 3.8, wAmp: 42, wSpeed: 5.6e-5, wOff: 1.2 },
-      { r: r2, b: b2, baseY: 430, sAmp: 42, sFreq: 1.35e-4, sPhase: 2.6, eAmp: 36, eFreq: 1.64e-4, ePhase: 0.8, wAmp: 44, wSpeed: 7.1e-5, wOff: 2.5 },
-      { r: r3, b: b3, baseY: 520, sAmp: 38, sFreq: 1.44e-4, sPhase: 4.1, eAmp: 42, eFreq: 1.78e-4, ePhase: 1.9, wAmp: 40, wSpeed: 6.1e-5, wOff: 3.7 },
+      { r: r0, b: b0, baseY: 320, sAmp: 95, sFreq: 9.0e-5, sPhase: sPhases[0], eAmp: 48, eFreq: 1.1e-4, ePhase: ePhases[0], wAmp:  22, wSpeed: 1.8e-5, wOff: 1.47 },
+      { r: r1, b: b1, baseY: 355, sAmp: 90, sFreq: 1.0e-4, sPhase: sPhases[1], eAmp: 52, eFreq: 7.5e-5, ePhase: ePhases[1], wAmp: -20, wSpeed: 1.5e-5, wOff: 1.67 },
+      { r: r2, b: b2, baseY: 390, sAmp: 92, sFreq: 8.0e-5, sPhase: sPhases[2], eAmp: 45, eFreq: 9.5e-5, ePhase: ePhases[2], wAmp:  24, wSpeed: 2.2e-5, wOff: 1.54 },
+      { r: r3, b: b3, baseY: 425, sAmp: 88, sFreq: 8.5e-5, sPhase: sPhases[3], eAmp: 50, eFreq: 1.0e-4, ePhase: ePhases[3], wAmp: -18, wSpeed: 1.9e-5, wOff: 1.72 },
     ];
 
     function buildPath(w, t) {
@@ -89,7 +103,7 @@ function AnimatedWaves() {
       // The chord defines a tilted baseline from sY to eY.
       const chord = x => sY + (eY - sY) * (x / 3000);
       // Wave humps sit on top of the chord so concavity follows the chord tilt.
-      const hump  = x => w.wAmp * Math.sin((x / 3000) * Math.PI * 3 + w.wSpeed * t + w.wOff);
+      const hump  = x => w.wAmp * Math.sin((x / 3000) * Math.PI * 2 + w.wSpeed * t + w.wOff);
       const y = x => chord(x) + hump(x);
       return (
         `M 0,${sY.toFixed(1)} ` +
@@ -102,9 +116,10 @@ function AnimatedWaves() {
 
     // ── Pulse timing (JS-driven so order can be shuffled each round) ──────────
     const CYCLE_MS   = 18000; // full cycle length
-    const FILL_FRAC  = 0.40;  // 0–40 %: head races right, tail fixed at start
-    const DRAIN_FRAC = 0.40;  // 40–80 %: head fixed at end, tail catches up
-    //                           80–100 %: rest (invisible)
+    const FILL_FRAC  = 0.30;  // 0–30 %: head races right, tail fixed at start
+    const HOLD_FRAC  = 0.20;  // 30–50 %: fully lit — hold (same duration as rest)
+    const DRAIN_FRAC = 0.30;  // 50–80 %: head fixed at end, tail catches up
+    //                           80–100 %: rest (invisible) = same 20 % as hold
     const DASH_MAX   = 3500;
     const DASH_GAP   = 9000;
     // Offsets (ms) between waves within a round — shuffled each round
@@ -152,7 +167,7 @@ function AnimatedWaves() {
           return;
         }
 
-        const frac = (elapsed % CYCLE_MS) / CYCLE_MS; // 0 → 1
+        const frac = Math.min(elapsed / CYCLE_MS, 1); // 0 → 1, clamped — no auto-wrap
         let dashLen, dashOffset;
 
         if (frac < FILL_FRAC) {
@@ -160,9 +175,13 @@ function AnimatedWaves() {
           const p  = frac / FILL_FRAC;
           dashLen    = Math.round(DASH_MAX * p);
           dashOffset = 0;
-        } else if (frac < FILL_FRAC + DRAIN_FRAC) {
+        } else if (frac < FILL_FRAC + HOLD_FRAC) {
+          // Hold: fully lit, no movement
+          dashLen    = DASH_MAX;
+          dashOffset = 0;
+        } else if (frac < FILL_FRAC + HOLD_FRAC + DRAIN_FRAC) {
           // Drain: head fixed at right end, tail races to catch up
-          const p  = (frac - FILL_FRAC) / DRAIN_FRAC;
+          const p  = (frac - FILL_FRAC - HOLD_FRAC) / DRAIN_FRAC;
           dashLen    = Math.round(DASH_MAX * (1 - p));
           dashOffset = -Math.round(DASH_MAX * p);
         } else {

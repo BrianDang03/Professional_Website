@@ -31,15 +31,17 @@
     --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.12);
 }
 
-[data-theme="light"] body {
-    background: linear-gradient(180deg, #dbe9ff 0%, #eef5ff 52%, #e3eeff 100%);
+[data-theme="light"] html {
+    background-color: #eef5ff;
 }
 
-[data-theme="light"] body::after {
+[data-theme="light"] body {
     background:
         radial-gradient(circle at 18% 10%, rgba(64, 110, 230, 0.38), transparent 42%),
         radial-gradient(circle at 88% 72%, rgba(82, 150, 245, 0.32), transparent 44%),
-        radial-gradient(circle at 50% 36%, rgba(102, 170, 255, 0.2), transparent 46%);
+        radial-gradient(circle at 50% 36%, rgba(102, 170, 255, 0.2), transparent 46%),
+        linear-gradient(180deg, #dbe9ff 0%, #eef5ff 52%, #e3eeff 100%);
+    background-attachment: fixed;
 }
 
 [data-theme="light"] body::before {
@@ -192,32 +194,28 @@ html {
     overflow-y: scroll;
     scrollbar-gutter: stable;
     scroll-behavior: smooth;
+    /* Canvas fallback so areas below the body gradient never show white. */
+    background-color: #161f2b;
 }
 
 body {
     margin: 0;
     min-height: 100%;
     font-family: "Manrope", "Segoe UI", sans-serif;
-    background: linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
+    /* Radials + gradient combined in one background declaration.
+       background-attachment:fixed keeps all layers viewport-anchored
+       so the glows never shift with scroll position. */
+    background:
+        radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.22), transparent 35%),
+        radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.18), transparent 38%),
+        linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
+    background-attachment: fixed;
     color: var(--text-main);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-}
-
-/* Radial glow spots kept in a fixed pseudo-element so they stay viewport-
-   anchored on both desktop and mobile (no scroll-position artifact). */
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -3;
-    pointer-events: none;
-    background:
-        radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.22), transparent 35%),
-        radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.18), transparent 38%);
 }
 
 body::before {
@@ -1129,10 +1127,18 @@ img {
 }
 
 @media (max-width: 900px) {
-    /* background-attachment:fixed triggers a full-page repaint on every
-       scroll frame on mobile. The body now uses a plain linear-gradient
-       (no attachment needed) and the glow spots live in body::after which
-       is always position:fixed, so they stay viewport-anchored automatically. */
+    /* background-attachment:fixed triggers full-page repaint on scroll on mobile.
+       Strip the radials on mobile (the fixed orbs provide ambient glow) and
+       switch to scroll so the plain gradient never causes repaint jank. */
+    body {
+        background: linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
+        background-attachment: scroll;
+    }
+
+    [data-theme="light"] body {
+        background: linear-gradient(180deg, #dbe9ff 0%, #eef5ff 52%, #e3eeff 100%);
+        background-attachment: scroll;
+    }
 
     .theme-bg .orb,
     .theme-bg .hexagon,

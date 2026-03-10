@@ -377,16 +377,23 @@ img {
     }
 }
 
-
 @keyframes pulse-ltr-scan {
     0% {
-        stroke-dasharray: 3200 1600;
-        stroke-dashoffset: 520;
+        /* Dash sits just off the left edge — path is fully dark */
+        stroke-dasharray: 3200 9000;
+        stroke-dashoffset: 3300;
     }
 
+    38% {
+        /* Dash has exited fully off the right edge — path is fully dark */
+        stroke-dasharray: 3200 9000;
+        stroke-dashoffset: -9000;
+    }
+
+    /* Hold off-screen for the rest of the cycle before looping. */
     100% {
-        stroke-dasharray: 3200 1600;
-        stroke-dashoffset: -4280;
+        stroke-dasharray: 3200 9000;
+        stroke-dashoffset: -9000;
     }
 }
 
@@ -693,33 +700,54 @@ img {
 
 
 /* Override global pulse: travel highlight from left to right. */
+/* Path geometry is driven by JS (AnimatedWaves); CSS handles glow/scan only. */
 .wave-line {
     stroke-dasharray: 360 2600;
     stroke-width: 2.1px;
     filter: drop-shadow(0 0 7px rgba(120, 205, 255, 0.52)) drop-shadow(0 0 16px rgba(120, 205, 255, 0.3));
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 3.8s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 6s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
     opacity: 1;
 }
 
 .wave-line-2 {
     stroke-dasharray: 320 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 4.2s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 7s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.16s, 0.22s, 0s;
     opacity: 1;
 }
 
 .wave-line-3 {
     stroke-dasharray: 330 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 3.6s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 5.8s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.32s, 0.12s, 0s;
     opacity: 1;
 }
 
 .wave-line-4 {
     stroke-dasharray: 390 2600;
-    animation: pulse-ltr-scan 7.2s linear infinite, wave-glow-flow 4s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 6.5s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.48s, 0.34s, 0s;
     opacity: 1;
+}
+
+/* Always-visible base lines; scan highlights travel over the top. */
+.wave-base {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.32;
+    filter: drop-shadow(0 0 4px rgba(120, 205, 255, 0.22));
+    animation: wave-startup-clamp 0.72s ease-out 1;
+}
+
+.wave-base-2 { animation-delay: 0.16s; }
+.wave-base-3 { animation-delay: 0.32s; }
+.wave-base-4 { animation-delay: 0.48s; }
+
+[data-theme="light"] .wave-base,
+[data-theme="light"] .wave-base-2,
+[data-theme="light"] .wave-base-3,
+[data-theme="light"] .wave-base-4 {
+    filter: drop-shadow(0 0 4px rgba(36, 82, 150, 0.3));
 }
 
 

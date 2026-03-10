@@ -61,6 +61,83 @@ function RouteLoadingFallback({ label }) {
   );
 }
 
+function AnimatedWaves() {
+  const r0 = useRef(null);
+  const r1 = useRef(null);
+  const r2 = useRef(null);
+  const r3 = useRef(null);
+  const b0 = useRef(null);
+  const b1 = useRef(null);
+  const b2 = useRef(null);
+  const b3 = useRef(null);
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    // Each wave has independent start-Y and end-Y oscillators at different periods
+    // and phases. As they drift apart or together the chord tilts and the
+    // concavity of the wave shape changes naturally on its own.
+    const WAVES = [
+      { r: r0, b: b0, baseY: 250, sAmp: 45, sFreq: 1.55e-4, sPhase: 0.0, eAmp: 38, eFreq: 1.95e-4, ePhase: 2.1, wAmp: 46, wSpeed: 6.5e-5, wOff: 0.0 },
+      { r: r1, b: b1, baseY: 340, sAmp: 40, sFreq: 1.78e-4, sPhase: 1.3, eAmp: 44, eFreq: 1.28e-4, ePhase: 3.8, wAmp: 42, wSpeed: 5.6e-5, wOff: 1.2 },
+      { r: r2, b: b2, baseY: 430, sAmp: 42, sFreq: 1.35e-4, sPhase: 2.6, eAmp: 36, eFreq: 1.64e-4, ePhase: 0.8, wAmp: 44, wSpeed: 7.1e-5, wOff: 2.5 },
+      { r: r3, b: b3, baseY: 520, sAmp: 38, sFreq: 1.44e-4, sPhase: 4.1, eAmp: 42, eFreq: 1.78e-4, ePhase: 1.9, wAmp: 40, wSpeed: 6.1e-5, wOff: 3.7 },
+    ];
+
+    function buildPath(w, t) {
+      const sY = w.baseY + w.sAmp * Math.sin(w.sFreq * t + w.sPhase);
+      const eY = w.baseY + w.eAmp * Math.sin(w.eFreq * t + w.ePhase);
+      // The chord defines a tilted baseline from sY to eY.
+      const chord = x => sY + (eY - sY) * (x / 3000);
+      // Wave humps sit on top of the chord so concavity follows the chord tilt.
+      const hump  = x => w.wAmp * Math.sin((x / 3000) * Math.PI * 3 + w.wSpeed * t + w.wOff);
+      const y = x => chord(x) + hump(x);
+      return (
+        `M 0,${sY.toFixed(1)} ` +
+        `Q 380,${y(380).toFixed(1)} 780,${y(780).toFixed(1)} ` +
+        `T 1560,${y(1560).toFixed(1)} ` +
+        `T 2320,${y(2320).toFixed(1)} ` +
+        `T 3000,${eY.toFixed(1)}`
+      );
+    }
+
+    function animate(ts) {
+      WAVES.forEach(w => {
+        const d = buildPath(w, ts);
+        if (w.r.current) w.r.current.setAttribute('d', d);
+        if (w.b.current) w.b.current.setAttribute('d', d);
+      });
+      rafRef.current = requestAnimationFrame(animate);
+    }
+
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  return (
+    <svg className="flowing-wave" viewBox="0 0 3000 1000" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="rgba(255, 255, 255, 0)" />
+          <stop offset="20%" stopColor="rgba(100, 180, 255, 0.38)" />
+          <stop offset="50%" stopColor="rgba(130, 210, 255, 0.56)" />
+          <stop offset="80%" stopColor="rgba(100, 180, 255, 0.38)" />
+          <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
+        </linearGradient>
+      </defs>
+      {/* Base lines – always visible; share the same JS-driven path geometry */}
+      <path ref={b0} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base" />
+      <path ref={b1} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-2" />
+      <path ref={b2} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-3" />
+      <path ref={b3} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base wave-base-4" />
+      {/* Scan highlights – traveling glow overlay */}
+      <path ref={r0} d="" stroke="url(#wave-gradient)" strokeWidth="2.9" fill="none" className="wave-line" />
+      <path ref={r1} d="" stroke="url(#wave-gradient)" strokeWidth="2.8" fill="none" className="wave-line wave-line-2" />
+      <path ref={r2} d="" stroke="url(#wave-gradient)" strokeWidth="2.8" fill="none" className="wave-line wave-line-3" />
+      <path ref={r3} d="" stroke="url(#wave-gradient)" strokeWidth="2.9" fill="none" className="wave-line wave-line-4" />
+    </svg>
+  );
+}
+
 function App() {
   const location = useLocation();
   const [showDecorations, setShowDecorations] = useState(false);
@@ -272,45 +349,7 @@ function App() {
           <div className={`theme-bg ${showDecorations ? "is-ready" : "is-deferred"} ${areShapesLocked ? "is-locked" : ""}`} aria-hidden="true">
             {showDecorations && (
               <>
-                <svg className="flowing-wave" viewBox="0 0 3000 1000" preserveAspectRatio="xMidYMid meet">
-                  <defs>
-                    <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="rgba(255, 255, 255, 0)" />
-                      <stop offset="20%" stopColor="rgba(100, 180, 255, 0.38)" />
-                      <stop offset="50%" stopColor="rgba(130, 210, 255, 0.56)" />
-                      <stop offset="80%" stopColor="rgba(100, 180, 255, 0.38)" />
-                      <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M 0,250 Q 380,210 780,310 T 1560,250 T 2320,300 T 3000,260"
-                    stroke="url(#wave-gradient)"
-                    strokeWidth="2.9"
-                    fill="none"
-                    className="wave-line"
-                  />
-                  <path
-                    d="M 0,330 Q 360,390 760,280 T 1540,350 T 2300,290 T 3000,340"
-                    stroke="url(#wave-gradient)"
-                    strokeWidth="2.8"
-                    fill="none"
-                    className="wave-line wave-line-2"
-                  />
-                  <path
-                    d="M 0,430 Q 400,370 820,470 T 1620,410 T 2360,480 T 3000,430"
-                    stroke="url(#wave-gradient)"
-                    strokeWidth="2.8"
-                    fill="none"
-                    className="wave-line wave-line-3"
-                  />
-                  <path
-                    d="M 0,510 Q 380,560 800,460 T 1600,530 T 2360,470 T 3000,520"
-                    stroke="url(#wave-gradient)"
-                    strokeWidth="2.9"
-                    fill="none"
-                    className="wave-line wave-line-4"
-                  />
-                </svg>
+                <AnimatedWaves />
                 <span className="orb orb-left" />
                 <span className="orb orb-nav-cut orb-nav-1" />
                 <span className="orb orb-nav-cut orb-nav-2" />

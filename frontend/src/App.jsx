@@ -100,12 +100,81 @@ function AnimatedWaves() {
       );
     }
 
+    // ── Pulse timing (JS-driven so order can be shuffled each round) ──────────
+    const CYCLE_MS   = 18000; // full cycle length
+    const FILL_FRAC  = 0.40;  // 0–40 %: head races right, tail fixed at start
+    const DRAIN_FRAC = 0.40;  // 40–80 %: head fixed at end, tail catches up
+    //                           80–100 %: rest (invisible)
+    const DASH_MAX   = 3500;
+    const DASH_GAP   = 9000;
+    // Offsets (ms) between waves within a round — shuffled each round
+    const OFFSET_POOL = [0, 150, 310, 500];
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // cycleStarts[i] = absolute rAF timestamp when wave i's current pulse began
+    let cycleStarts = [null, null, null, null];
+    let roundBase   = null;
+
+    function beginRound(baseTs) {
+      roundBase = baseTs;
+      const offsets = shuffle(OFFSET_POOL);
+      cycleStarts = offsets.map(o => baseTs + o);
+    }
+
     function animate(ts) {
-      WAVES.forEach(w => {
+      // Initialise on the very first frame
+      if (roundBase === null) beginRound(ts);
+
+      // When the last wave's cycle has ended, chain the next round seamlessly
+      const lastStart = Math.max(...cycleStarts);
+      if (ts >= lastStart + CYCLE_MS) beginRound(lastStart + CYCLE_MS);
+
+      WAVES.forEach((w, i) => {
         const d = buildPath(w, ts);
-        if (w.r.current) w.r.current.setAttribute('d', d);
         if (w.b.current) w.b.current.setAttribute('d', d);
+        if (!w.r.current) return;
+        w.r.current.setAttribute('d', d);
+
+        const elapsed = ts - cycleStarts[i];
+
+        // Before this wave's slot starts in the current round, stay invisible
+        if (elapsed < 0) {
+          w.r.current.style.strokeDasharray  = `0 ${DASH_GAP}`;
+          w.r.current.style.strokeDashoffset = '0';
+          return;
+        }
+
+        const frac = (elapsed % CYCLE_MS) / CYCLE_MS; // 0 → 1
+        let dashLen, dashOffset;
+
+        if (frac < FILL_FRAC) {
+          // Fill: head advances right, tail pinned at start
+          const p  = frac / FILL_FRAC;
+          dashLen    = Math.round(DASH_MAX * p);
+          dashOffset = 0;
+        } else if (frac < FILL_FRAC + DRAIN_FRAC) {
+          // Drain: head fixed at right end, tail races to catch up
+          const p  = (frac - FILL_FRAC) / DRAIN_FRAC;
+          dashLen    = Math.round(DASH_MAX * (1 - p));
+          dashOffset = -Math.round(DASH_MAX * p);
+        } else {
+          // Rest — invisible
+          dashLen    = 0;
+          dashOffset = -DASH_MAX;
+        }
+
+        w.r.current.style.strokeDasharray  = `${dashLen} ${DASH_GAP}`;
+        w.r.current.style.strokeDashoffset = dashOffset;
       });
+
       rafRef.current = requestAnimationFrame(animate);
     }
 

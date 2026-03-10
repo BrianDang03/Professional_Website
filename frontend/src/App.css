@@ -377,25 +377,6 @@ img {
     }
 }
 
-@keyframes pulse-ltr-scan {
-    0% {
-        /* Dash sits just off the left edge — path is fully dark */
-        stroke-dasharray: 3200 9000;
-        stroke-dashoffset: 3300;
-    }
-
-    38% {
-        /* Dash has exited fully off the right edge — path is fully dark */
-        stroke-dasharray: 3200 9000;
-        stroke-dashoffset: -9000;
-    }
-
-    /* Hold off-screen for the rest of the cycle before looping. */
-    100% {
-        stroke-dasharray: 3200 9000;
-        stroke-dashoffset: -9000;
-    }
-}
 
 @keyframes wave-glow-flow {
     0% {
@@ -680,14 +661,12 @@ img {
 .wave-line-2 {
     animation: led-pulse-2 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
     animation-delay: 0.4s, 0s;
-    stroke-dasharray: 4, 8;
     opacity: 0;
 }
 
 .wave-line-3 {
     animation: led-pulse 8s ease-in-out infinite, wave-fade-in 8s ease-out backwards;
     animation-delay: 0.8s, 0s;
-    stroke-dasharray: 2, 4;
     opacity: 0;
 }
 
@@ -699,34 +678,31 @@ img {
 
 
 
-/* Override global pulse: travel highlight from left to right. */
-/* Path geometry is driven by JS (AnimatedWaves); CSS handles glow/scan only. */
+/* Override: path geometry + dasharray are JS-driven; CSS handles glow only. */
 .wave-line {
-    stroke-dasharray: 360 2600;
     stroke-width: 2.1px;
+    stroke-linecap: round;
     filter: drop-shadow(0 0 7px rgba(120, 205, 255, 0.52)) drop-shadow(0 0 16px rgba(120, 205, 255, 0.3));
-    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 6s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation: wave-glow-flow 6s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation-delay: 0s, 0s;
     opacity: 1;
 }
 
 .wave-line-2 {
-    stroke-dasharray: 320 2600;
-    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 7s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
-    animation-delay: 0.16s, 0.22s, 0s;
+    animation: wave-glow-flow 7s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation-delay: 0.22s, 0s;
     opacity: 1;
 }
 
 .wave-line-3 {
-    stroke-dasharray: 330 2600;
-    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 5.8s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
-    animation-delay: 0.32s, 0.12s, 0s;
+    animation: wave-glow-flow 5.8s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation-delay: 0.12s, 0s;
     opacity: 1;
 }
 
 .wave-line-4 {
-    stroke-dasharray: 390 2600;
-    animation: pulse-ltr-scan 32s linear infinite, wave-glow-flow 6.5s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
-    animation-delay: 0.48s, 0.34s, 0s;
+    animation: wave-glow-flow 6.5s ease-in-out infinite, wave-startup-clamp 0.72s ease-out 1;
+    animation-delay: 0.34s, 0s;
     opacity: 1;
 }
 
@@ -739,8 +715,8 @@ img {
     animation: wave-startup-clamp 0.72s ease-out 1;
 }
 
-.wave-base-2 { animation-delay: 0.16s; }
-.wave-base-3 { animation-delay: 0.32s; }
+.wave-base-2 { animation-delay: 0.16s; stroke-dasharray: 4 8; }
+.wave-base-3 { animation-delay: 0.32s; stroke-dasharray: 2 4; }
 .wave-base-4 { animation-delay: 0.48s; }
 
 [data-theme="light"] .wave-base,

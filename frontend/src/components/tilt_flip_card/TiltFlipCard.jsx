@@ -314,27 +314,27 @@ export default function TiltFlipCard({
     // Percentages / opacity / hover: 0.02 unit.
     // Shadow pixels: 0.3px — sub-pixel, invisible.
     const SNAP_ANGLE = 0.03;
-    const SNAP_UNIT  = 0.02;
-    const SNAP_PX    = 0.3;
-    if (Math.abs(current.rx         - target.rx)         < SNAP_ANGLE) current.rx         = target.rx;
-    if (Math.abs(current.ry         - target.ry)         < SNAP_ANGLE) current.ry         = target.ry;
-    if (Math.abs(current.glareO     - target.glareO)     < SNAP_UNIT)  current.glareO     = target.glareO;
-    if (Math.abs(current.hover      - target.hover)      < SNAP_UNIT)  current.hover      = target.hover;
-    if (Math.abs(current.glareX     - target.glareX)     < SNAP_PX)    current.glareX     = target.glareX;
-    if (Math.abs(current.glareY     - target.glareY)     < SNAP_PX)    current.glareY     = target.glareY;
-    if (Math.abs(current.shadowX    - target.shadowX)    < SNAP_PX)    current.shadowX    = target.shadowX;
-    if (Math.abs(current.shadowY    - target.shadowY)    < SNAP_PX)    current.shadowY    = target.shadowY;
-    if (Math.abs(current.shadowBlur - target.shadowBlur) < SNAP_PX)    current.shadowBlur = target.shadowBlur;
+    const SNAP_UNIT = 0.02;
+    const SNAP_PX = 0.3;
+    if (Math.abs(current.rx - target.rx) < SNAP_ANGLE) current.rx = target.rx;
+    if (Math.abs(current.ry - target.ry) < SNAP_ANGLE) current.ry = target.ry;
+    if (Math.abs(current.glareO - target.glareO) < SNAP_UNIT) current.glareO = target.glareO;
+    if (Math.abs(current.hover - target.hover) < SNAP_UNIT) current.hover = target.hover;
+    if (Math.abs(current.glareX - target.glareX) < SNAP_PX) current.glareX = target.glareX;
+    if (Math.abs(current.glareY - target.glareY) < SNAP_PX) current.glareY = target.glareY;
+    if (Math.abs(current.shadowX - target.shadowX) < SNAP_PX) current.shadowX = target.shadowX;
+    if (Math.abs(current.shadowY - target.shadowY) < SNAP_PX) current.shadowY = target.shadowY;
+    if (Math.abs(current.shadowBlur - target.shadowBlur) < SNAP_PX) current.shadowBlur = target.shadowBlur;
 
     const isClose =
-      current.rx         === target.rx         &&
-      current.ry         === target.ry         &&
-      current.glareO     === target.glareO     &&
-      current.hover      === target.hover      &&
-      current.glareX     === target.glareX     &&
-      current.glareY     === target.glareY     &&
-      current.shadowX    === target.shadowX    &&
-      current.shadowY    === target.shadowY    &&
+      current.rx === target.rx &&
+      current.ry === target.ry &&
+      current.glareO === target.glareO &&
+      current.hover === target.hover &&
+      current.glareX === target.glareX &&
+      current.glareY === target.glareY &&
+      current.shadowX === target.shadowX &&
+      current.shadowY === target.shadowY &&
       current.shadowBlur === target.shadowBlur;
 
     if (!isClose) {
@@ -350,6 +350,20 @@ export default function TiltFlipCard({
   useEffect(() => {
     animateLerpRef.current = animateLerp;
   }, [animateLerp]);
+
+  useEffect(() => {
+    if (!isExpanded) return;
+    const savedScrollY = window.scrollY;
+    const onScroll = () => {
+      window.scrollTo({ top: savedScrollY, behavior: "instant" });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.documentElement.classList.add("scroll-locked");
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.documentElement.classList.remove("scroll-locked");
+    };
+  }, [isExpanded]);
 
   const startLerpAnimation = useCallback(() => {
     if (!isAnimatingRef.current) {

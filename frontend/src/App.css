@@ -113,7 +113,8 @@
     color: #1a2330;
 }
 
-@media (hover: none), (pointer: coarse) {
+@media (hover: none),
+(pointer: coarse) {
     [data-theme="light"] .nav-link:hover {
         border-color: transparent;
         background: transparent;
@@ -196,6 +197,65 @@ html {
     scroll-behavior: smooth;
     /* Canvas fallback so areas below the body gradient never show white. */
     background-color: #161f2b;
+    /* Firefox */
+    scrollbar-color: rgba(255, 255, 255, 0.14) #0c1118;
+    scrollbar-width: thin;
+}
+
+html.scroll-locked {
+    /* Firefox: dim the thumb while locked */
+    scrollbar-color: rgba(255, 255, 255, 0.05) #0c1118;
+}
+
+/* ── Palette-styled scrollbar (Webkit: Chrome, Edge, Safari) ─────────────────── */
+html::-webkit-scrollbar {
+    width: 8px;
+}
+
+html::-webkit-scrollbar-track {
+    background: #0c1118;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 4px;
+    border: 2px solid #0c1118;
+    transition: background 0.25s ease;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+/* Grey out the thumb when scroll is locked */
+html.scroll-locked::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Light theme overrides */
+html[data-theme="light"] {
+    scrollbar-color: rgba(26, 35, 48, 0.22) #dce3ec;
+}
+
+html[data-theme="light"]::-webkit-scrollbar-track {
+    background: #dce3ec;
+}
+
+html[data-theme="light"]::-webkit-scrollbar-thumb {
+    background: rgba(26, 35, 48, 0.22);
+    border-color: #dce3ec;
+}
+
+html[data-theme="light"]::-webkit-scrollbar-thumb:hover {
+    background: rgba(26, 35, 48, 0.38);
+}
+
+html[data-theme="light"].scroll-locked {
+    scrollbar-color: rgba(26, 35, 48, 0.07) #dce3ec;
+}
+
+html[data-theme="light"].scroll-locked::-webkit-scrollbar-thumb {
+    background: rgba(26, 35, 48, 0.07);
 }
 
 body {
@@ -388,13 +448,23 @@ img {
 }
 
 @keyframes wave-startup-clamp {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes wave-base-startup {
-    from { opacity: 0; }
-    to   { opacity: 0.32; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 0.32;
+    }
 }
 
 
@@ -679,9 +749,19 @@ img {
     animation: wave-base-startup 0.72s ease-out 1;
 }
 
-.wave-base-2 { animation-delay: 0.16s; stroke-dasharray: 4 8; }
-.wave-base-3 { animation-delay: 0.32s; stroke-dasharray: 2 4; }
-.wave-base-4 { animation-delay: 0.48s; }
+.wave-base-2 {
+    animation-delay: 0.16s;
+    stroke-dasharray: 4 8;
+}
+
+.wave-base-3 {
+    animation-delay: 0.32s;
+    stroke-dasharray: 2 4;
+}
+
+.wave-base-4 {
+    animation-delay: 0.48s;
+}
 
 [data-theme="light"] .wave-base,
 [data-theme="light"] .wave-base-2,
@@ -1133,6 +1213,7 @@ img {
 }
 
 @media (max-width: 900px) {
+
     /* background-attachment:fixed triggers full-page repaint on scroll on mobile.
        Strip the radials on mobile (the fixed orbs provide ambient glow) and
        switch to scroll so the plain gradient never causes repaint jank. */

@@ -69,6 +69,12 @@
   pointer-events: none;
 }
 
+/* Drop returning card below the backdrop (z-index: 20) and any newly
+   opened card (z-index: 30) so it never bleeds through during close. */
+.tfc-scene.is-expanded.is-returning {
+  z-index: 5;
+}
+
 /* Raise the hovered/active card above its siblings in flex/grid layouts
    so the 3D tilt pop-out doesn't get painted over by adjacent cards.
    Exclude expanded cards so the :hover rule (same specificity) doesn't
@@ -203,6 +209,7 @@
 }
 
 .tfc-tilt.is-expanded.is-returning {
+  z-index: 5;
   transition: transform 720ms cubic-bezier(0.2, 0.85, 0.2, 1);
 }
 

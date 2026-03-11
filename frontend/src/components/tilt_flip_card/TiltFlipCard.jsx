@@ -785,7 +785,7 @@ export default function TiltFlipCard({
 
       <div
         ref={sceneRef}
-        className={`tfc-scene ${entranceClass} ${isExpanded ? "is-expanded" : ""}`}
+        className={`tfc-scene ${entranceClass} ${isExpanded ? "is-expanded" : ""} ${isReturning ? "is-returning" : ""}`}
         style={cssVars}
         onPointerEnter={handlePointerEnter}
         onPointerDown={handlePointerDown}

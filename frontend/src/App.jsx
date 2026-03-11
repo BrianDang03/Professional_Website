@@ -74,15 +74,15 @@ function RouteLoadingFallback({ label }) {
 // junction, creating near-vertical tangents and kinked shapes.
 //
 // CURRENT APPROACH: cubic Bezier (C command) with hermite tangents.
-// 6 anchor x-positions are evenly spaced at 600px intervals across the
-// 3000-unit viewBox (= 5 segments × one full sine cycle).
+// 11 anchor x-positions are evenly spaced at 300px intervals across the
+// 3000-unit viewBox (= 10 segments × two full sine cycles).
 // At each anchor the curve passes through the EXACT sine Y value.
 // The cubic control points are derived from the analytic sine derivative
 // (cos), guaranteeing C1-continuity (smooth tangents) across every junction.
-const _SCALE = Math.PI * 2 / 3000; // radians per SVG x-unit (1 full cycle = 3000px)
-const _SEG_W = 600;                 // segment width in SVG units
+const _SCALE = Math.PI * 4 / 3000; // radians per SVG x-unit (2 full cycles = 3000px)
+const _SEG_W = 300;                 // segment width in SVG units
 const _SEG_CP = _SEG_W / 3;         // hermite control-point offset = ⅓ segment width
-const _XA = [0, 600, 1200, 1800, 2400, 3000]; // 6 evenly-spaced anchor x positions
+const _XA = [0, 300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000]; // 11 anchors
 
 function buildPath(w, t) {
   const phi = w.wSpeed * t + w.wOff;
@@ -92,9 +92,9 @@ function buildPath(w, t) {
   // Pre-compute y-value and tangent slope at each anchor.
   // y(x)    = center + amp * sin(x * _SCALE + phi)
   // dy/dx   = amp * cos(x * _SCALE + phi) * _SCALE
-  const y = new Array(6);
-  const tan = new Array(6);
-  for (let i = 0; i < 6; i++) {
+  const y = new Array(11);
+  const tan = new Array(11);
+  for (let i = 0; i < 11; i++) {
     const phase = _XA[i] * _SCALE + phi;
     y[i] = center + amp * Math.sin(phase);
     tan[i] = amp * Math.cos(phase) * _SCALE;
@@ -106,7 +106,7 @@ function buildPath(w, t) {
   // This is the standard hermite → cubic Bezier conversion; the resulting
   // curve passes exactly through every anchor with the correct sine slope.
   let d = `M 0,${y[0].toFixed(1)}`;
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     const x0 = _XA[i];
     const x1 = _XA[i + 1];
     const cp1y = (y[i] + tan[i] * _SEG_CP).toFixed(1);
@@ -150,11 +150,11 @@ function AnimatedWaves() {
     // so they never all show the same hue at once.
     const WAVES = [
       // Pair A: phases 0 and π — always on opposite sides of the coil
-      { r: r0, b: b0, cr: cr0, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: 0, colorPhase: 0 },
-      { r: r1, b: b1, cr: cr1, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi + Math.PI, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI, colorPhase: Math.PI * 0.5 },
+      { r: r0, b: b0, cr: cr0, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 1.4e-4, wOff: initPhi, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: 0, colorPhase: 0 },
+      { r: r1, b: b1, cr: cr1, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 1.4e-4, wOff: initPhi + Math.PI, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI, colorPhase: Math.PI * 0.5 },
       // Pair B: phases π/2 and 3π/2
-      { r: r2, b: b2, cr: cr2, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi + Math.PI * 0.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI * 0.5, colorPhase: Math.PI },
-      { r: r3, b: b3, cr: cr3, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi + Math.PI * 1.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI * 1.5, colorPhase: Math.PI * 1.5 },
+      { r: r2, b: b2, cr: cr2, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 1.4e-4, wOff: initPhi + Math.PI * 0.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI * 0.5, colorPhase: Math.PI },
+      { r: r3, b: b3, cr: cr3, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 1.4e-4, wOff: initPhi + Math.PI * 1.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI * 1.5, colorPhase: Math.PI * 1.5 },
     ];
 
     // Color cycle speed — full cycle every ~25 s (slower than spin so the hue
@@ -234,7 +234,7 @@ function AnimatedWaves() {
         const td = (depth + 1) * 0.5; // 0 = fully back, 1 = fully front
         // td² sharpens front/back color pop; td (linear) keeps back strands visible.
         const tdC = td * td;
-        w.wAmp = 60 + 120 * td; // 60 (flat, back) → 180 (full depth, front)
+        w.wAmp = 50 + 150 * td; // 50 (flat, back) → 200 (full depth, front)
 
         const d = buildPath(w, simTime);
         if (d !== prevPathD[i]) {

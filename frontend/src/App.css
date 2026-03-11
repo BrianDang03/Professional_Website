@@ -37,20 +37,20 @@
 
 [data-theme="light"] body {
     background:
+        radial-gradient(circle at 20% 25%, rgba(18, 34, 54, 0.6) 1px, transparent 2px),
+        radial-gradient(circle at 70% 40%, rgba(18, 34, 54, 0.55) 1px, transparent 2px),
+        radial-gradient(circle at 90% 75%, rgba(18, 34, 54, 0.6) 1px, transparent 2px),
+        radial-gradient(circle at 32% 68%, rgba(18, 34, 54, 0.55) 1px, transparent 2px),
         radial-gradient(circle at 18% 10%, rgba(64, 110, 230, 0.38), transparent 42%),
         radial-gradient(circle at 88% 72%, rgba(82, 150, 245, 0.32), transparent 44%),
         radial-gradient(circle at 50% 36%, rgba(102, 170, 255, 0.2), transparent 46%),
         linear-gradient(180deg, #dbe9ff 0%, #eef5ff 52%, #e3eeff 100%);
+    background-size: 360px 360px, 360px 360px, 360px 360px, 360px 360px, auto, auto, auto, auto;
     background-attachment: fixed;
 }
 
 [data-theme="light"] body::before {
-    opacity: 0.44;
-    background-image:
-        radial-gradient(circle at 20% 25%, rgba(18, 34, 54, 0.72) 1px, transparent 2px),
-        radial-gradient(circle at 70% 40%, rgba(18, 34, 54, 0.66) 1px, transparent 2px),
-        radial-gradient(circle at 90% 75%, rgba(18, 34, 54, 0.72) 1px, transparent 2px),
-        radial-gradient(circle at 32% 68%, rgba(18, 34, 54, 0.66) 1px, transparent 2px);
+    opacity: 0;
 }
 
 [data-theme="light"] .orb {
@@ -266,9 +266,14 @@ body {
        background-attachment:fixed keeps all layers viewport-anchored
        so the glows never shift with scroll position. */
     background:
+        radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 0.7) 1px, transparent 2px),
+        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.65) 1px, transparent 2px),
+        radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 0.7) 1px, transparent 2px),
+        radial-gradient(circle at 32% 68%, rgba(255, 255, 255, 0.65) 1px, transparent 2px),
         radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.22), transparent 35%),
         radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.18), transparent 38%),
         linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
+    background-size: 360px 360px, 360px 360px, 360px 360px, 360px 360px, auto, auto, auto;
     background-attachment: fixed;
     color: var(--text-main);
     overflow-x: hidden;
@@ -283,13 +288,7 @@ body::before {
     position: fixed;
     inset: 0;
     z-index: -3;
-    opacity: 0.28;
-    background-image:
-        radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
-        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.75) 1px, transparent 2px),
-        radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
-        radial-gradient(circle at 32% 68%, rgba(255, 255, 255, 0.75) 1px, transparent 2px);
-    background-size: 360px 360px;
+    opacity: 0;
     pointer-events: none;
 }
 

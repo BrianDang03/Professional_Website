@@ -720,14 +720,12 @@ img {
 }
 
 .wave-line-2 {
-    stroke-dasharray: 4 8;
     animation: wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.22s;
     opacity: 1;
 }
 
 .wave-line-3 {
-    stroke-dasharray: 2 4;
     animation: wave-startup-clamp 0.72s ease-out 1;
     animation-delay: 0.12s;
     opacity: 1;
@@ -751,12 +749,10 @@ img {
 
 .wave-base-2 {
     animation-delay: 0.16s;
-    stroke-dasharray: 4 8;
 }
 
 .wave-base-3 {
     animation-delay: 0.32s;
-    stroke-dasharray: 2 4;
 }
 
 .wave-base-4 {

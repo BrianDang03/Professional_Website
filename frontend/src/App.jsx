@@ -1,5 +1,5 @@
 import './App.css';
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "./components/Navbar/Navbar";
@@ -64,30 +64,56 @@ function RouteLoadingFallback({ label }) {
 
 // ── Module-level helix constants ──────────────────────────────────────────
 // Hoisted out of the AnimatedWaves useEffect closure so V8 can JIT-compile
-// buildPath once and reuse it without re-allocating the function or the XP
-// array on every useEffect execution.
-const _TWO_PI              = Math.PI * 2;
-const _TWO_PI_OVER_3000    = _TWO_PI / 3000;
-const _XP = [
-  0,
-  380  * _TWO_PI_OVER_3000,
-  780  * _TWO_PI_OVER_3000,
-  1560 * _TWO_PI_OVER_3000,
-  2320 * _TWO_PI_OVER_3000,
-  _TWO_PI,  // = 0 (mod 2π) — same phase as x=0
-];
+// buildPath once and reuse it without re-allocating arrays on every frame.
+//
+// PREVIOUS APPROACH (broken): used SVG Q+T quadratic Bezier with sine SAMPLE
+// VALUES as control points. A Bezier control point is NOT on the curve —
+// the actual peak of Q(p0,ctrl,p1) is at (p0+2*ctrl+p1)/4, so with a
+// full sine cycle the rendered amplitude was half the intended value.
+// The T reflections also produced control-point-x === endpoint-x at every
+// junction, creating near-vertical tangents and kinked shapes.
+//
+// CURRENT APPROACH: cubic Bezier (C command) with hermite tangents.
+// 6 anchor x-positions are evenly spaced at 600px intervals across the
+// 3000-unit viewBox (= 5 segments × one full sine cycle).
+// At each anchor the curve passes through the EXACT sine Y value.
+// The cubic control points are derived from the analytic sine derivative
+// (cos), guaranteeing C1-continuity (smooth tangents) across every junction.
+const _SCALE = Math.PI * 2 / 3000; // radians per SVG x-unit (1 full cycle = 3000px)
+const _SEG_W = 600;                 // segment width in SVG units
+const _SEG_CP = _SEG_W / 3;         // hermite control-point offset = ⅓ segment width
+const _XA = [0, 600, 1200, 1800, 2400, 3000]; // 6 evenly-spaced anchor x positions
 
 function buildPath(w, t) {
-  const phi    = w.wSpeed * t + w.wOff;
-  const amp    = w.wAmp + w.breathAmp * Math.sin(w.breathFreq * t + w.breathPhase);
-  const center = w.baseY + w.driftAmp  * Math.sin(w.driftFreq  * t + w.driftPhase);
-  const s0 = (center + amp * Math.sin(_XP[0] + phi)).toFixed(1);
-  const s1 = (center + amp * Math.sin(_XP[1] + phi)).toFixed(1);
-  const s2 = (center + amp * Math.sin(_XP[2] + phi)).toFixed(1);
-  const s3 = (center + amp * Math.sin(_XP[3] + phi)).toFixed(1);
-  const s4 = (center + amp * Math.sin(_XP[4] + phi)).toFixed(1);
-  const s5 = (center + amp * Math.sin(_XP[5] + phi)).toFixed(1);
-  return `M 0,${s0} Q 380,${s1} 780,${s2} T 1560,${s3} T 2320,${s4} T 3000,${s5}`;
+  const phi = w.wSpeed * t + w.wOff;
+  const amp = w.wAmp + w.breathAmp * Math.sin(w.breathFreq * t + w.breathPhase);
+  const center = w.baseY + w.driftAmp * Math.sin(w.driftFreq * t + w.driftPhase);
+
+  // Pre-compute y-value and tangent slope at each anchor.
+  // y(x)    = center + amp * sin(x * _SCALE + phi)
+  // dy/dx   = amp * cos(x * _SCALE + phi) * _SCALE
+  const y = new Array(6);
+  const tan = new Array(6);
+  for (let i = 0; i < 6; i++) {
+    const phase = _XA[i] * _SCALE + phi;
+    y[i] = center + amp * Math.sin(phase);
+    tan[i] = amp * Math.cos(phase) * _SCALE;
+  }
+
+  // Build cubic Bezier path: C cp1x,cp1y cp2x,cp2y ex,ey
+  // cp1 = anchor + (⅓ segment, tangent × ⅓ segment)   — forward  control
+  // cp2 = next_anchor - (⅓ segment, tangent × ⅓ segment) — backward control
+  // This is the standard hermite → cubic Bezier conversion; the resulting
+  // curve passes exactly through every anchor with the correct sine slope.
+  let d = `M 0,${y[0].toFixed(1)}`;
+  for (let i = 0; i < 5; i++) {
+    const x0 = _XA[i];
+    const x1 = _XA[i + 1];
+    const cp1y = (y[i] + tan[i] * _SEG_CP).toFixed(1);
+    const cp2y = (y[i + 1] - tan[i + 1] * _SEG_CP).toFixed(1);
+    d += ` C ${x0 + _SEG_CP},${cp1y} ${x1 - _SEG_CP},${cp2y} ${x1},${y[i + 1].toFixed(1)}`;
+  }
+  return d;
 }
 // ───────────────────────────────────────────────────────────────────────────
 
@@ -107,9 +133,64 @@ function AnimatedWaves() {
   const cr3 = useRef(null);
   const rafRef = useRef(0);
 
+  // Generate random soft-fade gap positions once on mount — unique per line
+  const waveMasks = useMemo(() => {
+    function mkRng(seed) {
+      let s = seed >>> 0;
+      return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 0x100000000; };
+    }
+    function makeStops(rand, count, lineColor) {
+      const VB_W = 3000;
+      const gaps = [];
+      for (let i = 0; i < count; i++) {
+        const center = 150 + rand() * (VB_W - 300);
+        const halfW = 35 + rand() * 130;
+        const ramp = 30 + rand() * 90;
+        gaps.push({ center, halfW, ramp });
+      }
+      gaps.sort((a, b) => a.center - b.center);
+      const pts = [
+        { x: 0, color: lineColor, o: 0 },
+        { x: 80, color: lineColor, o: 1 },
+      ];
+      for (const { center, halfW, ramp } of gaps) {
+        const edgeW = Math.min(ramp * 0.08, 12); // razor-thin edge snap
+        const causticW = ramp * 0.18;            // narrow bright rim
+        pts.push(
+          { x: Math.max(80, center - halfW - ramp), color: lineColor, o: 1 },
+          { x: Math.max(80, center - halfW - edgeW), color: lineColor, o: 1 },
+          { x: Math.max(80, center - halfW), color: lineColor, o: 0.01 },
+          { x: Math.max(80, center - halfW + causticW), color: lineColor, o: 1.0 },
+          { x: Math.max(80, center - halfW + causticW * 1.8), color: lineColor, o: 0.03 },
+          { x: center - halfW * 0.35, color: lineColor, o: 0.22 },
+          { x: center, color: lineColor, o: 0.04 },
+          { x: center + halfW * 0.35, color: lineColor, o: 0.22 },
+          { x: Math.min(VB_W - 80, center + halfW - causticW * 1.8), color: lineColor, o: 0.03 },
+          { x: Math.min(VB_W - 80, center + halfW - causticW), color: lineColor, o: 1.0 },
+          { x: Math.min(VB_W - 80, center + halfW), color: lineColor, o: 0.01 },
+          { x: Math.min(VB_W - 80, center + halfW + edgeW), color: lineColor, o: 1 },
+          { x: Math.min(VB_W - 80, center + halfW + ramp), color: lineColor, o: 1 },
+        );
+      }
+      pts.push(
+        { x: VB_W - 80, color: lineColor, o: 1 },
+        { x: VB_W, color: lineColor, o: 0 },
+      );
+      return pts.sort((a, b) => a.x - b.x);
+    }
+    const W = 'white';
+    const B = 'rgb(100,180,255)';
+    return [
+      makeStops(mkRng(8291), 4, W),
+      makeStops(mkRng(1654), 6, W),
+      makeStops(mkRng(6087), 7, B),
+      makeStops(mkRng(4315), 5, B),
+    ];
+  }, []);
+
   useEffect(() => {
-    // Random starting rotation so helix is at a different position every load
-    const initPhi = Math.random() * Math.PI * 2;
+    // Fixed starting rotation so helix always begins in the same position
+    const initPhi = 0;
 
     // Helix constants
     const SPIRAL_CENTER = 500;    // 50% of viewBox height → always vertically centred in viewport
@@ -119,17 +200,17 @@ function AnimatedWaves() {
     // concavity of the wave shape changes naturally on its own.
     const WAVES = [
       // Pair A: phases 0 and π — always on opposite sides of the coil
-      { r: r0, b: b0, cr: cr0, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi,            breathAmp: 11, breathFreq: 3.2e-5, breathPhase: 0.0, driftAmp: 18, driftFreq: 1.8e-5, driftPhase: 0.0 },
-      { r: r1, b: b1, cr: cr1, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi + Math.PI, breathAmp:  9, breathFreq: 2.8e-5, breathPhase: 1.4, driftAmp: 16, driftFreq: 1.8e-5, driftPhase: 0.0 },
-      // Pair B: phases π/2 and 3π/2 — slightly different speed so pairs slowly drift apart and together
-      { r: r2, b: b2, cr: cr2, baseY: SPIRAL_CENTER, wAmp: 112, wSpeed: 8.25e-5, wOff: initPhi + Math.PI * 0.5,  breathAmp: 12, breathFreq: 3.5e-5, breathPhase: 2.8, driftAmp: 20, driftFreq: 2.1e-5, driftPhase: 1.2 },
-      { r: r3, b: b3, cr: cr3, baseY: SPIRAL_CENTER, wAmp: 112, wSpeed: 8.25e-5, wOff: initPhi + Math.PI * 1.5, breathAmp: 10, breathFreq: 2.6e-5, breathPhase: 4.2, driftAmp: 18, driftFreq: 2.1e-5, driftPhase: 1.2 },
+      { r: r0, b: b0, cr: cr0, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
+      { r: r1, b: b1, cr: cr1, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi + Math.PI, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
+      // Pair B: phases π/2 and 3π/2
+      { r: r2, b: b2, cr: cr2, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi + Math.PI * 0.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
+      { r: r3, b: b3, cr: cr3, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi + Math.PI * 1.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
     ];
 
     // ── Pulse timing (JS-driven so order can be shuffled each round) ──────────
-    const CYCLE_MS   = 18000; // full cycle length
-    const FILL_FRAC  = 0.30;  // 0–30 %: head races right, tail fixed at start
-    const HOLD_FRAC  = 0.20;  // 30–50 %: fully lit — hold (same duration as rest)
+    const CYCLE_MS = 18000; // full cycle length
+    const FILL_FRAC = 0.30;  // 0–30 %: head races right, tail fixed at start
+    const HOLD_FRAC = 0.20;  // 30–50 %: fully lit — hold (same duration as rest)
     const DRAIN_FRAC = 0.30;  // 50–80 %: head fixed at end, tail catches up
     //                           80–100 %: rest (invisible) = same 20 % as hold
     // ViewBox width used for clipRect calculations
@@ -153,7 +234,7 @@ function AnimatedWaves() {
 
     // cycleStarts[i] = absolute rAF timestamp when wave i's current pulse began
     let cycleStarts = Array.from({ length: activeWaveCount }, () => null);
-    let roundBase   = null;
+    let roundBase = null;
     let lastTs = null;
     let simTime = performance.now();
     const prevClip = Array.from({ length: activeWaveCount }, () => ({ x: -1, w: -1 }));
@@ -288,33 +369,49 @@ function AnimatedWaves() {
           <stop offset="80%" stopColor="rgba(100, 180, 255, 0.38)" />
           <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
         </linearGradient>
+        <linearGradient id="wave-gradient-white" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="rgba(255, 255, 255, 0)" />
+          <stop offset="20%" stopColor="rgba(255, 255, 255, 0.38)" />
+          <stop offset="50%" stopColor="rgba(255, 255, 255, 0.56)" />
+          <stop offset="80%" stopColor="rgba(255, 255, 255, 0.38)" />
+          <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
+        </linearGradient>
         {/* Scan glow: single-pass blur in absolute SVG coords (filterUnits="userSpaceOnUse").   */}
         {/* Using bbox-% would cover ~3500×500px per wave — far too much GPU work per frame.    */}
         {/* Wave sits at y≈500 ±152 SVG units → bound filter to y 320–680 (400px at 1080p).    */}
         <filter id="wave-glow-scan" filterUnits="userSpaceOnUse" x="-20" y="320" width="3040" height="360" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="6" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
         <filter id="wave-glow-scan-lite" filterUnits="userSpaceOnUse" x="-20" y="320" width="3040" height="360" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="4" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
         {/* Clip rects control the visible window for each scan overlay */}
         <clipPath id="scan-clip-0"><rect ref={cr0} x="0" y="-200" width="0" height="1400" /></clipPath>
         <clipPath id="scan-clip-1"><rect ref={cr1} x="0" y="-200" width="0" height="1400" /></clipPath>
         <clipPath id="scan-clip-2"><rect ref={cr2} x="0" y="-200" width="0" height="1400" /></clipPath>
         <clipPath id="scan-clip-3"><rect ref={cr3} x="0" y="-200" width="0" height="1400" /></clipPath>
+        {/* Per-line color-swap gradients: solid sections show the line's own colour,
+             gap sections fade to the opposite colour (white→blue, blue→white) */}
+        {waveMasks.map((stops, i) => (
+          <linearGradient key={i} id={`wfg-${i}`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="3000" y2="0">
+            {stops.map((s, j) => (
+              <stop key={j} offset={`${(s.x / 3000 * 100).toFixed(3)}%`} stopColor={s.color} stopOpacity={s.o} />
+            ))}
+          </linearGradient>
+        ))}
       </defs>
       {/* Base lines – always visible; no SVG filter needed at 0.32 opacity (saves 4 blur passes/frame) */}
-      <path ref={b0} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base" />
-      <path ref={b1} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-2" />
+      <path ref={b0} d="" stroke="url(#wave-gradient-white)" strokeWidth="1.6" fill="none" className="wave-base" />
+      <path ref={b1} d="" stroke="url(#wave-gradient-white)" strokeWidth="1.5" fill="none" className="wave-base wave-base-2" />
       {!simpleMotion && <path ref={b2} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-3" />}
       {!simpleMotion && <path ref={b3} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base wave-base-4" />}
       {/* Scan highlights – clipPath reveals only the dots inside the window */}
-      <path ref={r0} d="" stroke="url(#wave-gradient)" strokeWidth="2.9" fill="none" className="wave-line" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-0)" />
-      <path ref={r1} d="" stroke="url(#wave-gradient)" strokeWidth="2.8" fill="none" className="wave-line wave-line-2" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-1)" />
-      {!simpleMotion && <path ref={r2} d="" stroke="url(#wave-gradient)" strokeWidth="2.8" fill="none" className="wave-line wave-line-3" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-2)" />}
-      {!simpleMotion && <path ref={r3} d="" stroke="url(#wave-gradient)" strokeWidth="2.9" fill="none" className="wave-line wave-line-4" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-3)" />}
+      <path ref={r0} d="" stroke="url(#wfg-0)" strokeWidth="2.9" fill="none" className="wave-line" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-0)" />
+      <path ref={r1} d="" stroke="url(#wfg-1)" strokeWidth="2.8" fill="none" className="wave-line wave-line-2" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-1)" />
+      {!simpleMotion && <path ref={r2} d="" stroke="url(#wfg-2)" strokeWidth="2.8" fill="none" className="wave-line wave-line-3" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-2)" />}
+      {!simpleMotion && <path ref={r3} d="" stroke="url(#wfg-3)" strokeWidth="2.9" fill="none" className="wave-line wave-line-4" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-3)" />}
     </svg>
   );
 }
@@ -467,8 +564,8 @@ function App() {
   }, [isBootReady]);
 
   useEffect(() => {
-     // Start decorative motion immediately so it is visible and moving at load.
-     setShowDecorations(true);
+    // Start decorative motion immediately so it is visible and moving at load.
+    setShowDecorations(true);
   }, []);
 
   useEffect(() => {

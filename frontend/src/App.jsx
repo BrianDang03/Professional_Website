@@ -1,5 +1,5 @@
 import './App.css';
-import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "./components/Navbar/Navbar";
@@ -134,60 +134,6 @@ function AnimatedWaves() {
   const rafRef = useRef(0);
 
   // Generate random soft-fade gap positions once on mount — unique per line
-  const waveMasks = useMemo(() => {
-    function mkRng(seed) {
-      let s = seed >>> 0;
-      return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 0x100000000; };
-    }
-    function makeStops(rand, count, lineColor) {
-      const VB_W = 3000;
-      const gaps = [];
-      for (let i = 0; i < count; i++) {
-        const center = 150 + rand() * (VB_W - 300);
-        const halfW = 35 + rand() * 130;
-        const ramp = 30 + rand() * 90;
-        gaps.push({ center, halfW, ramp });
-      }
-      gaps.sort((a, b) => a.center - b.center);
-      const pts = [
-        { x: 0, color: lineColor, o: 0 },
-        { x: 80, color: lineColor, o: 1 },
-      ];
-      for (const { center, halfW, ramp } of gaps) {
-        const edgeW = Math.min(ramp * 0.08, 12); // razor-thin edge snap
-        const causticW = ramp * 0.18;            // narrow bright rim
-        pts.push(
-          { x: Math.max(80, center - halfW - ramp), color: lineColor, o: 1 },
-          { x: Math.max(80, center - halfW - edgeW), color: lineColor, o: 1 },
-          { x: Math.max(80, center - halfW), color: lineColor, o: 0.01 },
-          { x: Math.max(80, center - halfW + causticW), color: lineColor, o: 1.0 },
-          { x: Math.max(80, center - halfW + causticW * 1.8), color: lineColor, o: 0.03 },
-          { x: center - halfW * 0.35, color: lineColor, o: 0.22 },
-          { x: center, color: lineColor, o: 0.04 },
-          { x: center + halfW * 0.35, color: lineColor, o: 0.22 },
-          { x: Math.min(VB_W - 80, center + halfW - causticW * 1.8), color: lineColor, o: 0.03 },
-          { x: Math.min(VB_W - 80, center + halfW - causticW), color: lineColor, o: 1.0 },
-          { x: Math.min(VB_W - 80, center + halfW), color: lineColor, o: 0.01 },
-          { x: Math.min(VB_W - 80, center + halfW + edgeW), color: lineColor, o: 1 },
-          { x: Math.min(VB_W - 80, center + halfW + ramp), color: lineColor, o: 1 },
-        );
-      }
-      pts.push(
-        { x: VB_W - 80, color: lineColor, o: 1 },
-        { x: VB_W, color: lineColor, o: 0 },
-      );
-      return pts.sort((a, b) => a.x - b.x);
-    }
-    const W = '#eaf4ff';
-    const B = '#2255dd';
-    return [
-      makeStops(mkRng(8291), 4, W),
-      makeStops(mkRng(1654), 6, '#30b8ff'),
-      makeStops(mkRng(6087), 7, B),
-      makeStops(mkRng(4315), 5, '#6633ff'),
-    ];
-  }, []);
-
   useEffect(() => {
     // Fixed starting rotation so helix always begins in the same position
     const initPhi = 0;
@@ -198,26 +144,34 @@ function AnimatedWaves() {
     // Each wave has independent start-Y and end-Y oscillators at different periods
     // and phases. As they drift apart or together the chord tilts and the
     // concavity of the wave shape changes naturally on its own.
+    // depthPhase = wOff_i so that cos(wSpeed*t + depthPhase) gives each strand's
+    // instantaneous z-depth (+1 = closest to viewer, -1 = farthest away).
+    // colorPhase: each strand starts at a different point in the color cycle
+    // so they never all show the same hue at once.
     const WAVES = [
       // Pair A: phases 0 and π — always on opposite sides of the coil
-      { r: r0, b: b0, cr: cr0, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
-      { r: r1, b: b1, cr: cr1, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi + Math.PI, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
+      { r: r0, b: b0, cr: cr0, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: 0, colorPhase: 0 },
+      { r: r1, b: b1, cr: cr1, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi + Math.PI, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI, colorPhase: Math.PI * 0.5 },
       // Pair B: phases π/2 and 3π/2
-      { r: r2, b: b2, cr: cr2, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi + Math.PI * 0.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
-      { r: r3, b: b3, cr: cr3, baseY: SPIRAL_CENTER, wAmp: 120, wSpeed: 7e-5, wOff: initPhi + Math.PI * 1.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0 },
+      { r: r2, b: b2, cr: cr2, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi + Math.PI * 0.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI * 0.5, colorPhase: Math.PI },
+      { r: r3, b: b3, cr: cr3, baseY: SPIRAL_CENTER, wAmp: 130, wSpeed: 9e-5, wOff: initPhi + Math.PI * 1.5, breathAmp: 0, breathFreq: 0, breathPhase: 0, driftAmp: 0, driftFreq: 0, driftPhase: 0, depthPhase: Math.PI * 1.5, colorPhase: Math.PI * 1.5 },
     ];
 
+    // Color cycle speed — full cycle every ~25 s (slower than spin so the hue
+    // shift feels like a slow aurora rather than a strobe).
+    const COLOR_SPEED = Math.PI * 2 / 25000;
+
     // ── Pulse timing (JS-driven so order can be shuffled each round) ──────────
-    const CYCLE_MS = 18000; // full cycle length
-    const FILL_FRAC = 0.30;  // 0–30 %: head races right, tail fixed at start
-    const HOLD_FRAC = 0.20;  // 30–50 %: fully lit — hold (same duration as rest)
-    const DRAIN_FRAC = 0.30;  // 50–80 %: head fixed at end, tail catches up
-    //                           80–100 %: rest (invisible) = same 20 % as hold
+    const CYCLE_MS = 42000; // full cycle length
+    const FILL_FRAC = 0.38;  // 0–38 %: head sweeps right, tail fixed at start
+    const HOLD_FRAC = 0.14;  // 38–52 %: fully lit — hold
+    const DRAIN_FRAC = 0.38;  // 52–90 %: head fixed at end, tail catches up
+    //                           90–100 %: rest (invisible)
     // ViewBox width used for clipRect calculations
     const VB_W = 3000;
     const activeWaveCount = simpleMotion ? 2 : 4;
     // Offsets (ms) between waves within a round — shuffled each round
-    const OFFSET_POOL = [0, 150, 310, 500];
+    const OFFSET_POOL = [0, 200, 400, 600];
     const hardwareConcurrency = navigator.hardwareConcurrency || 8;
     const isLowPowerDevice = simpleMotion || hardwareConcurrency <= 4;
     const MAX_SIM_STEP_MS = isLowPowerDevice ? 30 : 24;
@@ -246,9 +200,9 @@ function AnimatedWaves() {
 
     function beginRound(baseTs) {
       roundBase = baseTs;
-      const offsets = shuffle(OFFSET_POOL);
+      // Fixed ordered stagger so the spiral direction is always consistent.
       for (let i = 0; i < cycleStarts.length; i++) {
-        cycleStarts[i] = baseTs + offsets[i];
+        cycleStarts[i] = baseTs + i * 200;
       }
     }
 
@@ -274,12 +228,47 @@ function AnimatedWaves() {
 
       for (let i = 0; i < activeWaveCount; i++) {
         const w = WAVES[i];
+        // Amplitude perspective: front strand tall waves, back strand nearly flat.
+        // This is the strongest 3D cue — a cylinder's near surface curves more than far.
+        const depth = Math.cos(w.wSpeed * simTime + w.depthPhase);
+        const td = (depth + 1) * 0.5; // 0 = fully back, 1 = fully front
+        // td² sharpens front/back color pop; td (linear) keeps back strands visible.
+        const tdC = td * td;
+        w.wAmp = 60 + 120 * td; // 60 (flat, back) → 180 (full depth, front)
+
         const d = buildPath(w, simTime);
         if (d !== prevPathD[i]) {
           if (w.b.current) w.b.current.setAttribute('d', d);
           if (w.r.current) w.r.current.setAttribute('d', d);
           prevPathD[i] = d;
         }
+
+        // Back floor = a real visible blue so thin back strands aren't dark slivers.
+        // Front color cycles through galaxy blue spectrum: deep blue → cyan → violet-blue.
+        // All channels keep blue dominant — never drifts outside the blue family.
+        const hue = COLOR_SPEED * simTime + w.colorPhase;
+        // R: 20–120 (low range — keeps color cool/blue, peaks at violet)
+        const FR = Math.round(70 + 50 * Math.sin(hue));
+        // G: 100–200 (mid range — peaks at cyan, offset ¼ cycle)
+        const FG = Math.round(150 + 60 * Math.sin(hue - Math.PI * 0.5));
+        // B: 220–255 (always very high — locks everything in the blue family)
+        const FB = Math.round(238 + 17 * Math.sin(hue + Math.PI * 0.25));
+        const BR = 40, BG = 80, BB = 180; // back: fixed medium blue
+        const cr = Math.round(BR + (FR - BR) * tdC);
+        const cg = Math.round(BG + (FG - BG) * tdC);
+        const cb = Math.round(BB + (FB - BB) * tdC);
+        const col = `rgb(${cr},${cg},${cb})`;
+        if (w.b.current) {
+          w.b.current.setAttribute('stroke', col);
+          w.b.current.setAttribute('stroke-width', (0.8 + 2.2 * td).toFixed(2));  // 0.8 → 3.0
+          w.b.current.setAttribute('opacity', (0.30 + 0.55 * td).toFixed(3)); // 0.30 → 0.85
+        }
+        if (w.r.current) {
+          w.r.current.setAttribute('stroke', col);
+          w.r.current.setAttribute('stroke-width', (1.5 + 5.5 * td).toFixed(2));  // 1.5 → 7.0
+          w.r.current.setAttribute('opacity', (0.30 + 0.70 * td).toFixed(3)); // 0.30 → 1.0
+        }
+
         if (!w.cr.current) continue;
 
         const elapsed = simTime - cycleStarts[i];
@@ -288,17 +277,20 @@ function AnimatedWaves() {
 
         if (elapsed >= 0) {
           const frac = Math.min(elapsed / CYCLE_MS, 1);
+          // smoothstep(x) = 3x²-2x³ — ease-in-out on fill and drain so the
+          // sweep accelerates from rest and decelerates into the hold/rest.
+          const ss = (x) => x * x * (3 - 2 * x);
           if (frac < FILL_FRAC) {
             // Fill: window grows rightward from start
             clipX = 0;
-            clipW = Math.round(VB_W * (frac / FILL_FRAC));
+            clipW = Math.round(VB_W * ss(frac / FILL_FRAC));
           } else if (frac < FILL_FRAC + HOLD_FRAC) {
             // Hold: fully lit
             clipX = 0;
             clipW = VB_W;
           } else if (frac < FILL_FRAC + HOLD_FRAC + DRAIN_FRAC) {
-            // Drain: left edge (tail) advances rightward, right edge stays fixed
-            const p = (frac - FILL_FRAC - HOLD_FRAC) / DRAIN_FRAC;
+            // Drain: tail catches up to right edge
+            const p = ss((frac - FILL_FRAC - HOLD_FRAC) / DRAIN_FRAC);
             clipX = Math.round(VB_W * p);
             clipW = VB_W - clipX;
           }
@@ -313,13 +305,14 @@ function AnimatedWaves() {
           clipCache.w = clipW;
         }
 
-        // Hide/show the scan overlay to skip SVG filter cost during rest phase.
+        // Show/hide scan via opacity (avoids visibility paint-pipeline flush).
+        // Set to 0 opacity when resting so the glow filter doesn't run.
         const isResting = clipW === 0;
         if (isResting && scanVisible[i] === 1) {
-          if (w.r.current) w.r.current.setAttribute('visibility', 'hidden');
+          if (w.r.current) w.r.current.style.opacity = '0';
           scanVisible[i] = 0;
         } else if (!isResting && scanVisible[i] === 0) {
-          if (w.r.current) w.r.current.setAttribute('visibility', 'visible');
+          if (w.r.current) w.r.current.style.removeProperty('opacity');
           scanVisible[i] = 1;
         }
       }
@@ -363,32 +356,22 @@ function AnimatedWaves() {
     <svg className="flowing-wave" viewBox="0 0 3000 1000" preserveAspectRatio="xMidYMid slice">
       <defs>
         <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(10,30,120,0)" />
-          <stop offset="15%" stopColor="rgba(20,80,200,0.3)" />
-          <stop offset="35%" stopColor="rgba(30,130,240,0.55)" />
-          <stop offset="50%" stopColor="rgba(50,160,255,0.65)" />
-          <stop offset="65%" stopColor="rgba(30,130,240,0.55)" />
-          <stop offset="85%" stopColor="rgba(20,80,200,0.3)" />
-          <stop offset="100%" stopColor="rgba(10,30,120,0)" />
+          <stop offset="0%" stopColor="rgba(30,130,240,0.55)" />
+          <stop offset="100%" stopColor="rgba(30,130,240,0.55)" />
         </linearGradient>
         <linearGradient id="wave-gradient-white" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="rgba(220,238,255,0)" />
-          <stop offset="15%" stopColor="rgba(220,238,255,0.32)" />
-          <stop offset="35%" stopColor="rgba(235,247,255,0.56)" />
-          <stop offset="50%" stopColor="rgba(245,252,255,0.68)" />
-          <stop offset="65%" stopColor="rgba(235,247,255,0.56)" />
-          <stop offset="85%" stopColor="rgba(220,238,255,0.32)" />
-          <stop offset="100%" stopColor="rgba(220,238,255,0)" />
+          <stop offset="0%" stopColor="rgba(235,247,255,0.56)" />
+          <stop offset="100%" stopColor="rgba(235,247,255,0.56)" />
         </linearGradient>
         {/* Scan glow: single-pass blur in absolute SVG coords (filterUnits="userSpaceOnUse").   */}
         {/* Using bbox-% would cover ~3500×500px per wave — far too much GPU work per frame.    */}
         {/* Wave sits at y≈500 ±152 SVG units → bound filter to y 320–680 (400px at 1080p).    */}
-        <filter id="wave-glow-scan" filterUnits="userSpaceOnUse" x="-40" y="280" width="3080" height="440" colorInterpolationFilters="sRGB">
+        <filter id="wave-glow-scan" filterUnits="userSpaceOnUse" x="-40" y="240" width="3080" height="520" colorInterpolationFilters="sRGB">
           <feGaussianBlur stdDeviation="10" result="blur1" />
           <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur2" />
           <feMerge><feMergeNode in="blur1" /><feMergeNode in="blur2" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <filter id="wave-glow-scan-lite" filterUnits="userSpaceOnUse" x="-30" y="300" width="3060" height="400" colorInterpolationFilters="sRGB">
+        <filter id="wave-glow-scan-lite" filterUnits="userSpaceOnUse" x="-30" y="260" width="3060" height="480" colorInterpolationFilters="sRGB">
           <feGaussianBlur stdDeviation="6" result="blur" />
           <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
@@ -397,26 +380,17 @@ function AnimatedWaves() {
         <clipPath id="scan-clip-1"><rect ref={cr1} x="0" y="-200" width="0" height="1400" /></clipPath>
         <clipPath id="scan-clip-2"><rect ref={cr2} x="0" y="-200" width="0" height="1400" /></clipPath>
         <clipPath id="scan-clip-3"><rect ref={cr3} x="0" y="-200" width="0" height="1400" /></clipPath>
-        {/* Per-line color-swap gradients: solid sections show the line's own colour,
-             gap sections fade to the opposite colour (white→blue, blue→white) */}
-        {waveMasks.map((stops, i) => (
-          <linearGradient key={i} id={`wfg-${i}`} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="3000" y2="0">
-            {stops.map((s, j) => (
-              <stop key={j} offset={`${(s.x / 3000 * 100).toFixed(3)}%`} stopColor={s.color} stopOpacity={s.o} />
-            ))}
-          </linearGradient>
-        ))}
       </defs>
       {/* Base lines – always visible; no SVG filter needed at 0.32 opacity (saves 4 blur passes/frame) */}
       <path ref={b0} d="" stroke="url(#wave-gradient-white)" strokeWidth="1.6" fill="none" className="wave-base" />
       <path ref={b1} d="" stroke="url(#wave-gradient-white)" strokeWidth="1.5" fill="none" className="wave-base wave-base-2" />
       {!simpleMotion && <path ref={b2} d="" stroke="url(#wave-gradient)" strokeWidth="1.5" fill="none" className="wave-base wave-base-3" />}
       {!simpleMotion && <path ref={b3} d="" stroke="url(#wave-gradient)" strokeWidth="1.6" fill="none" className="wave-base wave-base-4" />}
-      {/* Scan highlights – clipPath reveals only the dots inside the window */}
-      <path ref={r0} d="" stroke="url(#wfg-0)" strokeWidth="3.5" fill="none" className="wave-line" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-0)" />
-      <path ref={r1} d="" stroke="url(#wfg-1)" strokeWidth="3.2" fill="none" className="wave-line wave-line-2" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-1)" />
-      {!simpleMotion && <path ref={r2} d="" stroke="url(#wfg-2)" strokeWidth="3.2" fill="none" className="wave-line wave-line-3" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-2)" />}
-      {!simpleMotion && <path ref={r3} d="" stroke="url(#wfg-3)" strokeWidth="3.5" fill="none" className="wave-line wave-line-4" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-3)" />}
+      {/* Scan highlights – clipPath reveals only the window */}
+      <path ref={r0} d="" stroke="#eaf4ff" strokeWidth="3.5" fill="none" className="wave-line" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-0)" />
+      <path ref={r1} d="" stroke="#30b8ff" strokeWidth="3.2" fill="none" className="wave-line wave-line-2" filter={simpleMotion ? "url(#wave-glow-scan-lite)" : "url(#wave-glow-scan)"} clipPath="url(#scan-clip-1)" />
+      {!simpleMotion && <path ref={r2} d="" stroke="#2255dd" strokeWidth="3.2" fill="none" className="wave-line wave-line-3" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-2)" />}
+      {!simpleMotion && <path ref={r3} d="" stroke="#6633ff" strokeWidth="3.5" fill="none" className="wave-line wave-line-4" filter="url(#wave-glow-scan)" clipPath="url(#scan-clip-3)" />}
     </svg>
   );
 }

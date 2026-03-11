@@ -352,7 +352,9 @@ export default function TiltFlipCard({
   }, [animateLerp]);
 
   useEffect(() => {
-    if (!isExpanded) return;
+    // Unlock scroll immediately when the close animation begins (isReturning),
+    // rather than waiting the full 720 ms for isExpanded to clear.
+    if (!isExpanded || isReturning) return;
     const savedScrollY = window.scrollY;
     const onScroll = () => {
       window.scrollTo({ top: savedScrollY, behavior: "instant" });
@@ -363,7 +365,7 @@ export default function TiltFlipCard({
       window.removeEventListener("scroll", onScroll);
       document.documentElement.classList.remove("scroll-locked");
     };
-  }, [isExpanded]);
+  }, [isExpanded, isReturning]);
 
   const startLerpAnimation = useCallback(() => {
     if (!isAnimatingRef.current) {
@@ -507,7 +509,7 @@ export default function TiltFlipCard({
   const closeInspectView = useCallback(() => {
     if (!isExpanded || isReturning) return;
 
-    suppressGlobalPointer(320);
+    suppressGlobalPointer(200);
 
     window.clearTimeout(closeReturnTimerRef.current);
 
@@ -738,13 +740,13 @@ export default function TiltFlipCard({
   const handleBackdropPointerDown = useCallback((event) => {
     event.preventDefault();
     event.stopPropagation();
-    suppressGlobalPointer(420);
+    suppressGlobalPointer(200);
   }, []);
 
   const handleBackdropClick = useCallback((event) => {
     event.preventDefault();
     event.stopPropagation();
-    suppressGlobalPointer(420);
+    suppressGlobalPointer(200);
     closeInspectView();
   }, [closeInspectView]);
 

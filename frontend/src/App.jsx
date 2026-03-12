@@ -1,5 +1,5 @@
 import './App.css';
-import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Navbar from "./components/Navbar/Navbar";
@@ -10,47 +10,20 @@ import PageTransition from "./components/PageTransition";
 import SEO from "./components/SEO";
 import { shouldUseSimpleMotion } from "./utils/motionProfile";
 import WaveLines from "./components/WaveLines/WaveLines";
+import AppLoader from "./components/AppLoader/AppLoader";
+import DecorativeShapes from "./components/DecorativeShapes/DecorativeShapes";
+import {
+  BOOT_MIN_DELAY_MS,
+  BOOT_ASSET_TIMEOUT_MS,
+  BOOT_IMAGES,
+  ROUTE_PRELOADERS,
+  withTimeout,
+  preloadImage,
+} from "./utils/boot";
 
 const Home = lazy(() => import("./pages/Home/Home"));
 const Portfolio = lazy(() => import("./pages/Portfolio/Portfolio"));
 const About = lazy(() => import("./pages/About/About"));
-
-const BOOT_MIN_DELAY_MS = 420;
-const BOOT_ASSET_TIMEOUT_MS = 1800;
-const BOOT_IMAGES = ["modem.jpg", "headshot.jpg", "contact.png", "flipIcon.png"];
-const ROUTE_PRELOADERS = [
-  () => import("./pages/About/About"),
-  () => import("./pages/Portfolio/Portfolio")
-];
-
-function withTimeout(promise, timeoutMs) {
-  return Promise.race([
-    promise,
-    new Promise((resolve) => {
-      window.setTimeout(resolve, timeoutMs);
-    })
-  ]);
-}
-
-function preloadImage(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    let settled = false;
-    const done = () => {
-      if (!settled) {
-        settled = true;
-        resolve();
-      }
-    };
-    img.onload = done;
-    img.onerror = done;
-    img.src = src;
-
-    if (typeof img.decode === "function") {
-      img.decode().then(done).catch(done);
-    }
-  });
-}
 
 function RouteLoadingFallback({ label }) {
   return (
@@ -294,38 +267,7 @@ function App() {
             {showDecorations && <WaveLines />}
           </div>
 
-          <div className={`theme-bg ${showDecorations ? "is-ready" : ""} ${areShapesLocked ? "is-locked" : ""}`} aria-hidden="true">
-            {showDecorations && (
-              <>
-                <span className="orb orb-left" />
-                <span className="orb orb-nav-cut orb-nav-1" />
-                <span className="orb orb-nav-cut orb-nav-2" />
-                <span className="hexagon hex-1" />
-                <span className="hexagon hex-2" />
-                <span className="hexagon hex-5" />
-                <span className="hexagon hex-6" />
-                <span className="orb orb-3" />
-                <span className="orb orb-8" />
-                <span className="floating-plus plus-1" />
-                <span className="floating-plus plus-4" />
-                <span className="floating-plus plus-6" />
-              </>
-            )}
-          </div>
-
-          <div className={`theme-bg-footer ${showDecorations ? "is-ready" : "is-deferred"} ${areShapesLocked ? "is-locked" : ""}`} aria-hidden="true">
-            {showDecorations && (
-              <>
-                <span className="beam beam-two" />
-                <span className="hexagon hex-3" />
-                <span className="hexagon hex-4" />
-                <span className="hexagon hex-7" />
-                <span className="hexagon hex-8" />
-                <span className="orb orb-10" />
-                <span className="floating-plus plus-7" />
-              </>
-            )}
-          </div>
+          <DecorativeShapes show={showDecorations} isLocked={areShapesLocked} />
 
           <Navbar />
 
@@ -375,17 +317,7 @@ function App() {
           <Footer />
         </div>
 
-        {showLoader && (
-          <div
-            className={`app-loader ${isLoaderExiting ? "is-exiting" : ""}`}
-            role="status"
-            aria-live="polite"
-            aria-busy={!canRevealApp}
-          >
-            <div className="app-loader-mark" aria-hidden="true" />
-            <p className="app-loader-text">Loading experience...</p>
-          </div>
-        )}
+        <AppLoader show={showLoader} isExiting={isLoaderExiting} canRevealApp={canRevealApp} />
       </>
     </ErrorBoundary>
   );

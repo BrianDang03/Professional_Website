@@ -43,9 +43,8 @@ function App() {
 
           <div className={`wave-bg ${showDecorations ? "is-ready" : "is-deferred"}`} aria-hidden="true">
             {showDecorations && !simpleMotion && <WaveLines />}
+            <DecorativeShapes show={showDecorations} isLocked={areShapesLocked} />
           </div>
-
-          <DecorativeShapes show={showDecorations} isLocked={areShapesLocked} />
 
           <Navbar />
 

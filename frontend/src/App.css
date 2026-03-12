@@ -45,7 +45,7 @@
         radial-gradient(circle at 88% 72%, rgba(82, 150, 245, 0.32), transparent 44%),
         radial-gradient(circle at 50% 36%, rgba(102, 170, 255, 0.2), transparent 46%),
         linear-gradient(180deg, #dbe9ff 0%, #eef5ff 52%, #e3eeff 100%);
-    background-size: 360px 360px, 360px 360px, 360px 360px, 360px 360px, auto, auto, auto, auto;
+    background-size: 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, auto, auto, auto, auto;
     background-attachment: fixed;
 }
 
@@ -160,7 +160,7 @@ body {
         radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.22), transparent 35%),
         radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.18), transparent 38%),
         linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
-    background-size: 360px 360px, 360px 360px, 360px 360px, 360px 360px, auto, auto, auto;
+    background-size: 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, auto, auto, auto;
     background-attachment: fixed;
     color: var(--text-main);
     overflow-x: hidden;

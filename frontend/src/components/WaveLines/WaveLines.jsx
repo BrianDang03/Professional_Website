@@ -1,54 +1,55 @@
 import { useEffect, useState } from 'react';
 import './WaveLines.css';
 
-// ── Path geometry helpers ─────────────────────────────────────────────────
-// Wave paths are generated relative to the actual viewport dimensions so the
-// visual appearance (amplitude, frequency, diagonal angle) is identical on
-// every screen size and orientation.
+// ── Wuthering Waves–inspired energy streams ───────────────────────────────
 //
-//   y(x)  = startY + slope·x + amp·sin(x·scale + phase)
-//   dy/dx = slope  + amp·cos(x·scale + phase)·scale
-// Cubic Bezier hermite conversion guarantees C1-continuity at every anchor.
+// Design language:
+//   • Three layered "currents": deep background haze, mid-field energy band,
+//     and foreground wisps — mimicking the depth of WW's resonance streams
+//   • Two color families: icy blue-white (primary) + soft teal (accent)
+//   • All streams flow upper-left → lower-right like wind across a landscape
+//   • 0.5 cycles per line = one clean arc sweeping through the middle
+//   • Dual glow filters: a wide haze for depth + tight bloom for brightness
+//
+// startYR / endYR = fraction of viewport height from the TOP (0 = top edge).
 
-const NUM_SEGS = 14;   // more segments keeps curves smooth at all sizes
-const NUM_CYCLES = 1.0; // exactly 1 cycle → each line makes one clear arch OR bowl
-
-// 10 lines all flowing from the left-middle area to the right-middle area.
-// Lines alternate between concave-down (arch, phase≈0) and concave-up (bowl, phase≈PI)
-// so adjacent lines curve in opposite directions.  Intertwining pairs share the same
-// baseline diagonal but are inverted — they cross ~twice across the viewport.
+const NUM_SEGS = 16;
 const PI = Math.PI;
-const LINE_CONFIGS = [
-    // ── upper accent, arch (concave down) ───────────────────────────────
-    { startYR: 0.06, endYR: 0.56, ampR: 0.050, phase: 0,          opacity: 0.30, strokeWidth: 0.9 },
 
-    // ── upper intertwining pair: arch + bowl ────────────────────────────
-    { startYR: 0.14, endYR: 0.64, ampR: 0.065, phase: 0,          opacity: 0.55, strokeWidth: 1.4 },
-    { startYR: 0.14, endYR: 0.64, ampR: 0.065, phase: PI,         opacity: 0.44, strokeWidth: 1.2 },
+// ── Stream definitions ────────────────────────────────────────────────────
+// All streams share phase=0 so every arc bows DOWNWARD with peak at x=50%.
+// Large ampR (0.27–0.32) creates the sweeping curve seen in the reference.
+// Lines enter near the top-left and exit at the right-middle, forming
+// one tight flowing band — the arc bottom sits around 60–70% screen height.
+const STREAMS = [
+    // Layer A: background haze
+    { startYR: 0.28, endYR: 0.55, ampR: 0.07,  cycles: 1.5, phase: 0,          color: 'blue',  opacity: 0.18, width: 0.70 },
+    { startYR: 0.32, endYR: 0.58, ampR: 0.08,  cycles: 1.5, phase: PI * 0.5,   color: 'teal',  opacity: 0.15, width: 0.65 },
+    { startYR: 0.38, endYR: 0.62, ampR: 0.075, cycles: 1.5, phase: PI,          color: 'blue',  opacity: 0.16, width: 0.65 },
+    { startYR: 0.44, endYR: 0.67, ampR: 0.08,  cycles: 1.5, phase: PI * 1.5,   color: 'teal',  opacity: 0.14, width: 0.60 },
 
-    // ── upper-center solo bowl (concave up) ─────────────────────────────
-    { startYR: 0.21, endYR: 0.71, ampR: 0.040, phase: PI,         opacity: 0.35, strokeWidth: 1.0 },
+    // Layer B: main energy band
+    { startYR: 0.30, endYR: 0.56, ampR: 0.09,  cycles: 1.5, phase: 0,          color: 'blue',  opacity: 0.52, width: 1.4  },
+    { startYR: 0.33, endYR: 0.58, ampR: 0.095, cycles: 1.5, phase: PI * 0.4,   color: 'white', opacity: 0.44, width: 1.2  },
+    { startYR: 0.35, endYR: 0.60, ampR: 0.10,  cycles: 1.5, phase: PI,          color: 'blue',  opacity: 0.55, width: 1.5  },
+    { startYR: 0.38, endYR: 0.62, ampR: 0.085, cycles: 1.5, phase: PI * 0.6,   color: 'teal',  opacity: 0.40, width: 1.1  },
+    { startYR: 0.41, endYR: 0.65, ampR: 0.095, cycles: 1.5, phase: PI * 1.2,   color: 'blue',  opacity: 0.48, width: 1.3  },
+    { startYR: 0.44, endYR: 0.68, ampR: 0.08,  cycles: 1.5, phase: PI * 0.8,   color: 'white', opacity: 0.35, width: 1.0  },
 
-    // ── center intertwining pair: bowl + arch ────────────────────────────
-    { startYR: 0.27, endYR: 0.77, ampR: 0.068, phase: PI,         opacity: 0.55, strokeWidth: 1.4 },
-    { startYR: 0.27, endYR: 0.77, ampR: 0.068, phase: 0,          opacity: 0.45, strokeWidth: 1.2 },
-
-    // ── lower-center solo arch (concave down) ───────────────────────────
-    { startYR: 0.34, endYR: 0.84, ampR: 0.040, phase: 0,          opacity: 0.32, strokeWidth: 1.0 },
-
-    // ── lower intertwining pair: arch + bowl ────────────────────────────
-    { startYR: 0.40, endYR: 0.90, ampR: 0.062, phase: 0,          opacity: 0.50, strokeWidth: 1.3 },
-    { startYR: 0.40, endYR: 0.90, ampR: 0.062, phase: PI,         opacity: 0.38, strokeWidth: 1.1 },
-
-    // ── lower accent, bowl (concave up) ─────────────────────────────────
-    { startYR: 0.48, endYR: 0.98, ampR: 0.048, phase: PI,         opacity: 0.28, strokeWidth: 0.9 },
+    // Layer C: foreground wisps
+    { startYR: 0.31, endYR: 0.57, ampR: 0.10,  cycles: 1.5, phase: PI * 0.2,   color: 'white', opacity: 0.60, width: 0.90 },
+    { startYR: 0.34, endYR: 0.59, ampR: 0.095, cycles: 1.5, phase: PI * 0.9,   color: 'blue',  opacity: 0.52, width: 0.85 },
+    { startYR: 0.37, endYR: 0.62, ampR: 0.09,  cycles: 1.5, phase: PI * 0.3,   color: 'teal',  opacity: 0.45, width: 0.80 },
+    { startYR: 0.42, endYR: 0.66, ampR: 0.10,  cycles: 1.5, phase: PI * 1.1,   color: 'white', opacity: 0.38, width: 0.75 },
 ];
 
-function buildPath({ startYR, endYR, ampR, phase }, vbW, vbH) {
+const GRAD = { blue: 'wl-grad-blue', teal: 'wl-grad-teal', white: 'wl-grad-white' };
+
+function buildPath({ startYR, endYR, ampR, cycles, phase }, vbW, vbH) {
     const startY = startYR * vbH;
     const endY   = endYR   * vbH;
     const amp    = ampR    * vbH;
-    const scale  = (Math.PI * 2 * NUM_CYCLES) / vbW;
+    const scale  = (PI * 2 * cycles) / vbW;
     const segW   = vbW / NUM_SEGS;
     const segCp  = segW / 3;
     const slope  = (endY - startY) / vbW;
@@ -67,25 +68,15 @@ function buildPath({ startYR, endYR, ampR, phase }, vbW, vbH) {
 }
 
 export default function WaveLines() {
-    // Track the real viewport size so paths are generated for the exact screen.
-    // This ensures wave amplitude, frequency, and diagonal look identical on
-    // desktop, tablet, and mobile (portrait & landscape).
-    const [dims, setDims] = useState({
-        w: window.innerWidth,
-        h: window.innerHeight,
-    });
+    const [dims, setDims] = useState({ w: window.innerWidth, h: window.innerHeight });
 
     useEffect(() => {
-        function update() {
-            setDims({ w: window.innerWidth, h: window.innerHeight });
-        }
+        function update() { setDims({ w: window.innerWidth, h: window.innerHeight }); }
         window.addEventListener('resize', update, { passive: true });
         return () => window.removeEventListener('resize', update);
     }, []);
 
     const { w: vbW, h: vbH } = dims;
-    const filterX2 = vbW + 80;
-    const filterY2 = vbH + 400;
 
     return (
         <svg
@@ -95,31 +86,94 @@ export default function WaveLines() {
             aria-hidden="true"
         >
             <defs>
-                <filter id="wl-glow" filterUnits="userSpaceOnUse" x="-40" y="-200" width={filterX2} height={filterY2} colorInterpolationFilters="sRGB">
-                    <feGaussianBlur stdDeviation="6" result="blur" />
+                {/* Wide bloom: outer glow halo around each stream */}
+                <filter id="wl-bloom" filterUnits="userSpaceOnUse"
+                    x="-5%" y={-vbH * 0.35} width="110%" height={vbH * 1.7}
+                    colorInterpolationFilters="sRGB">
+                    <feGaussianBlur stdDeviation="7" result="halo" />
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="core" />
+                    <feMerge>
+                        <feMergeNode in="halo" />
+                        <feMergeNode in="core" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+
+                {/* Soft haze: background depth blur only */}
+                <filter id="wl-haze" filterUnits="userSpaceOnUse"
+                    x="-5%" y={-vbH * 0.2} width="110%" height={vbH * 1.4}
+                    colorInterpolationFilters="sRGB">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
                     <feMerge>
                         <feMergeNode in="blur" />
                         <feMergeNode in="SourceGraphic" />
                     </feMerge>
                 </filter>
-                <linearGradient id="wl-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="rgba(180,220,255,0)" />
-                    <stop offset="15%" stopColor="rgba(180,220,255,1)" />
-                    <stop offset="85%" stopColor="rgba(180,220,255,1)" />
-                    <stop offset="100%" stopColor="rgba(180,220,255,0)" />
+
+                {/* Icy blue-white — primary resonance color */}
+                <linearGradient id="wl-grad-blue" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stopColor="rgba(140,200,255,0)" />
+                    <stop offset="10%"  stopColor="rgba(165,218,255,0.9)" />
+                    <stop offset="50%"  stopColor="rgba(195,232,255,1)" />
+                    <stop offset="90%"  stopColor="rgba(165,218,255,0.9)" />
+                    <stop offset="100%" stopColor="rgba(140,200,255,0)" />
+                </linearGradient>
+
+                {/* Pure white core — brightest wisp highlights */}
+                <linearGradient id="wl-grad-white" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stopColor="rgba(215,235,255,0)" />
+                    <stop offset="10%"  stopColor="rgba(232,244,255,0.88)" />
+                    <stop offset="50%"  stopColor="rgba(248,252,255,1)" />
+                    <stop offset="90%"  stopColor="rgba(232,244,255,0.88)" />
+                    <stop offset="100%" stopColor="rgba(215,235,255,0)" />
+                </linearGradient>
+
+                {/* Soft teal — secondary accent for depth variation */}
+                <linearGradient id="wl-grad-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stopColor="rgba(90,210,195,0)" />
+                    <stop offset="10%"  stopColor="rgba(115,222,210,0.82)" />
+                    <stop offset="50%"  stopColor="rgba(138,232,220,1)" />
+                    <stop offset="90%"  stopColor="rgba(115,222,210,0.82)" />
+                    <stop offset="100%" stopColor="rgba(90,210,195,0)" />
                 </linearGradient>
             </defs>
 
-            {LINE_CONFIGS.map((cfg, i) => (
-                <path
-                    key={i}
-                    d={buildPath(cfg, vbW, vbH)}
+            {/* Layer A — background haze */}
+            {STREAMS.slice(0, 4).map((s, i) => (
+                <path key={`a${i}`}
+                    d={buildPath(s, vbW, vbH)}
                     fill="none"
-                    stroke="url(#wl-grad)"
-                    strokeWidth={cfg.strokeWidth}
+                    stroke={`url(#${GRAD[s.color]})`}
+                    strokeWidth={s.width}
                     strokeLinecap="round"
-                    opacity={cfg.opacity}
-                    filter="url(#wl-glow)"
+                    opacity={s.opacity}
+                    filter="url(#wl-haze)"
+                />
+            ))}
+
+            {/* Layer B — mid-field energy band */}
+            {STREAMS.slice(4, 10).map((s, i) => (
+                <path key={`b${i}`}
+                    d={buildPath(s, vbW, vbH)}
+                    fill="none"
+                    stroke={`url(#${GRAD[s.color]})`}
+                    strokeWidth={s.width}
+                    strokeLinecap="round"
+                    opacity={s.opacity}
+                    filter="url(#wl-bloom)"
+                />
+            ))}
+
+            {/* Layer C — foreground wisps */}
+            {STREAMS.slice(10).map((s, i) => (
+                <path key={`c${i}`}
+                    d={buildPath(s, vbW, vbH)}
+                    fill="none"
+                    stroke={`url(#${GRAD[s.color]})`}
+                    strokeWidth={s.width}
+                    strokeLinecap="round"
+                    opacity={s.opacity}
+                    filter="url(#wl-bloom)"
                 />
             ))}
         </svg>

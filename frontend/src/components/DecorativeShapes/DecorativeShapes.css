@@ -434,6 +434,24 @@
     top: auto;
 }
 
+/* On coarse-pointer devices each orb backdrop-filter adds a GPU compositor
+   layer. Strip the blur and rely on the solid opaque fill instead. */
+@media (pointer: coarse) {
+    .orb {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
+/* Respect reduced-motion: show shapes immediately without entrance translate. */
+@media (prefers-reduced-motion: reduce) {
+    .orb,
+    .floating-plus {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+}
+
 /* ── Light theme overrides ───────────────────────────────────────────────────*/
 [data-theme="light"] .orb {
     border-color: rgba(60, 100, 220, 0.25);

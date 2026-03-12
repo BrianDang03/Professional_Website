@@ -85,7 +85,9 @@
     color: #c62828;
 }
 
-@media (max-width: 640px) {
+/* 16px minimum prevents iOS Safari from auto-zooming focused inputs.
+   Covers phones, phablets, and tablets up to iPad landscape. */
+@media (max-width: 900px) {
 
     .form-group input,
     .form-group textarea {

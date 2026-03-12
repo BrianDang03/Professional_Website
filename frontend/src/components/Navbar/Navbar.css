@@ -112,8 +112,8 @@
 .nav-menu-btn {
     position: relative;
     z-index: var(--z-nav-btn);
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border: 1px solid rgba(255, 255, 255, 0.26);
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.08);
@@ -183,6 +183,20 @@
 [data-theme="light"] .site-header {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.16));
     border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+/* On coarse-pointer (touch) devices, backdrop-filter on the sticky header
+   forces a repaint on every scroll frame. Replace with a solid background. */
+@media (pointer: coarse) {
+    .site-header {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background: rgba(13, 18, 26, 0.94);
+    }
+
+    [data-theme="light"] .site-header {
+        background: rgba(248, 250, 253, 0.97);
+    }
 }
 
 [data-theme="light"] .nav-cta {
@@ -264,8 +278,8 @@
         right: 0;
         z-index: var(--z-nav-panel);
         width: min(84vw, 320px);
-        min-height: 100vh;
         height: 100dvh;
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
         gap: 0.9rem;
@@ -290,6 +304,9 @@
 
     .nav-panel .nav-link {
         padding: 0.72rem 0.86rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
         font-size: 0.9rem;
         border-radius: 12px;
     }

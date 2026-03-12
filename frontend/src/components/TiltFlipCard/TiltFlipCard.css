@@ -33,7 +33,7 @@
   perspective-origin: center center;
   cursor: pointer;
   user-select: none;
-  touch-action: pan-y;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-drag: none;
   opacity: 0;
@@ -545,5 +545,23 @@
     box-shadow:
       var(--shadow-x, 0px) var(--shadow-y, 0px) var(--shadow-blur, 20px) rgba(0, 0, 0, 0.24),
       0 calc(var(--hover, 0) * 18px) calc(var(--hover, 0) * 24px) rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tfc-scene {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .tfc-backdrop {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .tfc-close-btn {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

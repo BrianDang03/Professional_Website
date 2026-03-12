@@ -121,6 +121,11 @@ body {
         background: linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
         background-attachment: scroll;
     }
+
+    [data-theme="light"] body {
+        background: linear-gradient(180deg, #dde6f7 0%, #e8f0fb 54%, #d8e3f5 100%);
+        background-attachment: scroll;
+    }
 }
 
 /* Light theme body — mirror the dark mode structure but invert the colours:
@@ -176,6 +181,13 @@ body.has-modal .main-content {
 
 .app-root-enter {
     animation: app-root-reveal 160ms ease-out 150ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-root-enter {
+        animation: none;
+        opacity: 1;
+    }
 }
 
 @keyframes app-root-reveal {

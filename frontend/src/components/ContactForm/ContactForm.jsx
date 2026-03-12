@@ -67,6 +67,7 @@ export default function ContactForm() {
                     type="text"
                     id="name"
                     name="name"
+                    autoComplete="name"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -80,6 +81,7 @@ export default function ContactForm() {
                     type="email"
                     id="email"
                     name="email"
+                    autoComplete="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -93,6 +95,7 @@ export default function ContactForm() {
                     type="text"
                     id="subject"
                     name="subject"
+                    autoComplete="off"
                     value={formData.subject}
                     onChange={handleChange}
                     required

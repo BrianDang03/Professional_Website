@@ -23,24 +23,24 @@ const PI = Math.PI;
 // one tight flowing band — the arc bottom sits around 60–70% screen height.
 const STREAMS = [
     // Layer A: background haze
-    { startYR: 0.28, endYR: 0.55, ampR: 0.07,  cycles: 1.5, phase: 0,          color: 'blue',  opacity: 0.18, width: 0.70 },
-    { startYR: 0.32, endYR: 0.58, ampR: 0.08,  cycles: 1.5, phase: PI * 0.5,   color: 'teal',  opacity: 0.15, width: 0.65 },
-    { startYR: 0.38, endYR: 0.62, ampR: 0.075, cycles: 1.5, phase: PI,          color: 'blue',  opacity: 0.16, width: 0.65 },
-    { startYR: 0.44, endYR: 0.67, ampR: 0.08,  cycles: 1.5, phase: PI * 1.5,   color: 'teal',  opacity: 0.14, width: 0.60 },
+    { startYR: 0.30, endYR: 0.65, ampR: 0.07,  cycles: 1.5, phase: 0,          color: 'blue',  opacity: 0.18, width: 0.70 },
+    { startYR: 0.34, endYR: 0.68, ampR: 0.08,  cycles: 1.5, phase: PI * 0.5,   color: 'teal',  opacity: 0.15, width: 0.65 },
+    { startYR: 0.40, endYR: 0.72, ampR: 0.075, cycles: 1.5, phase: PI,          color: 'blue',  opacity: 0.16, width: 0.65 },
+    { startYR: 0.46, endYR: 0.77, ampR: 0.08,  cycles: 1.5, phase: PI * 1.5,   color: 'teal',  opacity: 0.14, width: 0.60 },
 
     // Layer B: main energy band
-    { startYR: 0.30, endYR: 0.56, ampR: 0.09,  cycles: 1.5, phase: 0,          color: 'blue',  opacity: 0.52, width: 1.4  },
-    { startYR: 0.33, endYR: 0.58, ampR: 0.095, cycles: 1.5, phase: PI * 0.4,   color: 'white', opacity: 0.44, width: 1.2  },
-    { startYR: 0.35, endYR: 0.60, ampR: 0.10,  cycles: 1.5, phase: PI,          color: 'blue',  opacity: 0.55, width: 1.5  },
-    { startYR: 0.38, endYR: 0.62, ampR: 0.085, cycles: 1.5, phase: PI * 0.6,   color: 'teal',  opacity: 0.40, width: 1.1  },
-    { startYR: 0.41, endYR: 0.65, ampR: 0.095, cycles: 1.5, phase: PI * 1.2,   color: 'blue',  opacity: 0.48, width: 1.3  },
-    { startYR: 0.44, endYR: 0.68, ampR: 0.08,  cycles: 1.5, phase: PI * 0.8,   color: 'white', opacity: 0.35, width: 1.0  },
+    { startYR: 0.32, endYR: 0.66, ampR: 0.09,  cycles: 1.5, phase: 0,          color: 'blue',  opacity: 0.52, width: 1.4  },
+    { startYR: 0.35, endYR: 0.68, ampR: 0.095, cycles: 1.5, phase: PI * 0.4,   color: 'white', opacity: 0.44, width: 1.2  },
+    { startYR: 0.37, endYR: 0.70, ampR: 0.10,  cycles: 1.5, phase: PI,          color: 'blue',  opacity: 0.55, width: 1.5  },
+    { startYR: 0.40, endYR: 0.72, ampR: 0.085, cycles: 1.5, phase: PI * 0.6,   color: 'teal',  opacity: 0.40, width: 1.1  },
+    { startYR: 0.43, endYR: 0.75, ampR: 0.095, cycles: 1.5, phase: PI * 1.2,   color: 'blue',  opacity: 0.48, width: 1.3  },
+    { startYR: 0.46, endYR: 0.78, ampR: 0.08,  cycles: 1.5, phase: PI * 0.8,   color: 'white', opacity: 0.35, width: 1.0  },
 
     // Layer C: foreground wisps
-    { startYR: 0.31, endYR: 0.57, ampR: 0.10,  cycles: 1.5, phase: PI * 0.2,   color: 'white', opacity: 0.60, width: 0.90 },
-    { startYR: 0.34, endYR: 0.59, ampR: 0.095, cycles: 1.5, phase: PI * 0.9,   color: 'blue',  opacity: 0.52, width: 0.85 },
-    { startYR: 0.37, endYR: 0.62, ampR: 0.09,  cycles: 1.5, phase: PI * 0.3,   color: 'teal',  opacity: 0.45, width: 0.80 },
-    { startYR: 0.42, endYR: 0.66, ampR: 0.10,  cycles: 1.5, phase: PI * 1.1,   color: 'white', opacity: 0.38, width: 0.75 },
+    { startYR: 0.33, endYR: 0.67, ampR: 0.10,  cycles: 1.5, phase: PI * 0.2,   color: 'white', opacity: 0.60, width: 0.90 },
+    { startYR: 0.36, endYR: 0.69, ampR: 0.095, cycles: 1.5, phase: PI * 0.9,   color: 'blue',  opacity: 0.52, width: 0.85 },
+    { startYR: 0.39, endYR: 0.72, ampR: 0.09,  cycles: 1.5, phase: PI * 0.3,   color: 'teal',  opacity: 0.45, width: 0.80 },
+    { startYR: 0.44, endYR: 0.76, ampR: 0.10,  cycles: 1.5, phase: PI * 1.1,   color: 'white', opacity: 0.38, width: 0.75 },
 ];
 
 const GRAD = { blue: 'wl-grad-blue', teal: 'wl-grad-teal', white: 'wl-grad-white' };

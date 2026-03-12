@@ -85,7 +85,6 @@ img {
 html {
     height: 100%;
     background-color: var(--bg-0);
-    overflow-y: scroll;
     scrollbar-gutter: stable;
 }
 
@@ -94,7 +93,7 @@ body {
     min-height: 100%;
     font-family: "Manrope", "Segoe UI", sans-serif;
     color: var(--text-main);
-    overflow-x: hidden;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background:
@@ -149,7 +148,7 @@ body {
 }
 
 .app-root-enter {
-    animation: app-root-reveal 160ms ease-out both;
+    animation: app-root-reveal 160ms ease-out 150ms both;
 }
 
 @keyframes app-root-reveal {

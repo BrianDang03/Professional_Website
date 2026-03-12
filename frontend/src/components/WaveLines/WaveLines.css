@@ -32,6 +32,10 @@
     filter: contrast(1.34) saturate(0.86) brightness(0.5);
 }
 
+[data-theme="light"] .wl-base path {
+    stroke: rgba(0, 0, 0, 0.45);
+}
+
 /* Baseline — no glow, no gradient, just dim static traces.
    Sweeps in left-to-right with a stagger matching the main lines. */
 .wl-base path {

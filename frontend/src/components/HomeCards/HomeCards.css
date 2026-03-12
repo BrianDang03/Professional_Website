@@ -43,6 +43,10 @@
     box-shadow: var(--shadow-deep);
 }
 
+[data-theme="light"] .tilt-card-fallback {
+    border-color: var(--line-soft);
+}
+
 .card-copy-front h3,
 .card-copy-back h3 {
     font-family: "Cinzel", "Times New Roman", serif;

@@ -98,13 +98,13 @@ body {
     -moz-osx-font-smoothing: grayscale;
     background:
         /* Dot stars — tiny 1px radials tiled across the viewport */
-        radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 0.70) 1px, transparent 2px),
-        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.65) 1px, transparent 2px),
-        radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 0.70) 1px, transparent 2px),
-        radial-gradient(circle at 32% 68%, rgba(255, 255, 255, 0.65) 1px, transparent 2px),
+        radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 1.00) 1px, transparent 2px),
+        radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.95) 1px, transparent 2px),
+        radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 1.00) 1px, transparent 2px),
+        radial-gradient(circle at 32% 68%, rgba(255, 255, 255, 0.95) 1px, transparent 2px),
         /* Ambient glow — soft bloom spots anchored to the viewport */
-        radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.22), transparent 35%),
-        radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.18), transparent 38%),
+        radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.16), transparent 40%),
+        radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.13), transparent 42%),
         /* Base gradient */
         linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
     /* Dot stars tile at 18.75vw × 33.33vh; glows + gradient fill naturally */
@@ -121,6 +121,26 @@ body {
         background: linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
         background-attachment: scroll;
     }
+}
+
+/* Light theme body — mirror the dark mode structure but invert the colours:
+   dot particles become dark specks, ambient glows become soft indigo/blue blooms,
+   base gradient stays in the light palette. Wins over both the default body rule
+   and the mobile @media rule via higher specificity (0,1,1 vs 0,0,1). */
+[data-theme="light"] body {
+    background:
+        /* Dot particles — blue-tinted specks tiled across the viewport */
+        radial-gradient(circle at 20% 25%, rgba(60, 90, 200, 0.55) 1px, transparent 2px),
+        radial-gradient(circle at 70% 40%, rgba(60, 90, 200, 0.50) 1px, transparent 2px),
+        radial-gradient(circle at 90% 75%, rgba(60, 90, 200, 0.55) 1px, transparent 2px),
+        radial-gradient(circle at 32% 68%, rgba(60, 90, 200, 0.50) 1px, transparent 2px),
+        /* Ambient glow — strong indigo/blue bloom spots */
+        radial-gradient(circle at 18% 10%, rgba(80, 120, 240, 0.50), transparent 45%),
+        radial-gradient(circle at 88% 72%, rgba(60, 100, 220, 0.42), transparent 48%),
+        /* Base gradient — light blue tint */
+        linear-gradient(180deg, #dde6f7 0%, #e8f0fb 54%, #d8e3f5 100%);
+    background-size: 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, auto, auto, auto;
+    background-attachment: fixed;
 }
 
 /* ── App Root ────────────────────────────────────────────────────────────────
@@ -199,6 +219,13 @@ body {
         max-width: min(1000px, 100%);
         padding: clamp(2rem, 3vw, 3rem);
     }
+}
+
+/* In light mode the white border and white-tint gradient overlay are invisible
+   against the light surface. Use the theme border token and a clean solid fill. */
+[data-theme="light"] .page-shell {
+    border-color: var(--line-soft);
+    background: var(--surface);
 }
 
 .page-shell h1 {

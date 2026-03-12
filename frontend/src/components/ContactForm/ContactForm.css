@@ -38,6 +38,7 @@
 
 [data-theme="light"] .form-group input:focus,
 [data-theme="light"] .form-group textarea:focus {
+    background: rgba(0, 0, 0, 0.04);
     box-shadow: 0 0 0 3px rgba(26, 45, 67, 0.1);
 }
 
@@ -74,6 +75,14 @@
     background: rgba(244, 67, 54, 0.15);
     border: 1px solid rgba(244, 67, 54, 0.4);
     color: #ef9a9a;
+}
+
+[data-theme="light"] .form-status.success {
+    color: #2e7d32;
+}
+
+[data-theme="light"] .form-status.error {
+    color: #c62828;
 }
 
 @media (max-width: 640px) {

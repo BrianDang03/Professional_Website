@@ -60,3 +60,13 @@
         box-shadow: none;
     }
 }
+
+/* In light mode the white-overlay gradient backgrounds are invisible.
+   Switch to a subtle dark-tint gradient that reads against the light page. */
+[data-theme="light"] .skill-tag {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.03));
+}
+
+[data-theme="light"] .skill-tag:hover {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.05));
+}

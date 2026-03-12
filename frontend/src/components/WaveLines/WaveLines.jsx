@@ -11,16 +11,18 @@ import './WaveLines.css';
 // Cubic Bezier hermite conversion guarantees C1-continuity at every anchor.
 
 const NUM_SEGS = 12;   // segments per path (more = smoother on tall viewports)
-const NUM_CYCLES = 2;  // sine cycles across the full viewport width
+const NUM_CYCLES = 1.5; // fewer cycles = longer wavelength = gentler flow
 
-// Line configs expressed as fractions of viewport height so the proportions
-// are pixel-identical on every screen size and orientation.
+// Five parallel lines flowing from upper-left-middle to lower-right-middle.
+// Center line crosses from 25 % down on the left to 75 % down on the right.
+// Each adjacent line is offset ±0.07 above/below that center diagonal.
+// ampR values are kept small so the undulation feels like a soft drift.
 const LINE_CONFIGS = [
-    { startYR: -0.12, endYR: 1.00, ampR: 0.055, phase: 0, opacity: 0.55, strokeWidth: 1.4 },
-    { startYR: -0.06, endYR: 1.06, ampR: 0.068, phase: 0, opacity: 0.45, strokeWidth: 1.2 },
-    { startYR:  0,    endYR: 1.12, ampR: 0.072, phase: 0, opacity: 0.50, strokeWidth: 1.3 },
-    { startYR:  0.06, endYR: 1.18, ampR: 0.068, phase: 0, opacity: 0.40, strokeWidth: 1.2 },
-    { startYR:  0.12, endYR: 1.24, ampR: 0.055, phase: 0, opacity: 0.35, strokeWidth: 1.1 },
+    { startYR: 0.11, endYR: 0.61, ampR: 0.030, phase: 0, opacity: 0.55, strokeWidth: 1.4 },
+    { startYR: 0.18, endYR: 0.68, ampR: 0.038, phase: 0, opacity: 0.45, strokeWidth: 1.2 },
+    { startYR: 0.25, endYR: 0.75, ampR: 0.040, phase: 0, opacity: 0.50, strokeWidth: 1.3 },
+    { startYR: 0.32, endYR: 0.82, ampR: 0.038, phase: 0, opacity: 0.40, strokeWidth: 1.2 },
+    { startYR: 0.39, endYR: 0.89, ampR: 0.030, phase: 0, opacity: 0.35, strokeWidth: 1.1 },
 ];
 
 function buildPath({ startYR, endYR, ampR, phase }, vbW, vbH) {

@@ -1,3 +1,5 @@
+import './DecorativeShapes.css';
+
 // Decorative background shapes — orbs, beams, and floating-plus signs.
 // Split into two containers so the main shapes scroll with the page while
 // the footer shapes stay anchored near the bottom.

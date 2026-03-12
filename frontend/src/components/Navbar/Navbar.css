@@ -88,7 +88,9 @@
     transform: translateY(-1px);
 }
 
-@media (hover: none), (pointer: coarse) {
+@media (hover: none),
+(pointer: coarse) {
+
     /* Sticky hover: iOS/Android fire :hover on scroll-touch and it stays stuck.
        Reset ALL visual hover changes so no element highlights while scrolling. */
     .nav-link:hover {
@@ -175,6 +177,69 @@
     .nav-links {
         flex-wrap: wrap;
     }
+}
+
+/* Light theme overrides */
+[data-theme="light"] .site-header {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.16));
+    border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .nav-cta {
+    color: #ffffff;
+    background: linear-gradient(140deg, #2a3f5f, #1a2d43);
+}
+
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .nav-link.is-active {
+    border-color: rgba(26, 45, 67, 0.28);
+    background: rgba(26, 45, 67, 0.1);
+    color: #1a2330;
+}
+
+@media (hover: none),
+(pointer: coarse) {
+    [data-theme="light"] .nav-link:hover {
+        border-color: transparent;
+        background: transparent;
+    }
+}
+
+[data-theme="light"] .brand-ring {
+    border-color: rgba(26, 45, 67, 0.7);
+    background: rgba(26, 45, 67, 0.08);
+}
+
+[data-theme="light"] .nav-menu-btn {
+    border-color: rgba(26, 45, 67, 0.28);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] .nav-menu-btn span {
+    background: #1a2d43;
+}
+
+[data-theme="light"] .nav-backdrop {
+    background: rgba(18, 28, 44, 0.32);
+}
+
+[data-theme="light"] .nav-panel {
+    background: linear-gradient(180deg, rgba(241, 247, 255, 0.95), rgba(231, 241, 255, 0.9));
+    border-left-color: rgba(26, 45, 67, 0.2);
+    box-shadow: -18px 0 34px rgba(18, 34, 54, 0.18);
+}
+
+[data-theme="light"] .nav-panel .nav-link {
+    color: #1f314a;
+    border-color: rgba(26, 45, 67, 0.12);
+    background: rgba(255, 255, 255, 0.45);
+}
+
+[data-theme="light"] .nav-panel .nav-link:hover,
+[data-theme="light"] .nav-panel .nav-link.is-active {
+    color: #14253c;
+    border-color: rgba(26, 45, 67, 0.32);
+    background: rgba(26, 45, 67, 0.14);
 }
 
 @media (max-width: 640px) {

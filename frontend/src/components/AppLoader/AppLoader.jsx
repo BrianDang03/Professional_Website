@@ -1,3 +1,5 @@
+import './AppLoader.css';
+
 export default function AppLoader({ show, isExiting, canRevealApp }) {
     if (!show) return null;
 

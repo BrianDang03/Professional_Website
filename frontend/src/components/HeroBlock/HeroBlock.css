@@ -19,6 +19,14 @@
     letter-spacing: 0.04em;
 }
 
+[data-theme="light"] .hero-block h1 {
+    color: #1a2330;
+}
+
+[data-theme="light"] .hero-block h2 {
+    color: #3d4a5c;
+}
+
 .hero-block h2 {
     margin: 0.45rem 0 1rem;
     color: #e3e7ee;

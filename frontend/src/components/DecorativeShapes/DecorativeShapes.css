@@ -1,0 +1,467 @@
+/* ── Wave background container ───────────────────────────────────────────────
+   Fixed container for the animated wave SVG. Sits furthest back (z=-4) so it
+   renders behind both shapes and page content. CSS filter is intentionally
+   omitted here — a filter creates a stacking context that forces the SVG into
+   a single GPU layer, causing full-layer invalidation on every RAF tick.
+   Brightness is applied directly on the SVG element via WaveLines.css instead. */
+.wave-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -4;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.wave-bg.is-deferred {
+    opacity: 0.001;
+}
+
+.wave-bg.is-ready {
+    opacity: 1;
+    transition: opacity 220ms ease-out;
+}
+
+/* ── Shape containers ────────────────────────────────────────────────────────
+   Two absolute containers so the main-viewport shapes and footer shapes can
+   be positioned independently without conflicting stacking contexts.
+   Both sit at z=-3 (in front of waves, behind page content). */
+.theme-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    overflow: visible;
+    pointer-events: none;
+    --nav-orb-left-x: -64px;
+    --nav-orb-left-y: 10vh;
+    --nav-orb-left-size: 290px;
+    --nav-orb-small-size: 96px;
+    --nav-orb-small-overlap-x: 76px;
+    --nav-orb-small-overlap-y: 72px;
+}
+
+.theme-bg-footer {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    overflow: visible;
+    pointer-events: none;
+}
+
+/* ── Shape entrance keyframes ────────────────────────────────────────────────
+   All shapes slide in from slightly off-screen on first paint. The translate3d
+   values are driven by CSS custom properties set via JavaScript mousemove/scroll
+   listeners, so the keyframes need to animate to the same computed values. */
+@keyframes float-in-from-top {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5 - 180px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    }
+}
+
+@keyframes float-in-from-left {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45 - 220px), calc(var(--space-scroll-y, 0px) * 1.5 - 80px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    }
+}
+
+@keyframes float-in-from-right {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45 + 240px), calc(var(--space-scroll-y, 0px) * 1.5 - 60px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    }
+}
+
+@keyframes plus-float-in-from-top {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95 - 180px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    }
+}
+
+@keyframes plus-float-in-from-left {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85 - 220px), calc(var(--space-scroll-y, 0px) * 1.95 - 80px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    }
+}
+
+@keyframes plus-float-in-from-right {
+    from {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85 + 240px), calc(var(--space-scroll-y, 0px) * 1.95 - 60px), 0);
+    }
+
+    to {
+        transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    }
+}
+
+/* ── Container state transitions ─────────────────────────────────────────────
+   Containers start transparent (rendered but invisible during boot) then fade
+   in. The is-locked class strips entrance animations after their intro window
+   to free GPU composite layers. */
+.theme-bg.is-ready,
+.theme-bg-footer.is-ready {
+    opacity: 1;
+    transition: opacity 220ms ease-out;
+}
+
+.theme-bg.is-locked .orb,
+.theme-bg.is-locked .floating-plus,
+.theme-bg-footer.is-locked .orb,
+.theme-bg-footer.is-locked .floating-plus {
+    animation: none !important;
+}
+
+/* Footer shapes need position: absolute so they anchor within .theme-bg-footer */
+.theme-bg-footer .orb,
+.theme-bg-footer .beam,
+.theme-bg-footer .floating-plus {
+    position: absolute;
+}
+
+/* ── Shared shape base styles ────────────────────────────────────────────────
+   Parallax transform is driven by --space-base-x and --space-scroll-y CSS vars
+   updated by a JS mousemove/scroll listener on the root element. */
+.orb,
+.floating-plus {
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.orb,
+.beam {
+    position: absolute;
+    z-index: -2;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Orbs ────────────────────────────────────────────────────────────────────
+   box-shadow instead of filter:drop-shadow — drop-shadow forces each orb into
+   its own GPU filter layer and runs a Gaussian blur every RAF frame during the
+   2.4s entrance animation. box-shadow is composited directly with no blur pass
+   and produces an identical visual on border-radius:999px. */
+.orb {
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.18), 0 0 6px rgba(255, 255, 255, 0.08);
+    transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
+    animation: float-in-from-top 2.4s cubic-bezier(0.16, 0.84, 0.44, 1) backwards;
+}
+
+.orb:nth-child(odd) {
+    animation-name: float-in-from-left;
+}
+
+.orb:nth-child(even) {
+    animation-name: float-in-from-right;
+}
+
+/* Orbs that overlap the navbar use a higher z-index so the nav blurs over them */
+.orb-nav-cut {
+    z-index: 12;
+}
+
+.orb-nav-1 {
+    width: 210px;
+    aspect-ratio: 1;
+    top: -146px;
+    left: 64vw;
+    right: auto;
+    bottom: auto;
+    border-width: 1.5px;
+}
+
+.orb-nav-2 {
+    width: 130px;
+    aspect-ratio: 1;
+    top: -96px;
+    left: 31vw;
+    right: auto;
+    bottom: auto;
+    border-width: 1px;
+}
+
+.orb-left {
+    width: 290px;
+    aspect-ratio: 1;
+    top: 6vh;
+    left: -70px;
+    margin: 0;
+    right: auto;
+    bottom: auto;
+}
+
+.orb-3 {
+    width: 132px;
+    aspect-ratio: 1;
+    top: 36vh;
+    right: 4vw;
+    left: auto;
+    bottom: auto;
+    border-width: 2px;
+}
+
+.orb-8 {
+    width: 96px;
+    aspect-ratio: 1;
+    top: 26vh;
+    left: 8vw;
+    right: auto;
+    bottom: auto;
+    border-width: 1.5px;
+}
+
+.orb-10 {
+    width: 132px;
+    aspect-ratio: 1;
+    bottom: 12vh;
+    left: -40px;
+    right: auto;
+    top: auto;
+    border-width: 1px;
+}
+
+/* ── Beam ────────────────────────────────────────────────────────────────────
+   A thin gradient line used as a subtle diagonal accent near the footer. */
+.beam {
+    width: 46vw;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--line-strong) 40%, transparent 100%);
+    margin: 0;
+}
+
+.beam-two {
+    bottom: 18vh;
+    left: -12vw;
+    transform: rotate(18deg);
+    right: auto;
+    top: auto;
+    margin: 0;
+}
+
+/* ── Floating plus signs ─────────────────────────────────────────────────────
+   Rendered via ::before (vertical bar) and ::after (horizontal bar). */
+.floating-plus {
+    position: absolute;
+    z-index: -2;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
+    animation: plus-float-in-from-top 2.2s cubic-bezier(0.16, 0.84, 0.44, 1) backwards;
+}
+
+.floating-plus:nth-child(3n) {
+    animation-name: plus-float-in-from-right;
+}
+
+.floating-plus:nth-child(3n+1) {
+    animation-name: plus-float-in-from-left;
+}
+
+.floating-plus::before,
+.floating-plus::after {
+    content: "";
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.floating-plus::before {
+    width: 2px;
+    height: 20px;
+    left: 9px;
+    top: 0;
+}
+
+.floating-plus::after {
+    width: 20px;
+    height: 2px;
+    left: 0;
+    top: 9px;
+}
+
+/* ── Stagger entrance delays ─────────────────────────────────────────────────
+   Offsets ensure shapes don't all pop in at the same frame. */
+.orb-left {
+    animation-delay: 0.1s;
+}
+
+.orb-3 {
+    animation-delay: 0.5s;
+}
+
+.orb-8 {
+    animation-delay: 0.15s;
+}
+
+.orb-10 {
+    animation-delay: 0.25s;
+}
+
+.orb-nav-1 {
+    animation-delay: 0.6s;
+}
+
+.orb-nav-2 {
+    animation-delay: 0.65s;
+}
+
+.floating-plus {
+    animation-delay: 0.1s;
+}
+
+.plus-1 {
+    animation-delay: 0.2s;
+}
+
+.plus-4 {
+    animation-delay: 0.4s;
+}
+
+.plus-6 {
+    animation-delay: 0.5s;
+}
+
+.plus-7 {
+    animation-delay: 0.3s;
+}
+
+/* ── Plus sign positions ─────────────────────────────────────────────────────*/
+.plus-1 {
+    top: 12vh;
+    right: 12vw;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-4 {
+    top: 28vh;
+    right: 10vw;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-6 {
+    top: 18vh;
+    left: 12vw;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.plus-7 {
+    top: 45vh;
+    right: 12vw;
+    left: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+/* ── Nav-anchored layout overrides ───────────────────────────────────────────
+   Inside .theme-bg, shapes are re-positioned relative to the nav band. */
+.theme-bg .orb-left {
+    top: var(--nav-orb-left-y);
+    left: var(--nav-orb-left-x);
+}
+
+.theme-bg .orb-nav-1 {
+    top: -142px;
+    left: 62vw;
+}
+
+.theme-bg .orb-nav-2 {
+    top: -92px;
+    left: 30vw;
+}
+
+.theme-bg .orb-3 {
+    top: 24vh;
+    right: 5vw;
+}
+
+.theme-bg .orb-8 {
+    width: var(--nav-orb-small-size);
+    top: calc(var(--nav-orb-left-y) + var(--nav-orb-left-size) - var(--nav-orb-small-overlap-y));
+    left: calc(var(--nav-orb-left-x) + var(--nav-orb-left-size) - var(--nav-orb-small-overlap-x));
+}
+
+.theme-bg .plus-1 {
+    top: 12vh;
+    right: 14vw;
+}
+
+.theme-bg .plus-4 {
+    top: 44vh;
+    right: 8vw;
+}
+
+.theme-bg .plus-6 {
+    top: 22vh;
+    left: 28vw;
+}
+
+/* ── Footer-anchored layout overrides ────────────────────────────────────────
+   Inside .theme-bg-footer, shapes are re-positioned near the bottom viewport band. */
+.theme-bg-footer .beam-two {
+    bottom: 6vh;
+    left: -10vw;
+    transform: rotate(16deg);
+}
+
+.theme-bg-footer .orb-10 {
+    bottom: -3vh;
+    left: -34px;
+}
+
+.theme-bg-footer .plus-7 {
+    bottom: 16vh;
+    right: 12vw;
+    top: auto;
+}
+
+/* ── Light theme overrides ───────────────────────────────────────────────────*/
+[data-theme="light"] .orb {
+    border-color: rgba(18, 34, 54, 0.44);
+    box-shadow: 0 0 18px rgba(18, 34, 54, 0.22);
+}
+
+[data-theme="light"] .beam {
+    background: linear-gradient(90deg, transparent 0%, rgba(18, 34, 54, 0.34) 40%, transparent 100%);
+}
+
+[data-theme="light"] .floating-plus::before,
+[data-theme="light"] .floating-plus::after {
+    background: rgba(18, 34, 54, 0.56);
+}
+
+/* ── Mobile: disable entrance animations ─────────────────────────────────────
+   background-attachment:fixed causes full-page repaints on scroll on mobile,
+   so the parallax effect and its entrance animations are stripped. */
+@media (max-width: 900px) {
+
+    .theme-bg .orb,
+    .theme-bg .floating-plus,
+    .theme-bg-footer .orb,
+    .theme-bg-footer .floating-plus {
+        animation: none;
+    }
+}

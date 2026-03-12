@@ -239,7 +239,7 @@ export default function WaveLines() {
                         d={buildPath(s, s.phase, 1, vbW, vbH)}
                         pathLength="1"
                         fill="none"
-                        stroke="rgba(255, 255, 255, 0.2)"
+                        stroke="rgba(255, 255, 255, 0.55)"
                         strokeWidth={s.width * 0.7}
                         strokeLinecap="round"
                     />

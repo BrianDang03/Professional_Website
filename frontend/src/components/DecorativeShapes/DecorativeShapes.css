@@ -180,7 +180,7 @@
 .orb-nav-1 {
     width: 10.9vw;
     aspect-ratio: 1;
-    top: -13.5vh;
+    top: 26vh;
     left: 64vw;
     right: auto;
     bottom: auto;
@@ -190,7 +190,7 @@
 .orb-nav-2 {
     width: 6.8vw;
     aspect-ratio: 1;
-    top: -8.9vh;
+    top: 28vh;
     left: 31vw;
     right: auto;
     bottom: auto;
@@ -384,12 +384,12 @@
 }
 
 .theme-bg .orb-nav-1 {
-    top: -13.1vh;
+    top: -7vh;
     left: 62vw;
 }
 
 .theme-bg .orb-nav-2 {
-    top: -8.5vh;
+    top: -5vh;
     left: 30vw;
 }
 

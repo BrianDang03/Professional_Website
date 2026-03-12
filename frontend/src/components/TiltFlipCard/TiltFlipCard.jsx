@@ -662,12 +662,19 @@ export default function TiltFlipCard({
       );
 
       if (distance > MOVE_THRESHOLD_PX) {
-        pointerState.moved = true;
+        // User is scrolling/swiping past the card. End the tilt interaction
+        // immediately so the RAF loop stops firing on every touchmove during
+        // vertical scroll — which is the most common mobile gesture.
+        if (!pointerState.moved) {
+          pointerState.moved = true;
+          endInteraction();
+        }
+        return;
       }
 
       scheduleTiltUpdate(event.clientX, event.clientY);
     },
-    [isExpanded, supportsMouseHover, scheduleTiltUpdate]
+    [isExpanded, supportsMouseHover, scheduleTiltUpdate, endInteraction]
   );
 
   const handlePointerUp = useCallback(

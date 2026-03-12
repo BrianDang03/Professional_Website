@@ -31,8 +31,9 @@ function RouteLoadingFallback({ label }) {
 
 function App() {
   const location = useLocation();
+  const simpleMotion = shouldUseSimpleMotion();
   const { showDecorations, showLoader, isLoaderExiting, areShapesLocked, canRevealApp } =
-    useAppBoot(shouldUseSimpleMotion());
+    useAppBoot(simpleMotion);
 
   return (
     <ErrorBoundary>
@@ -41,7 +42,7 @@ function App() {
           <SkipToContent />
 
           <div className={`wave-bg ${showDecorations ? "is-ready" : "is-deferred"}`} aria-hidden="true">
-            {showDecorations && <WaveLines />}
+            {showDecorations && !simpleMotion && <WaveLines />}
           </div>
 
           <DecorativeShapes show={showDecorations} isLocked={areShapesLocked} />

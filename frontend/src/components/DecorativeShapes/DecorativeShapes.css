@@ -456,7 +456,7 @@
 /* ── Mobile: disable entrance animations ─────────────────────────────────────
    background-attachment:fixed causes full-page repaints on scroll on mobile,
    so the parallax effect and its entrance animations are stripped. */
-@media (max-width: 900px) {
+@media (max-width: 900px), (pointer: coarse) {
 
     .theme-bg .orb,
     .theme-bg .floating-plus,

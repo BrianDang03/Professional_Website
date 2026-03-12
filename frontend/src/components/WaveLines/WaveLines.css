@@ -5,9 +5,20 @@
     height: 100%;
     pointer-events: none;
     filter: brightness(1.15);
-    will-change: transform;
+    /* Intentionally no will-change — the SVG is static (no JS-driven transforms,
+       no keyframe animations). Promoting it creates a permanent GPU layer that
+       consumes memory on mobile without any compositing benefit. */
 }
 
 [data-theme="light"] .wave-lines {
     filter: contrast(1.34) saturate(0.86) brightness(0.5);
+}
+
+/* The per-path feGaussianBlur runs in software on iOS and is expensive on
+   mobile GPUs. Removing it on touch devices eliminates 5 blur passes per
+   repaint while keeping the wave lines fully visible. */
+@media (pointer: coarse) {
+    .wave-lines path {
+        filter: none;
+    }
 }

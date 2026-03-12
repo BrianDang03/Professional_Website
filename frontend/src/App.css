@@ -328,7 +328,10 @@ img {
     }
 }
 
-@media (max-width: 900px) {
+/* pointer:coarse catches touch devices wider than 900px (tablets in landscape).
+   background-attachment:fixed is not just slow on phones — any touch-primary
+   device repaint-floods the entire background layer on scroll. */
+@media (max-width: 900px), (pointer: coarse) {
 
     /* background-attachment:fixed triggers full-page repaint on scroll on mobile.
        Strip the radials on mobile (the fixed orbs provide ambient glow) and

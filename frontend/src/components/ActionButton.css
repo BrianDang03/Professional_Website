@@ -124,3 +124,8 @@
         box-shadow: none;
     }
 }
+
+/* Error boundary retry button spacing */
+.error-retry-btn {
+    margin-top: 1rem;
+}

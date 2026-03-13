@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { motion as Motion } from 'framer-motion';
 import { shouldUseSimpleMotion } from '../../utils/motionProfile';
 import "./SkillsGrid.css";
@@ -30,7 +31,7 @@ const itemVariants = {
     }
 };
 
-export default function SkillsGrid() {
+function SkillsGrid() {
     const simpleMotion = shouldUseSimpleMotion();
 
     return (
@@ -74,3 +75,5 @@ export default function SkillsGrid() {
         </div>
     );
 }
+
+export default memo(SkillsGrid);

@@ -61,32 +61,34 @@ export default function ContactForm() {
 
     return (
         <form onSubmit={handleSubmit} className="contact-form">
-            <div className="form-group">
-                <label htmlFor="name">Name *</label>
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    autoComplete="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    placeholder="Your name"
-                />
-            </div>
+            <div className="form-row">
+                <div className="form-group">
+                    <label htmlFor="name">Name *</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        autoComplete="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        placeholder="Your name"
+                    />
+                </div>
 
-            <div className="form-group">
-                <label htmlFor="email">Email *</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    autoComplete="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="your.email@example.com"
-                />
+                <div className="form-group">
+                    <label htmlFor="email">Email *</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        autoComplete="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        placeholder="your.email@example.com"
+                    />
+                </div>
             </div>
 
             <div className="form-group">

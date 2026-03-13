@@ -11,7 +11,7 @@ export default function Portfolio() {
                 description="Explore my software engineering projects including gameplay systems, web applications, and full-stack development work."
                 keywords="portfolio, projects, software development, game development, web applications"
             />
-            <section className="page-shell">
+            <section className="page-shell portfolio-page">
                 <p className="hero-kicker">Selected Work</p>
                 <h1>Portfolio</h1>
                 <p className="page-intro">

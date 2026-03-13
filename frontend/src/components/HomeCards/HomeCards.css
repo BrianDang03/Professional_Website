@@ -63,8 +63,11 @@
     border: 1px solid rgba(255, 255, 255, 0.38);
     border-radius: 0.65rem;
     background: rgba(22, 30, 40, 0.22);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    /* Reduce blur radius from 10px — 6px is visually identical but the GPU
+       kernel area is ~64% smaller (6² vs 10²), cutting compositing cost during
+       the 960ms entrance animations while all three cards are animating. */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
         0 8px 24px rgba(0, 0, 0, 0.35);
@@ -97,8 +100,8 @@
     border: 1px solid rgba(255, 255, 255, 0.34);
     border-radius: 0.65rem;
     background: rgba(22, 30, 40, 0.2);
-    backdrop-filter: blur(9px);
-    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.16),
         0 8px 20px rgba(0, 0, 0, 0.28);

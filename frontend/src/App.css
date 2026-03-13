@@ -100,6 +100,17 @@ html {
     height: 100%;
     background-color: var(--bg-0);
     scrollbar-gutter: stable;
+    /* Prevent iOS Safari from auto-inflating font sizes on orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Smooth scroll for anchor navigation; suppressed for users who prefer less motion */
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
 }
 
 body {
@@ -107,7 +118,6 @@ body {
     min-height: 100%;
     font-family: "Manrope", "Segoe UI", sans-serif;
     color: var(--text-main);
-    overflow-x: hidden;
     overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -249,6 +259,21 @@ body {
         linear-gradient(155deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05)),
         var(--surface);
     box-shadow: var(--shadow-deep);
+    position: relative;
+}
+
+/* Frosted-glass top rim — a thin bright edge that reinforces the glass feel */
+.page-shell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.09) 0px,
+        rgba(255, 255, 255, 0.03) 2px,
+        transparent 6px);
+    pointer-events: none;
+    z-index: 0;
 }
 
 @media (min-width: 1400px) {
@@ -265,26 +290,49 @@ body {
     background: var(--surface);
 }
 
+[data-theme="light"] .page-shell::before {
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.55) 0px,
+        rgba(255, 255, 255, 0.20) 2px,
+        transparent 6px);
+}
+
 .page-shell h1 {
     margin-bottom: 0.8rem;
     font-family: "Cinzel", "Times New Roman", serif;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-main);
+    position: relative;
+    z-index: 1;
 }
 
 .page-shell p {
     color: var(--text-dim);
     line-height: 1.7;
+    position: relative;
+    z-index: 1;
 }
 
 /* ── Shared typography utilities ─────────────────────────────────────────────*/
 .hero-kicker {
-    margin: 0;
+    margin: 0 0 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
     color: var(--text-muted);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     font-size: 0.72rem;
+}
+
+.hero-kicker::before {
+    content: '';
+    display: inline-block;
+    width: 1.1rem;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(160, 185, 245, 0.7), rgba(160, 185, 245, 0.2));
+    flex-shrink: 0;
 }
 
 /* ── Route loading state ─────────────────────────────────────────────────────

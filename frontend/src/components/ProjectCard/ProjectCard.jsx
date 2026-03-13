@@ -1,7 +1,24 @@
+import { memo } from 'react';
 import { motion as Motion } from 'framer-motion';
 import { ExternalLink, Github } from 'lucide-react';
 import { shouldUseSimpleMotion } from '../../utils/motionProfile';
 import "./ProjectCard.css";
+
+const TECH_COLORS = {
+    // Frontend / web
+    React: 'badge-blue', 'Vue.js': 'badge-blue', TypeScript: 'badge-blue',
+    JavaScript: 'badge-blue', CSS3: 'badge-blue', 'HTML/CSS': 'badge-blue',
+    'Framer Motion': 'badge-blue', Vite: 'badge-blue', 'D3.js': 'badge-blue',
+    // Backend / runtime
+    'Node.js': 'badge-green', Express: 'badge-green', Django: 'badge-green',
+    GraphQL: 'badge-green', 'REST APIs': 'badge-green', WebSocket: 'badge-green',
+    // Systems / native
+    'C#': 'badge-purple', Unity: 'badge-purple', 'C++': 'badge-purple',
+    'System Architecture': 'badge-purple', 'Unreal Engine': 'badge-purple',
+    // Data / infra / AI
+    Python: 'badge-amber', TensorFlow: 'badge-amber', PostgreSQL: 'badge-amber',
+    Stripe: 'badge-amber', Docker: 'badge-amber', AWS: 'badge-amber',
+};
 
 const cardVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -15,7 +32,7 @@ const cardVariants = {
     }
 };
 
-export default function ProjectCard({ project }) {
+function ProjectCard({ project }) {
     const simpleMotion = shouldUseSimpleMotion();
 
     return (
@@ -28,7 +45,7 @@ export default function ProjectCard({ project }) {
             whileHover={simpleMotion ? undefined : { y: -8 }}
             transition={simpleMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 20 }}
         >
-            {project.image && (
+            {project.image ? (
                 <div className="project-image">
                     <picture>
                         {project.imageWebpSrcSet && (
@@ -54,6 +71,12 @@ export default function ProjectCard({ project }) {
                         />
                     </picture>
                 </div>
+            ) : (
+                <div className="project-image-placeholder" aria-hidden="true">
+                    <span className="project-placeholder-initial">
+                        {project.title.charAt(0)}
+                    </span>
+                </div>
             )}
 
             <div className="project-content">
@@ -62,7 +85,7 @@ export default function ProjectCard({ project }) {
 
                 <div className="project-tech">
                     {project.technologies.map((tech) => (
-                        <span key={tech} className="tech-badge">{tech}</span>
+                        <span key={tech} className={`tech-badge${TECH_COLORS[tech] ? ` ${TECH_COLORS[tech]}` : ''}`}>{tech}</span>
                     ))}
                 </div>
 
@@ -91,8 +114,13 @@ export default function ProjectCard({ project }) {
                             <span>Live Demo</span>
                         </a>
                     )}
+                    {!project.github && !project.demo && (
+                        <span className="project-coming-soon">Coming Soon</span>
+                    )}
                 </div>
             </div>
         </Motion.article>
     );
 }
+
+export default memo(ProjectCard);

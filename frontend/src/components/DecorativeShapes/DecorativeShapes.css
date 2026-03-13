@@ -97,6 +97,16 @@
     animation: none !important;
 }
 
+/* On touch devices each orb's backdrop-filter forces a separate GPU compositing layer
+   and runs a blur pass during the entrance animation. Strip it on coarse-pointer devices
+   (touch screens) to eliminate the unnecessary compositing overhead. */
+@media (pointer: coarse) {
+    .orb {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
 /* ── Shared shape base styles ────────────────────────────────────────────────
    Parallax transform is driven by --space-base-x and --space-scroll-y CSS vars
    updated by a JS mousemove/scroll listener on the root element. */

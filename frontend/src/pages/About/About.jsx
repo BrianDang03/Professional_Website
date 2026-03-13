@@ -55,7 +55,7 @@ export default function About() {
 
           <div className="about-section">
             <h2>What I Do</h2>
-            <ul className="about-list">
+            <ul className="about-list" role="list">
               <li>Design and implement gameplay systems with focus on feel, feedback, and performance</li>
               <li>Build full-stack web applications from concept through production</li>
               <li>Create user-centered experiences that balance aesthetics with functionality</li>

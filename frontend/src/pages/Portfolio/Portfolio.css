@@ -1,3 +1,7 @@
+.portfolio-page {
+    max-width: min(1240px, 100%);
+}
+
 .page-intro {
     max-width: 760px;
     margin: 1rem auto;

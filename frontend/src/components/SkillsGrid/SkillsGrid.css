@@ -13,7 +13,29 @@
     font-weight: 600;
     color: var(--text-main);
     letter-spacing: 0.02em;
+    position: relative;
+    padding-left: 0.95rem;
 }
+
+.skill-category h3::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0.9em;
+    border-radius: 999px;
+}
+
+/* Languages — blue */
+.skill-category:nth-child(1) h3::before { background: #7b9cf5; }
+/* Frontend — purple */
+.skill-category:nth-child(2) h3::before { background: #a87bf5; }
+/* Backend — teal/green */
+.skill-category:nth-child(3) h3::before { background: #4abf8e; }
+/* Tools & Other — amber */
+.skill-category:nth-child(4) h3::before { background: #f0b44a; }
 
 .skill-tags {
     display: flex;

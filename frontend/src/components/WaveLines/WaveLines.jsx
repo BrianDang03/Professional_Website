@@ -4,7 +4,7 @@ import './WaveLines.css';
 // ─── constants ────────────────────────────────────────────────────────────
 const PI = Math.PI;
 const NUM_SEGS = 8;
-const FRAME_MS = 16;    // cap at ~60 fps for consistent dt
+const FRAME_MS = 50;    // cap at ~20 fps — decorative slow waves look smooth at 20fps
 const SCAN_STOP_MS = 14200; // 500 + 13*130 + 12000 — last line fully swept
 const WIND_DOWN_MS = 1200;
 
@@ -98,7 +98,7 @@ export default function WaveLines() {
         let tid;
         function onResize() {
             clearTimeout(tid);
-            tid = setTimeout(() => setDims({ w: window.innerWidth, h: window.innerHeight }), 150);
+            tid = setTimeout(() => setDims({ w: window.innerWidth, h: window.innerHeight }), 250);
         }
         window.addEventListener('resize', onResize, { passive: true });
         return () => { window.removeEventListener('resize', onResize); clearTimeout(tid); };

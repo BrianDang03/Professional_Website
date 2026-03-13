@@ -17,10 +17,17 @@
     font-size: clamp(2.1rem, 5vw, 5rem);
     font-weight: 700;
     letter-spacing: 0.04em;
+    background: linear-gradient(155deg, #ffffff 0%, #dce8ff 40%, #b8ccfa 72%, #a4b8f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 [data-theme="light"] .hero-block h1 {
-    color: #1a2330;
+    background: linear-gradient(155deg, #0c1826 0%, #1b3465 45%, #0e2252 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 [data-theme="light"] .hero-block h2 {
@@ -32,6 +39,8 @@
     color: #b0b8c8;
     font-size: clamp(1rem, 2.2vw, 1.55rem);
     font-weight: 500;
+    animation: rise-in 750ms ease both;
+    animation-delay: 120ms;
 }
 
 .hero-lead {
@@ -39,6 +48,8 @@
     margin: 0 auto;
     color: #c8d0e0;
     line-height: 1.65;
+    animation: rise-in 750ms ease both;
+    animation-delay: 220ms;
     text-shadow:
         0 0 12px rgba(210, 220, 240, 0.55),
         0 0 32px rgba(185, 200, 230, 0.30),
@@ -71,9 +82,135 @@
     }
 }
 
+/* ── Hero CTAs ───────────────────────────────────────────────────────────────*/
+.hero-ctas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2.4rem;
+    flex-wrap: wrap;
+    animation: rise-in 750ms ease both;
+    animation-delay: 320ms;
+}
+
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-family: "Manrope", sans-serif;
+    font-weight: 600;
+    font-size: 0.94rem;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 240ms ease, border-color 240ms ease, transform 220ms ease, box-shadow 240ms ease, color 240ms ease;
+}
+
+.hero-btn-primary {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.09));
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.22);
+}
+
+.hero-btn-primary:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.15));
+    border-color: rgba(255, 255, 255, 0.58);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.hero-btn-secondary {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: var(--text-dim);
+}
+
+.hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.36);
+    color: var(--text-main);
+    transform: translateY(-2px);
+}
+
+[data-theme="light"] .hero-btn-primary {
+    background: linear-gradient(135deg, #1a2d43, #253c58);
+    border-color: rgba(26, 45, 67, 0.55);
+    color: #ffffff;
+    box-shadow: 0 2px 14px rgba(26, 45, 67, 0.22);
+}
+
+[data-theme="light"] .hero-btn-primary:hover {
+    background: linear-gradient(135deg, #243448, #2e4a68);
+    border-color: rgba(26, 45, 67, 0.8);
+    box-shadow: 0 8px 24px rgba(26, 45, 67, 0.28);
+}
+
+[data-theme="light"] .hero-btn-secondary {
+    border-color: rgba(26, 45, 67, 0.25);
+    color: var(--text-dim);
+}
+
+[data-theme="light"] .hero-btn-secondary:hover {
+    background: rgba(26, 45, 67, 0.07);
+    border-color: rgba(26, 45, 67, 0.45);
+    color: #1a2330;
+}
+
+@media (hover: none), (pointer: coarse) {
+    .hero-btn-primary:hover,
+    .hero-btn-secondary:hover {
+        transform: none;
+    }
+
+    [data-theme="light"] .hero-btn-secondary:hover {
+        background: transparent;
+        border-color: rgba(26, 45, 67, 0.25);
+        color: var(--text-dim);
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-ctas {
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* On narrow screens a single text-shadow pass is visually sufficient and
+   avoids compositing three separate Gaussian blur layers per pixel */
+@media (max-width: 640px) {
+    .hero-lead {
+        text-shadow: 0 0 16px rgba(210, 220, 240, 0.35);
+    }
+
+    [data-theme="light"] .hero-lead {
+        text-shadow: 0 0 12px rgba(80, 110, 180, 0.14);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .hero-block {
+    .hero-block,
+    .hero-block h2,
+    .hero-lead {
         animation: none;
         opacity: 1;
+    }
+
+    .hero-btn {
+        transition: none;
     }
 }

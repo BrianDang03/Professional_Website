@@ -5,7 +5,9 @@
     height: 100%;
     pointer-events: none;
     transform: translateZ(0);
-    filter: brightness(1.6) drop-shadow(0 0 6px rgba(245, 248, 255, 1.0)) drop-shadow(0 0 20px rgba(220, 232, 252, 0.95)) drop-shadow(0 0 55px rgba(185, 205, 245, 0.60)) drop-shadow(0 0 110px rgba(150, 175, 230, 0.28));
+    /* 3 passes instead of 4 — the 110px outermost glow contributes <3% of
+       the visual, but doubles the GPU blur kernel size and sample count. */
+    filter: brightness(1.6) drop-shadow(0 0 6px rgba(245, 248, 255, 1.0)) drop-shadow(0 0 20px rgba(220, 232, 252, 0.95)) drop-shadow(0 0 55px rgba(185, 205, 245, 0.60));
 }
 
 /* Band paths: draw + sweep controlled entirely by JS — CSS only sets initial dash state */

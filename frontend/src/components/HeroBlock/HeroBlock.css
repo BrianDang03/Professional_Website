@@ -108,6 +108,8 @@
     text-decoration: none;
     cursor: pointer;
     border: 1px solid transparent;
+    /* Remove the ~300ms iOS tap-detection delay on touch devices */
+    touch-action: manipulation;
     transition: background 240ms ease, border-color 240ms ease, transform 220ms ease, box-shadow 240ms ease, color 240ms ease;
 }
 
@@ -205,7 +207,8 @@
 @media (prefers-reduced-motion: reduce) {
     .hero-block,
     .hero-block h2,
-    .hero-lead {
+    .hero-lead,
+    .hero-ctas {
         animation: none;
         opacity: 1;
     }

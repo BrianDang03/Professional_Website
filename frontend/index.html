@@ -4,8 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/brand-ring.svg" />
-  <!-- Preload the LCP-critical hero image before JS executes — largest improvement to LCP score -->
-  <link rel="preload" href="/modem-480.webp" as="image" type="image/webp" fetchpriority="high">
+  <!-- Preload the LCP-critical hero image before JS executes — largest improvement to LCP score.
+       imagesrcset/imagesizes mirror the <picture> srcset below so the browser fetches the
+       correct responsive variant (e.g. modem-1200.webp on desktop, not the 480px fallback). -->
+  <link rel="preload" href="/modem-480.webp" as="image" type="image/webp" fetchpriority="high"
+    imagesrcset="/modem-480.webp 480w, /modem-768.webp 768w, /modem-1200.webp 1200w"
+    imagesizes="(max-width: 640px) 88vw, (max-width: 1280px) 320px, (max-width: 1600px) 360px, 400px">
   <!-- Pre-warm DNS + TCP for the contact form API so the first submit doesn't stall on DNS -->
   <link rel="preconnect" href="https://api.web3forms.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -18,8 +18,14 @@
 }
 
 /* Remove hover effects on touch devices — iOS/Android fire :hover on
-   scroll-touch and it stays "stuck", making elements flash as highlighted. */
+   scroll-touch and it stays "stuck", making elements flash as highlighted.
+   Also remove the transition itself so there's no animated flash even on
+   the momentary :hover that fires during a scroll gesture. */
 @media (hover: none), (pointer: coarse) {
+    .project-card {
+        transition: none;
+    }
+
     .project-card:hover {
         border-color: var(--line-soft);
         box-shadow: none;
@@ -28,6 +34,10 @@
 
     .project-card:hover .project-image img {
         transform: none;
+    }
+
+    .project-image img {
+        transition: none;
     }
 
     .project-link:hover {

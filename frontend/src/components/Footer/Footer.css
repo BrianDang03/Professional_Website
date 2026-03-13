@@ -18,6 +18,9 @@
 .footer-inner {
     position: relative;
     z-index: 1;
+    /* Isolate footer layout; prevents footer reflows from propagating up the tree
+       during scroll-repaint on pages with variable content heights. */
+    contain: layout;
 }
 
 /* ── Decorative background elements ──────────────────────────────────────────
@@ -125,6 +128,8 @@
     color: var(--text-dim);
     text-decoration: none;
     font-size: 0.92rem;
+    /* Remove ~300ms iOS tap delay on footer navigation links */
+    touch-action: manipulation;
     transition: color 180ms ease;
 }
 

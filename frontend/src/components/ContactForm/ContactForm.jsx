@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import "./ContactForm.css";
 import "../ActionButton.css";
 
@@ -18,10 +18,10 @@ export default function ContactForm() {
         };
     }, []);
 
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-    };
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

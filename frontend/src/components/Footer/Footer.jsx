@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Footer.css";
 
@@ -7,14 +8,14 @@ export default function Footer() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const handleEmail = (e) => {
+    const handleEmail = useCallback((e) => {
         e.preventDefault();
         if (location.pathname === "/about") {
             document.getElementById("get-in-touch")?.scrollIntoView({ behavior: "smooth" });
         } else {
             navigate("/about", { state: { scrollTo: "get-in-touch" } });
         }
-    };
+    }, [location.pathname, navigate]);
     return (
         <footer className="site-footer">
             {/* Decorative background elements — sit above the backdrop but below the text */}

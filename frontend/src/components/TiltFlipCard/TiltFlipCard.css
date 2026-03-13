@@ -601,4 +601,10 @@
     opacity: 1 !important;
     transform: none !important;
   }
+
+  /* Disable the infinite shimmer on loading card images — it plays
+     on every card face mount for users who prefer reduced motion. */
+  .tfc-face::before {
+    animation: none !important;
+  }
 }

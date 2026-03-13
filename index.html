@@ -4,10 +4,23 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/brand-ring.svg" />
+  <!-- Preload the LCP-critical hero image before JS executes — largest improvement to LCP score -->
+  <link rel="preload" href="/modem-480.webp" as="image" type="image/webp" fetchpriority="high">
+  <!-- Pre-warm DNS + TCP for the contact form API so the first submit doesn't stall on DNS -->
+  <link rel="preconnect" href="https://api.web3forms.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Load fonts asynchronously so they never block the first paint.
+       display=swap means text renders immediately in the system fallback font;
+       the web font swaps in once downloaded. The noscript fallback ensures
+       fonts still load for users with JS disabled. -->
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Manrope:wght@400;500;700&display=swap">
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Manrope:wght@400;500;700&display=swap"
+    media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Manrope:wght@400;500;700&display=swap">
+  </noscript>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="description"
     content="Brian Dang - Software Engineer specializing in gameplay systems, full-stack development, and creating unforgettable user experiences.">
@@ -15,6 +28,8 @@
     content="software engineer, gameplay engineer, full-stack developer, web development, system architecture">
   <meta name="author" content="Brian Dang">
   <meta name="theme-color" content="#0f141c">
+  <meta name="theme-color" content="#e2eaf8" media="(prefers-color-scheme: light)">
+  <meta name="robots" content="index, follow">
   <script>
     // Restore the original SPA route after GitHub Pages 404 fallback redirect.
     (function (location) {
@@ -47,16 +62,25 @@
     content="Software engineer specializing in gameplay systems, full-stack development, and creating unforgettable user experiences.">
 
   <title>Brian Dang - Software Engineer</title>
-  <script type="module" crossorigin src="/assets/index-Di0xzpYH.js"></script>
+  <script type="module" crossorigin src="/assets/index-Cld6Yuin.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-COnpUsM8.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-motion-CZ_H8Nyy.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-ui-Jrm5e2s8.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-DpjMC11P.js">
-  <link rel="stylesheet" crossorigin href="/assets/index-ByLQxa-b.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-BG1mCx3w.css">
 </head>
 
 <body>
-  <div id="root"></div>
+  <!-- Apply saved theme synchronously before first paint to prevent FOUC -->
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'light' || saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    }());
+  </script>
+  <div id="root"></div>
 </body>
 
 </html>

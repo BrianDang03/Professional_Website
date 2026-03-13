@@ -5,19 +5,32 @@
    Local stacking contexts (e.g. inside a card face) may use plain integers
    that are scoped within that context and do not compete with this scale. */
 :root {
-    --z-wave:             2;  /* Wave SVG — above shapes, below content     */
-    --z-shapes:            1;  /* Decorative orbs / beams / plus signs      */
-    --z-shapes-nav-cut:   12;  /* Orbs that bleed behind the navbar         */
-    --z-footer:            4;  /* Footer — above waves                      */
-    --z-navbar:           15;  /* Sticky site header                        */
-    --z-modal-backdrop:   20;  /* Dark blur overlay behind expanded card    */
-    --z-modal:            30;  /* Expanded card modal                       */
-    --z-modal-returning:   5;  /* Card closing — drops below backdrop       */
-    --z-nav-backdrop:     39;  /* Mobile nav dim overlay                    */
-    --z-nav-panel:        40;  /* Mobile slide-in nav panel                 */
-    --z-nav-btn:          41;  /* Hamburger button (above panel)            */
-    --z-loader:           60;  /* Full-screen boot loader                   */
-    --z-skip:           9999;  /* Skip-to-content (accessibility, always top) */
+    --z-wave: 2;
+    /* Wave SVG — above shapes, below content     */
+    --z-shapes: 1;
+    /* Decorative orbs / beams / plus signs      */
+    --z-shapes-nav-cut: 12;
+    /* Orbs that bleed behind the navbar         */
+    --z-footer: 4;
+    /* Footer — above waves                      */
+    --z-navbar: 15;
+    /* Sticky site header                        */
+    --z-modal-backdrop: 20;
+    /* Dark blur overlay behind expanded card    */
+    --z-modal: 30;
+    /* Expanded card modal                       */
+    --z-modal-returning: 5;
+    /* Card closing — drops below backdrop       */
+    --z-nav-backdrop: 39;
+    /* Mobile nav dim overlay                    */
+    --z-nav-panel: 40;
+    /* Mobile slide-in nav panel                 */
+    --z-nav-btn: 41;
+    /* Hamburger button (above panel)            */
+    --z-loader: 60;
+    /* Full-screen boot loader                   */
+    --z-skip: 9999;
+    /* Skip-to-content (accessibility, always top) */
 }
 
 /* ── CSS Variables ───────────────────────────────────────────────────────────
@@ -25,18 +38,18 @@
    [data-theme="light"] on the <html> element. */
 :root {
     --theme-brightness: 1.15;
-    --bg-0: #0f141c;
-    --bg-1: #1a2330;
-    --bg-2: #263140;
-    --mist: rgba(255, 255, 255, 0.08);
-    --line-soft: rgba(255, 255, 255, 0.2);
-    --line-strong: rgba(255, 255, 255, 0.55);
-    --text-main: #f2f3f4;
-    --text-dim: #cdd3dc;
-    --text-muted: #a8b0bf;
-    --surface: rgba(26, 34, 46, 0.7);
-    --surface-strong: rgba(30, 39, 52, 0.84);
-    --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.35);
+    --bg-0: #09090d;
+    --bg-1: #111318;
+    --bg-2: #1a1d23;
+    --mist: rgba(185, 195, 215, 0.08);
+    --line-soft: rgba(190, 200, 218, 0.22);
+    --line-strong: rgba(200, 210, 228, 0.58);
+    --text-main: #d8dce4;
+    --text-dim: #9da5b4;
+    --text-muted: #68707e;
+    --surface: rgba(18, 20, 26, 0.75);
+    --surface-strong: rgba(24, 27, 34, 0.91);
+    --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.55);
 }
 
 /* Light Theme */
@@ -102,11 +115,11 @@ body {
         radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.95) 1px, transparent 2px),
         radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 1.00) 1px, transparent 2px),
         radial-gradient(circle at 32% 68%, rgba(255, 255, 255, 0.95) 1px, transparent 2px),
-        /* Ambient glow — soft bloom spots anchored to the viewport */
-        radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.16), transparent 40%),
-        radial-gradient(circle at 88% 72%, rgba(255, 255, 255, 0.13), transparent 42%),
+        /* Ambient glow — silver bloom spots anchored to the viewport */
+        radial-gradient(circle at 18% 10%, rgba(185, 200, 228, 0.13), transparent 40%),
+        radial-gradient(circle at 88% 72%, rgba(170, 188, 220, 0.10), transparent 42%),
         /* Base gradient */
-        linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
+        linear-gradient(180deg, #07080c 0%, #0c0e13 54%, #08090d 100%);
     /* Dot stars tile at 18.75vw × 33.33vh; glows + gradient fill naturally */
     background-size: 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, 18.75vw 33.33vh, auto, auto, auto;
     background-attachment: fixed;
@@ -116,9 +129,10 @@ body {
    on every scroll frame, which tanks performance on mobile. Also drop the
    dot stars and glow radials since the tiled background-size only works
    correctly with background-attachment: fixed. */
-@media (max-width: 900px), (pointer: coarse) {
+@media (max-width: 900px),
+(pointer: coarse) {
     body {
-        background: linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
+        background: linear-gradient(180deg, #07080c 0%, #0c0e13 54%, #08090d 100%);
         background-attachment: scroll;
     }
 
@@ -191,8 +205,13 @@ body.has-modal .main-content {
 }
 
 @keyframes app-root-reveal {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* ── Layer 4 — Main Content ──────────────────────────────────────────────────

@@ -246,10 +246,10 @@
   border-radius: var(--tfc-radius);
 
   /* solid card shell */
-  background-color: rgba(34, 40, 49, 0.78);
+  background-color: rgba(16, 18, 23, 0.86);
   background-image: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.2),
-      rgba(255, 255, 255, 0.08));
+      rgba(195, 205, 225, 0.22),
+      rgba(155, 168, 198, 0.07));
 
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -521,6 +521,7 @@
 }
 
 @media (hover: none) and (pointer: coarse) {
+
   /* backdrop-filter freezes and blurs all pixels behind the element — very
      expensive on mobile GPUs. Use a more-opaque solid overlay instead. */
   .tfc-backdrop {

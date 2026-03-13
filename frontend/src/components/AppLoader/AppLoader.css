@@ -11,9 +11,9 @@
     visibility: visible;
     transition: opacity 260ms ease, visibility 260ms ease;
     background:
-        radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.15), transparent 36%),
-        radial-gradient(circle at 82% 72%, rgba(255, 255, 255, 0.13), transparent 40%),
-        linear-gradient(180deg, #0d131b 0%, #161f2b 54%, #0e141d 100%);
+        radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.12), transparent 36%),
+        radial-gradient(circle at 82% 72%, rgba(255, 255, 255, 0.10), transparent 40%),
+        linear-gradient(180deg, #060809 0%, #0b0e12 54%, #07090c 100%);
 }
 
 .app-loader.is-exiting {

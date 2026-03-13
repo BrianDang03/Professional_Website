@@ -2,9 +2,9 @@
     position: sticky;
     top: 0;
     z-index: var(--z-navbar);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    background: linear-gradient(180deg, rgba(13, 18, 26, 0.34), rgba(13, 18, 26, 0.08));
+    -webkit-backdrop-filter: blur(120px);
+    backdrop-filter: blur(120px);
+    background: linear-gradient(180deg, rgba(13, 18, 26, 0.96), rgba(13, 18, 26, 0.93));
     border-bottom: 1px solid rgba(255, 255, 255, 0.14);
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
@@ -177,7 +177,9 @@
 
 /* Light theme overrides */
 [data-theme="light"] .site-header {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.16));
+    background: linear-gradient(180deg, rgba(225, 232, 248, 0.96), rgba(225, 232, 248, 0.93));
+    -webkit-backdrop-filter: blur(32px);
+    backdrop-filter: blur(32px);
     border-bottom-color: rgba(0, 0, 0, 0.1);
 }
 

@@ -10,7 +10,7 @@
     --z-shapes: -2;
     /* Decorative orbs/beams — behind waves. theme-bg has no z-index so orbs
        participate directly in app-root's stacking context (nav-cut orbs reach z:12) */
-    --z-shapes-nav-cut: 12;
+    --z-shapes-nav-cut: 1;
     /* Orbs that bleed behind the navbar         */
     --z-footer: 3;
     /* Footer — above waves, below content       */

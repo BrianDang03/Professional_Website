@@ -16,7 +16,7 @@ const BASE_ENTRANCE_DELAY_MS = 0; // Start card entrance motion immediately
 const LERP_FACTOR_TILT = 0.24; // Tilt rotation responsiveness: higher = faster tracking
 const LERP_FACTOR = 0.24; // Glare/shadow responsiveness
 const LERP_FACTOR_POPOUT = 0.10; // Popout responsiveness — 0.10 exits RAF in ~620ms vs ~1050ms at 0.06
-const CLOSE_RETURN_MS = 480;
+const CLOSE_RETURN_MS = 200;
 
 const POINTER_INITIAL_STATE = {
   isDown: false,
@@ -513,7 +513,7 @@ export default function TiltFlipCard({
   const closeInspectView = useCallback(() => {
     if (!isExpanded || isReturning) return;
 
-    suppressGlobalPointer(200);
+    suppressGlobalPointer(1);
 
     window.clearTimeout(closeReturnTimerRef.current);
 

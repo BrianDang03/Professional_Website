@@ -1,10 +1,10 @@
-import { useCallback } from 'react';
+import { memo, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Footer.css";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-export default function Footer() {
+function Footer() {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -66,3 +66,5 @@ export default function Footer() {
         </footer>
     );
 }
+
+export default memo(Footer);

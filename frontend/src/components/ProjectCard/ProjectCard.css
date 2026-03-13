@@ -40,6 +40,12 @@
         transition: none;
     }
 
+    /* Remove transition on link buttons too — otherwise the snap-back
+       from hover to rest state is still an animated 250ms fade */
+    .project-link {
+        transition: none;
+    }
+
     .project-link:hover {
         background: var(--mist);
         border-color: var(--line-soft);

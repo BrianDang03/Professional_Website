@@ -18,3 +18,10 @@
 .skip-to-content:focus {
     top: 20px;
 }
+
+/* No sliding animation for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .skip-to-content {
+        transition: none;
+    }
+}

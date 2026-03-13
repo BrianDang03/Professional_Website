@@ -51,6 +51,9 @@
     --surface: rgba(18, 20, 26, 0.75);
     --surface-strong: rgba(24, 27, 34, 0.91);
     --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.55);
+    /* Tell the browser our default theme is dark so native controls
+       (scrollbars, form inputs, selection highlight) render in dark mode. */
+    color-scheme: dark;
 }
 
 /* Light Theme */
@@ -68,6 +71,8 @@
     --surface: rgba(255, 255, 255, 0.8);
     --surface-strong: rgba(255, 255, 255, 0.95);
     --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.12);
+    /* Switch native browser controls to light mode when light theme is active */
+    color-scheme: light;
 }
 
 /* ── Base Resets ─────────────────────────────────────────────────────────────*/
@@ -265,6 +270,10 @@ body {
         var(--surface);
     box-shadow: var(--shadow-deep);
     position: relative;
+    /* Isolate this panel's layout and style from the rest of the page tree.
+       All CSS counters used by About.css are scoped entirely within this
+       element, so isolation is safe here. */
+    contain: layout style;
 }
 
 /* Frosted-glass top rim — a thin bright edge that reinforces the glass feel */

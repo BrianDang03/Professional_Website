@@ -98,6 +98,11 @@ img {
    html provides a solid canvas fallback colour for areas outside the gradient. */
 html {
     height: 100%;
+    /* overflow-x: hidden on html (not just body) propagates to the viewport,
+       which is required to prevent horizontal scroll. overflow-x: clip on body
+       alone does NOT propagate, so iOS Safari still allows horizontal panning
+       when position:fixed elements (like the mobile nav) are translated offscreen. */
+    overflow-x: hidden;
     background-color: var(--bg-0);
     scrollbar-gutter: stable;
     /* Prevent iOS Safari from auto-inflating font sizes on orientation change */

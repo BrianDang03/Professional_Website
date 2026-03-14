@@ -8,6 +8,70 @@
     padding-bottom: clamp(0.6rem, 1.6vw, 1.2rem);
 }
 
+/* ── Two-column hero: intro text left, portrait card right ───────────────── */
+.home-hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: clamp(2.4rem, 6vw, 6rem);
+    width: min(1200px, calc(100% - 3.2rem));
+    margin-inline: auto;
+}
+
+/* Left-align hero text when inside the split layout */
+.home-hero .hero-block {
+    text-align: left;
+    margin-inline: 0;
+    max-width: none;
+}
+
+.home-hero .hero-lead {
+    margin: 0;
+    max-width: 540px;
+}
+
+.home-hero .hero-intro {
+    max-width: 540px;
+}
+
+.home-hero .hero-ctas {
+    justify-content: flex-start;
+}
+
+/* Card sits at its natural size; remove the top margin used in the old stacked layout */
+.home-hero .card-container {
+    margin-top: 0;
+}
+
+/* ── Single-column breakpoint (mobile / narrow viewport) ─────────────────── */
+@media (max-width: 860px) {
+    .home-hero {
+        grid-template-columns: 1fr;
+        gap: clamp(2rem, 5vw, 3rem);
+    }
+
+    .home-hero .hero-block {
+        text-align: center;
+        max-width: 640px;
+        margin-inline: auto;
+    }
+
+    .home-hero .hero-lead,
+    .home-hero .hero-intro {
+        margin-inline: auto;
+        max-width: 540px;
+    }
+
+    .home-hero .hero-ctas {
+        justify-content: center;
+    }
+
+    /* Card below text on mobile */
+    .home-hero .card-container {
+        order: 2;
+    }
+}
+
 .home-bottom-line {
     width: min(980px, 92vw);
     height: 2px;
@@ -19,8 +83,15 @@
 }
 
 @keyframes home-line-in {
-    from { opacity: 0; transform: scaleX(0.3); }
-    to   { opacity: 1; transform: scaleX(1); }
+    from {
+        opacity: 0;
+        transform: scaleX(0.3);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleX(1);
+    }
 }
 
 [data-theme="light"] .home-bottom-line {

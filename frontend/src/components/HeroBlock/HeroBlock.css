@@ -83,6 +83,20 @@
 }
 
 /* ── Hero CTAs ───────────────────────────────────────────────────────────────*/
+.hero-intro {
+    max-width: 600px;
+    margin: 1.1rem auto 0;
+    color: var(--text-dim);
+    font-size: 0.96rem;
+    line-height: 1.72;
+    animation: rise-in 750ms ease both;
+    animation-delay: 300ms;
+}
+
+[data-theme="light"] .hero-intro {
+    color: var(--text-dim);
+}
+
 .hero-ctas {
     display: flex;
     justify-content: center;
@@ -91,7 +105,7 @@
     margin-top: 2.4rem;
     flex-wrap: wrap;
     animation: rise-in 750ms ease both;
-    animation-delay: 320ms;
+    animation-delay: 400ms;
 }
 
 .hero-btn {
@@ -164,7 +178,9 @@
     color: #1a2330;
 }
 
-@media (hover: none), (pointer: coarse) {
+@media (hover: none),
+(pointer: coarse) {
+
     /* Disable transitions — scroll-triggered :hover on touch causes an animated
        flash/rollback; instant state change is the correct behaviour on touch. */
     .hero-btn {
@@ -211,6 +227,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .hero-block,
     .hero-block h2,
     .hero-lead,

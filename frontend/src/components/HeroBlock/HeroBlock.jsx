@@ -2,7 +2,7 @@ import './HeroBlock.css';
 import { useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function HeroBlock({ name, job, lead = "Ideas engineered into unforgettable experiences." }) {
+export default function HeroBlock({ name, job, lead = "Ideas engineered into unforgettable experiences.", intro = null }) {
   const navigate = useNavigate();
 
   const handleContact = useCallback(() => {
@@ -14,6 +14,7 @@ export default function HeroBlock({ name, job, lead = "Ideas engineered into unf
       <h1>{name}</h1>
       <h2>{job}</h2>
       <p className="hero-lead">{lead}</p>
+      {intro && <p className="hero-intro">{intro}</p>}
       <div className="hero-ctas">
         <Link to="/portfolio" className="hero-btn hero-btn-primary">View My Work</Link>
         <button type="button" className="hero-btn hero-btn-secondary" onClick={handleContact}>

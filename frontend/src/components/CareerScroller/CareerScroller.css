@@ -1,12 +1,12 @@
-/* ── Scroll spacer — invisible, lives in document flow to create scroll room ── */
+﻿/* â”€â”€ Scroll spacer â€” invisible, lives in document flow to create scroll room â”€â”€ */
 .cs-container {
     position: relative;
-    height: 320vh;
+    height: 500vh;
     z-index: 0;
     pointer-events: none;
 }
 
-/* ── Fixed overlay — portalled to body, fully independent of layout ───────── */
+/* â”€â”€ Fixed overlay â€” portalled to body, fully independent of layout â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .cs-sticky {
     position: fixed;
     inset: 0;
@@ -15,285 +15,259 @@
     height: 100svh;
     overflow: hidden;
     background: var(--bg-0);
-    /* Subtle radial vignette centered on the VP — blue/silver */
-    background-image:
-        radial-gradient(ellipse 80% 60% at 50% 46%, rgba(50, 90, 200, 0.14) 0%, transparent 70%),
-        radial-gradient(ellipse 55% 38% at 50% 46%, rgba(80, 120, 220, 0.08) 0%, transparent 60%);
-    /* Above page content but below the navbar */
     z-index: 14;
 }
 
-/* Separate blue/red ambient halos beneath the SVG lines — centered on VP */
-.cs-sticky::before,
-.cs-sticky::after {
-    content: '';
+/* â”€â”€ Horizontal track â€” contains all panels side-by-side â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.cs-track {
     position: absolute;
-    /* VP is at 50% x, 46% y — halos bloom from there outward */
-    top: 28%;
-    width: 70%;
-    height: 60%;
-    pointer-events: none;
-    border-radius: 50%;
-    z-index: 0;
-}
-
-.cs-sticky::before {
-    left: -18%;
-    background: radial-gradient(ellipse at 75% 55%, rgba(80, 130, 255, 0.11) 0%, transparent 65%);
-}
-
-.cs-sticky::after {
-    right: -18%;
-    background: radial-gradient(ellipse at 25% 55%, rgba(60, 110, 230, 0.09) 0%, transparent 65%);
-}
-
-/* ── SVG canvases ───────────────────────────────────────────────────── */
-.cs-svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
+    top: 0;
+    left: 0;
     height: 100%;
-    pointer-events: none;
-    z-index: 1;
-    transform: translateZ(0);
+    display: flex;
+    will-change: transform;
 }
 
-/* Unified glow — black/silver/blue theme */
-.cs-svg {
-    filter: brightness(1.6) drop-shadow(0 0 6px rgba(210, 225, 255, 1.00)) drop-shadow(0 0 22px rgba(140, 180, 255, 0.88)) drop-shadow(0 0 55px rgba(80, 140, 240, 0.52));
+/* â”€â”€ Individual full-bleed panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.cs-panel {
+    position: relative;
+    width: 100vw;
+    height: 100%;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    /* Subtle right-edge shadow gives depth between panels */
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
 }
 
-[data-theme='light'] .cs-svg {
-    filter: contrast(1.1) saturate(0.65) brightness(0.72);
-}
-
-@media (max-width: 900px),
-(pointer: coarse) {
-    .cs-svg {
-        filter: brightness(1.5) drop-shadow(0 0 10px rgba(195, 215, 255, 0.95)) drop-shadow(0 0 30px rgba(110, 165, 245, 0.68));
-    }
-
-    [data-theme='light'] .cs-svg {
-        filter: contrast(1.0) saturate(0.65) brightness(0.75);
-    }
-}
-
-/* ── VP convergence glow orb ─────────────────────────────────────────────── */
-.cs-vp-glow {
+/* â”€â”€ Huge decorative year â€” background depth layer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.cs-panel__bg-year {
     position: absolute;
-    /* Base size is intentionally modest — JS scales it up to ~2.5× at arrival */
-    width: clamp(160px, 24vw, 380px);
-    height: clamp(80px, 12vw, 190px);
-    border-radius: 50%;
-    background: radial-gradient(ellipse 60% 80% at 50% 50%,
-            rgba(225, 235, 255, 0.95) 0%,
-            rgba(170, 200, 255, 0.70) 28%,
-            rgba(110, 160, 245, 0.40) 52%,
-            rgba(70, 120, 215, 0.16) 72%,
-            transparent 100%);
-    filter: blur(10px);
-    pointer-events: none;
-    z-index: 2;
-    will-change: opacity, transform;
-    transition: none;
-    /* driven by JS */
-}
-
-/* ── Career entry cards ──────────────────────────────────────────────────── */
-.cs-item {
-    position: absolute;
-    width: clamp(180px, 21vw, 270px);
-    padding: clamp(1rem, 1.6vw, 1.4rem) clamp(1rem, 1.8vw, 1.6rem);
-    background: var(--surface);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 14px;
-    backdrop-filter: blur(60px) saturate(1.3);
-    -webkit-backdrop-filter: blur(60px) saturate(1.3);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 0 0 1px rgba(200, 215, 240, 0.08),
-        0 8px 28px rgba(0, 0, 0, 0.40);
-    z-index: 3;
-    will-change: opacity, transform;
-
-    /* Transitions driven by data-visible attribute toggle */
-    opacity: 0;
-    transition:
-        opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
-        transform 640ms cubic-bezier(0.22, 1, 0.36, 1);
-
-    /* transform is set per-side below; translateY(-50%) centers vertically on `top` */
-}
-
-.cs-item--left {
-    left: clamp(1.2rem, 4vw, 4rem);
-    transform: translateX(-48px) translateY(-50%);
-}
-
-.cs-item--right {
-    right: clamp(1.2rem, 4vw, 4rem);
-    transform: translateX(48px) translateY(-50%);
-}
-
-/* Visible state — slide in from offset */
-.cs-item[data-visible='1'] {
-    opacity: 1;
-}
-
-.cs-item--left[data-visible='1'] {
-    transform: translateX(0) translateY(-50%);
-}
-
-.cs-item--right[data-visible='1'] {
-    transform: translateX(0) translateY(-50%);
-}
-
-/* Typography */
-.cs-year {
-    display: block;
+    right: clamp(-1rem, -1vw, -0.3rem);
+    bottom: 6%;
     font-family: "Cinzel", "Times New Roman", serif;
+    font-size: clamp(10rem, 20vw, 26rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: rgba(160, 190, 255, 1);
+    opacity: 0;
+    /* driven by JS */
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+/* â”€â”€ Foreground content block â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.cs-panel__content {
+    position: relative;
+    z-index: 2;
+    padding: 0 clamp(3rem, 8vw, 10rem);
+    max-width: 54vw;
+}
+
+.cs-panel__company {
+    display: block;
     font-size: 0.70rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-weight: 600;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--pillar-color-a, #7b9cf5);
-    margin-bottom: 0.45rem;
+    margin-bottom: 1rem;
 }
 
-.cs-title {
+.cs-panel__rule {
+    width: 2.2rem;
+    height: 1px;
+    background: rgba(200, 215, 255, 0.20);
+    margin-bottom: 1.5rem;
+}
+
+.cs-panel__title {
     font-family: "Cinzel", "Times New Roman", serif;
-    font-size: clamp(0.72rem, 1.1vw, 0.84rem);
+    font-size: clamp(2rem, 4.2vw, 5.2rem);
     font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
     color: var(--text-main);
-    margin: 0 0 0.30rem;
-    line-height: 1.35;
+    margin: 0 0 1.5rem;
 }
 
-.cs-company {
-    display: block;
-    font-size: 0.76rem;
+.cs-panel__desc {
+    font-size: clamp(0.85rem, 1.05vw, 0.98rem);
+    line-height: 1.80;
     color: var(--text-muted);
-    margin-bottom: 0.55rem;
-    letter-spacing: 0.03em;
+    margin: 0 0 2.2rem;
+    max-width: 40ch;
 }
 
-.cs-desc {
-    font-size: 0.80rem;
-    line-height: 1.65;
-    color: var(--text-dim);
-    margin: 0;
+.cs-panel__year-tag {
+    display: inline-block;
+    font-family: "Cinzel", "Times New Roman", serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: rgba(180, 195, 230, 0.38);
+    border: 1px solid rgba(180, 195, 230, 0.13);
+    padding: 0.28rem 0.65rem;
+    border-radius: 2px;
 }
 
-/* ── Section label (centered on VP, i.e. center screen) ─────────────────── */
-.cs-label {
+/* â”€â”€ Station progress dots â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.cs-dots {
     position: absolute;
-    top: 42%;
+    bottom: 2.4rem;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 3;
+    display: flex;
+    gap: 0.55rem;
+    align-items: center;
+    z-index: 4;
+}
+
+.cs-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(180, 200, 255, 0.55);
+    opacity: 0.25;
+    will-change: transform;
+}
+
+/* Panel counter (bottom-right, above scroll cue) */
+.cs-counter {
+    position: absolute;
+    bottom: 2.4rem;
+    right: clamp(3rem, 8vw, 10rem);
+    font-family: "Cinzel", "Times New Roman", serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(180, 195, 230, 0.35);
+    z-index: 4;
+    pointer-events: none;
+}
+
+[data-theme='light'] .cs-counter {
+    color: rgba(40, 60, 120, 0.35);
+}
+
+/* â”€â”€ Section label (top-left, in line with content padding) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.cs-label {
+    position: absolute;
+    top: 2rem;
+    left: clamp(3rem, 8vw, 10rem);
+    z-index: 4;
     pointer-events: none;
 }
 
 .cs-label span {
-    display: block;
     font-family: "Cinzel", "Times New Roman", serif;
-    font-size: clamp(0.60rem, 0.9vw, 0.72rem);
+    font-size: 0.64rem;
     font-weight: 700;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: rgba(180, 195, 230, 0.50);
+    color: rgba(180, 195, 230, 0.32);
 }
 
-/* ── Scroll cue chevron (bottom of sticky panel) ─────────────────────────── */
+/* â”€â”€ Scroll cue chevron (bottom-right) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .cs-scroll-cue {
     position: absolute;
     bottom: 2.2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    right: clamp(3rem, 8vw, 10rem);
     width: 1px;
-    height: 3rem;
-    background: linear-gradient(to bottom, rgba(160, 185, 255, 0.50), transparent);
-    z-index: 3;
+    height: 2.5rem;
+    background: linear-gradient(to bottom, rgba(160, 185, 255, 0.38), transparent);
+    z-index: 4;
 }
 
 .cs-scroll-cue::before {
     content: '';
     position: absolute;
-    bottom: -6px;
+    bottom: -5px;
     left: 50%;
     transform: translateX(-50%) rotate(45deg);
-    width: 6px;
-    height: 6px;
-    border-right: 1px solid rgba(160, 185, 255, 0.50);
-    border-bottom: 1px solid rgba(160, 185, 255, 0.50);
+    width: 5px;
+    height: 5px;
+    border-right: 1px solid rgba(160, 185, 255, 0.38);
+    border-bottom: 1px solid rgba(160, 185, 255, 0.38);
 }
 
-/* ── Light theme overrides ───────────────────────────────────────────────── */
+/* â”€â”€ Light theme â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 [data-theme='light'] .cs-sticky {
     background: var(--bg-0);
-    background-image:
-        radial-gradient(ellipse 70% 55% at 50% 46%, rgba(80, 120, 230, 0.08) 0%, transparent 65%),
-        radial-gradient(ellipse 50% 35% at 50% 46%, rgba(200, 60, 80, 0.05) 0%, transparent 55%);
 }
 
-[data-theme='light'] .cs-sticky::before {
-    background: radial-gradient(ellipse at 80% 90%, rgba(80, 130, 255, 0.08) 0%, transparent 70%);
+[data-theme='light'] .cs-panel {
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.04);
 }
 
-[data-theme='light'] .cs-sticky::after {
-    background: radial-gradient(ellipse at 20% 90%, rgba(210, 50, 70, 0.07) 0%, transparent 70%);
+[data-theme='light'] .cs-panel__bg-year {
+    color: rgba(30, 55, 160, 1);
 }
 
-[data-theme='light'] .cs-item {
-    border-color: rgba(26, 45, 67, 0.16);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.90),
-        0 0 0 1px rgba(26, 45, 67, 0.06),
-        0 8px 28px rgba(26, 45, 67, 0.10);
+[data-theme='light'] .cs-panel__rule {
+    background: rgba(30, 50, 130, 0.14);
+}
+
+[data-theme='light'] .cs-panel__year-tag {
+    color: rgba(40, 60, 130, 0.40);
+    border-color: rgba(40, 60, 130, 0.12);
+}
+
+[data-theme='light'] .cs-dot {
+    background: rgba(50, 80, 200, 0.50);
 }
 
 [data-theme='light'] .cs-label span {
-    color: rgba(60, 80, 130, 0.45);
+    color: rgba(40, 60, 120, 0.32);
 }
 
 [data-theme='light'] .cs-scroll-cue {
-    background: linear-gradient(to bottom, rgba(80, 110, 200, 0.40), transparent);
+    background: linear-gradient(to bottom, rgba(60, 90, 200, 0.28), transparent);
 }
 
 [data-theme='light'] .cs-scroll-cue::before {
-    border-color: rgba(80, 110, 200, 0.40);
+    border-color: rgba(60, 90, 200, 0.28);
 }
 
-/* ── Reduced motion ──────────────────────────────────────────────────────── */
+/* â”€â”€ Reduced motion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (prefers-reduced-motion: reduce) {
-    .cs-item {
-        transition: opacity 300ms ease;
-        transform: translateX(0) translateY(-50%) !important;
+
+    .cs-track,
+    .cs-panel__content {
+        transition: none;
     }
 }
 
-/* ── Mobile / touch ──────────────────────────────────────────────────────── */
+/* â”€â”€ Mobile / touch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (max-width: 700px) {
-    .cs-item {
-        width: clamp(140px, 42vw, 200px);
-        padding: 0.8rem 0.9rem;
+    .cs-panel__content {
+        padding: 0 clamp(1.5rem, 5vw, 3rem);
+        max-width: 88vw;
     }
 
-    .cs-item--left {
-        left: 0.6rem;
+    .cs-panel__title {
+        font-size: clamp(1.8rem, 7vw, 2.6rem);
     }
 
-    .cs-item--right {
-        right: 0.6rem;
+    .cs-panel__bg-year {
+        font-size: clamp(6rem, 26vw, 12rem);
     }
 
-    .cs-title {
-        font-size: 0.70rem;
+    .cs-label {
+        left: clamp(1.5rem, 5vw, 3rem);
     }
 
-    .cs-desc {
-        font-size: 0.74rem;
+    .cs-scroll-cue {
+        right: clamp(1.5rem, 5vw, 3rem);
+    }
+
+    .cs-counter {
+        right: clamp(1.5rem, 5vw, 3rem);
     }
 }

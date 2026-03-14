@@ -13,6 +13,11 @@
     --pillar-color-c: #4abf8e;
 }
 
+/* Extra height so the scroll-driven fade has room to play out */
+.home-fade-spacer {
+    height: 60vh;
+}
+
 /* ── Two-column hero: intro text left, portrait card right ───────────────── */
 .home-hero {
     display: grid;

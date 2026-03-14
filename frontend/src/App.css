@@ -376,3 +376,16 @@ body {
     mask-image: linear-gradient(to bottom, transparent 55%, black 72%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 55%, black 72%);
 }
+
+/* ── Scroll-to-black overlay ─────────────────────────────────────────────────
+   Fixed full-screen black veil. opacity is driven by JS scroll progress
+   (0 at top of page → 1 at bottom of page). Sits above all content layers
+   (z-index 50) but below the loader (--z-loader: 60) and skip link (9999). */
+.scroll-fade-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+}

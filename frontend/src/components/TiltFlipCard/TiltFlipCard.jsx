@@ -596,11 +596,9 @@ export default function TiltFlipCard({
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = isExpanded ? "hidden" : "";
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
       cancelAnimationFrame(rafRef.current);
     };
   }, [isExpanded, closeInspectView]);

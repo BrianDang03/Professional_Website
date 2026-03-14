@@ -43,6 +43,11 @@
     [data-theme="light"] .wave-lines {
         filter: contrast(1.0) saturate(0.7) brightness(0.78);
     }
+
+    /* Band is JS-driven and skipped on touch — hide it so nothing flickers */
+    .wl-band {
+        display: none;
+    }
 }
 
 [data-theme="light"] .wl-base path {
@@ -57,6 +62,16 @@
     stroke-dashoffset: 1;
     animation: wl-base-in 6000ms cubic-bezier(0.37, 0, 0.63, 1) both;
     animation-delay: calc(8000ms + var(--wl-i, 0) * 80ms);
+}
+
+/* Baseline replaces the scan on mobile — each line draws in exactly when
+   its scan counterpart would have started (500ms + i * 130ms).
+   Must come AFTER the base rule above to win the cascade. */
+@media (max-width: 900px),
+(pointer: coarse) {
+    .wl-base path {
+        animation-delay: calc(500ms + var(--wl-i, 0) * 130ms);
+    }
 }
 
 @keyframes wl-base-in {

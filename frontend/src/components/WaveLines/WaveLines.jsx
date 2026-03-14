@@ -106,6 +106,13 @@ export default function WaveLines() {
 
     // RAF loop — mutates SVG path `d` attributes directly, never re-renders React
     useEffect(() => {
+        // On touch devices only the CSS-driven baseline plays — skip the JS band loop entirely
+        const isTouchDevice =
+            typeof window !== 'undefined' &&
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(pointer: coarse)').matches;
+        if (isTouchDevice) return;
+
         let startTime = null;
 
         function tick(time) {

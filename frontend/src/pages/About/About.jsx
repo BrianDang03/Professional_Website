@@ -25,8 +25,8 @@ export default function About() {
     <PageTransition>
       <SEO
         title="About"
-        description="Learn about Brian Dang - software engineer passionate about gameplay systems, full-stack development, and creating memorable user experiences."
-        keywords="about, bio, skills, experience, software engineer, gameplay engineer"
+        description="Learn about Brian Dang - software engineer and M.S. CS candidate at Colorado School of Mines, building production tools, automation, and open-source contributions."
+        keywords="about, bio, education, Colorado School of Mines, University of Colorado Denver, skills, software engineer"
       />
       <section className="page-shell about-page">
         <button className="back-link" onClick={() => navigate(-1)} aria-label="Go back">
@@ -38,35 +38,83 @@ export default function About() {
 
         <div className="about-content">
           <p className="about-intro">
-            I am a creator first, and a systems designer and implementer at heart.
-            My work blends technical precision with creative vision, with a strong
-            focus on gameplay engineering, challenge-driven problem solving, and
-            continuous growth through every build.
+            I've been a gamer my whole life. FPS, Dark Souls, RPGs, puzzles, hack and slash.
+            I grew up chasing that feeling of finally figuring something out after it had
+            been grinding at me for hours. Turns out engineering gives me the exact same
+            thing. Building a system, wrestling with a problem, and then watching it click
+            and ship. That's my version of beating a hard boss. That drive is what got me
+            into software and it's still what keeps me going.
           </p>
 
           <div className="about-section">
-            <h2>My Journey</h2>
+            <h2>My Story</h2>
             <p>
-              As a software engineer, I've built systems that prioritize both user experience
-              and technical excellence. From gameplay-focused features to full-stack web
-              applications, I approach each project with a creator's mindset and an engineer's
-              discipline.
+              I didn't start in tech. I started in medicine, working as a pharmacy tech
+              and on track to become a pharmacist. Six months in I knew something was wrong.
+              The work felt dead. Uninspiring. I was going through the motions every single
+              day and it was draining me.
             </p>
             <p>
-              My experience spans game development, web technologies, and system architecture.
-              I thrive on complex challenges that require creative solutions, whether it's
-              optimizing performance for 60fps gameplay or architecting scalable backend systems.
+              So I made a decision on a complete whim. I liked games, I had always liked
+              tech, so I figured why not give computer science a shot. I enrolled at the
+              University of Colorado Denver with no coding background and just started. It
+              clicked immediately. The problem solving, the building, the feeling of finally
+              making something work after it had been grinding at you. It felt like
+              everything medicine never did.
+            </p>
+            <p>
+              From there I contributed to <strong>&lt;T&gt;LAPACK</strong>, an NSF-funded
+              open source C++ linear algebra library at UCD, implementing core numerical
+              routines merged into the production codebase. Then at Wanco Inc. I built two
+              tools that became critical dependencies on the manufacturing floor.
+              <strong> Modem Wizard</strong>, a full stack MERN application I shipped in
+              six weeks learning the stack for the first time, now processes 40 to 90 units
+              every week. A <strong>Python automation tool</strong> I wrote with Playwright
+              cut a four hour fulfillment process down to ten minutes and serves three active
+              production lines. I am now pursuing my M.S. in Computer Science at Colorado
+              School of Mines and I have not looked back once.
+            </p>
+            <p>
+              The next step is getting into a high impact engineering environment where the
+              work carries real weight and the standards are uncompromising. I want to spend
+              several years in that world, absorbing what it means to build at that level.
+              Then, eventually, I want to bring all of it into game development. Gameplay
+              engineering, systems design, building the kinds of experiences that make
+              someone feel exactly what I felt growing up. That is where this is all heading.
             </p>
           </div>
 
           <div className="about-section">
-            <h2>What I Do</h2>
+            <h2>Education</h2>
+            <div className="about-edu">
+              <div className="about-edu-card">
+                <div className="about-edu-header">
+                  <span className="about-edu-degree">M.S. Computer Science</span>
+                  <span className="about-edu-dash">—</span>
+                  <span className="about-edu-year">2026 – 2028</span>
+                </div>
+                <span className="about-edu-school">Colorado School of Mines</span>
+              </div>
+              <div className="about-edu-card">
+                <div className="about-edu-header">
+                  <span className="about-edu-degree">B.S. Computer Science</span>
+                  <span className="about-edu-dash">—</span>
+                  <span className="about-edu-year">2022 – 2026</span>
+                </div>
+                <span className="about-edu-school">University of Colorado Denver</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="about-section">
+            <h2>What I Build</h2>
             <ul className="about-list" role="list">
-              <li>Design and implement gameplay systems with focus on feel, feedback, and performance</li>
-              <li>Build full-stack web applications from concept through production</li>
-              <li>Create user-centered experiences that balance aesthetics with functionality</li>
-              <li>Optimize systems for scalability, maintainability, and long-term support</li>
-              <li>Collaborate across disciplines to bring creative visions to life</li>
+              <li>Production-grade internal tools that replace unreliable manual workflows</li>
+              <li>Full-stack web applications — database schema, API, and UI shipped as one</li>
+              <li>Browser and workflow automation that compresses hours of work into minutes</li>
+              <li>Gameplay systems with focus on feel, responsiveness, and real-time feedback</li>
+              <li>Open-source contributions to numerical computing and systems libraries</li>
+              <li>Third-party API integrations built under real deadline pressure</li>
             </ul>
           </div>
 
@@ -78,8 +126,8 @@ export default function About() {
           <div className="about-section" id="get-in-touch">
             <h2>Get in Touch</h2>
             <p>
-              I'm always interested in discussing new projects, creative ideas, or opportunities
-              to collaborate. Feel free to reach out!
+              I'm open to discussing new projects, engineering roles, or technical collaboration.
+              If you have something real to build, I want to hear about it.
             </p>
             <ContactForm />
           </div>

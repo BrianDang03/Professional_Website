@@ -17,6 +17,7 @@ import { shouldUseSimpleMotion } from './utils/motionProfile';
 const Home = lazy(() => import('./pages/Home/Home'));
 const Portfolio = lazy(() => import('./pages/Portfolio/Portfolio'));
 const About = lazy(() => import('./pages/About/About'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail/ProjectDetail'));
 
 function RouteLoadingFallback({ label }) {
   return (
@@ -69,6 +70,14 @@ function App() {
                   element={
                     <Suspense fallback={<RouteLoadingFallback label="Portfolio" />}>
                       <Portfolio />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/portfolio/:slug"
+                  element={
+                    <Suspense fallback={<RouteLoadingFallback label="Project" />}>
+                      <ProjectDetail />
                     </Suspense>
                   }
                 />

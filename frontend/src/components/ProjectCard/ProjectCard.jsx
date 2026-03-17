@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { motion as Motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { ExternalLink, Github, Lock } from 'lucide-react';
 import { shouldUseSimpleMotion } from '../../utils/motionProfile';
 import "./ProjectCard.css";
@@ -82,7 +83,7 @@ function ProjectCard({ project }) {
 
             <div className="project-content">
                 <h3>{project.title}</h3>
-                <p className="project-description">{project.description}</p>
+                <p className="project-description">{project.summary || project.description}</p>
 
                 <div className="project-tech">
                     {project.technologies.map((tech) => (
@@ -118,10 +119,19 @@ function ProjectCard({ project }) {
                     {!project.github && !project.demo && project.proprietary && (
                         <span className="project-proprietary">
                             <Lock size={13} aria-hidden="true" />
-                            Proprietary — Code Unavailable
+                            Code Unavailable
                         </span>
                     )}
-                    {!project.github && !project.demo && !project.proprietary && (
+                    {project.details && (
+                        <Link
+                            to={`/portfolio/${project.slug}`}
+                            className="project-link project-link-see-more"
+                            aria-label={`See more details about ${project.title}`}
+                        >
+                            <span>See More</span>
+                        </Link>
+                    )}
+                    {!project.github && !project.demo && !project.proprietary && !project.details && (
                         <span className="project-coming-soon">Coming Soon</span>
                     )}
                 </div>

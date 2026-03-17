@@ -9,19 +9,19 @@ const PILLARS = [
   {
     Icon: Layers,
     title: "Full-Stack Development",
-    body: "End-to-end web applications built from database to UI, production-deployed and relied on by real teams.",
+    body: "Builds complete web applications from the database to the UI, shipped to production and relied on by real teams.",
     color: "var(--pillar-color-b)",
   },
   {
     Icon: Zap,
     title: "Automation & Tooling",
-    body: "Python-driven workflow automation that replaced manual processes and cut fulfillment time from hours to minutes.",
+    body: "Workflow automation built in Python that replaced manual processes and cut fulfillment time from hours to minutes.",
     color: "var(--pillar-color-a)",
   },
   {
     Icon: Cpu,
     title: "Algorithms & Open Source",
-    body: "Contributor to an NSF-funded C++ linear algebra library, implementing numerical routines and test cases for production use.",
+    body: "Contributor to a C++ linear algebra library backed by NSF funding, implementing numerical routines and test cases for production use.",
     color: "var(--pillar-color-c)",
   },
 ];
@@ -40,7 +40,7 @@ export default function Home({ name, job }) {
           <HeroBlock
             name={name}
             job={job}
-            intro="Software engineer with a gameplay focus. I design and ship systems end-to-end — from player mechanics to production web interfaces — with an emphasis on feel, performance, and maintainability."
+            intro="Software engineer who builds tools and products that create real impact. I ship production web applications, automate workflows, and contribute to open source. I thrive when the work has a clear purpose and real consequences."
           />
           <HomeCards />
         </div>

@@ -1,10 +1,309 @@
 .home-shell {
-    min-height: calc(100svh - 10rem);
+    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding-top: clamp(0.6rem, 1.6vw, 1.2rem);
-    padding-bottom: clamp(0.6rem, 1.6vw, 1.2rem);
+    padding-bottom: clamp(5rem, 12vw, 10rem);
+
+    /* Pillar accent colours */
+    --pillar-color-a: #7b9cf5;
+    --pillar-color-b: #a87bf5;
+    --pillar-color-c: #4abf8e;
+}
+
+/* Extra height so the scroll-driven fade has room to play out */
+.home-fade-spacer {
+    height: 60vh;
+}
+
+/* ── Two-column hero: intro text left, portrait card right ───────────────── */
+.home-hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: clamp(2.4rem, 6vw, 6rem);
+    width: min(1200px, calc(100% - 3.2rem));
+    margin-inline: auto;
+    padding-bottom: 0;
+}
+
+/* Left-align hero text when inside the split layout */
+.home-hero .hero-block {
+    text-align: left;
+    margin-inline: 0;
+    max-width: none;
+}
+
+.home-hero .hero-lead {
+    margin: 0;
+    max-width: 540px;
+}
+
+.home-hero .hero-intro {
+    max-width: 540px;
+}
+
+.home-hero .hero-ctas {
+    justify-content: flex-start;
+}
+
+/* Card sits at its natural size; remove the top margin used in the old stacked layout */
+.home-hero .card-container {
+    margin-top: 0;
+}
+
+/* ── Single-column breakpoint (mobile / narrow viewport) ─────────────────── */
+@media (max-width: 860px) {
+    .home-hero {
+        grid-template-columns: 1fr;
+        gap: clamp(2rem, 5vw, 3rem);
+    }
+
+    .home-hero .hero-block {
+        text-align: center;
+        max-width: 640px;
+        margin-inline: auto;
+    }
+
+    .home-hero .hero-lead,
+    .home-hero .hero-intro {
+        margin-inline: auto;
+        max-width: 540px;
+    }
+
+    .home-hero .hero-ctas {
+        justify-content: center;
+    }
+
+    /* Card below text on mobile */
+    .home-hero .card-container {
+        order: 2;
+    }
+}
+
+/* ── Pillar tiles ────────────────────────────────────────────────────────── */
+.home-pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2.4vw, 1.5rem);
+    width: min(1200px, calc(100% - 3.2rem));
+    margin: clamp(3rem, 6vw, 4.5rem) auto 0;
+}
+
+.home-pillar {
+    padding: clamp(1.4rem, 3vw, 2rem) clamp(1.4rem, 2.5vw, 1.8rem);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    background: var(--surface);
+    backdrop-filter: blur(80px) saturate(1.4) brightness(0.9);
+    -webkit-backdrop-filter: blur(80px) saturate(1.4) brightness(0.9);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 0 0 1px rgba(200, 215, 240, 0.10),
+        0 0 18px 2px rgba(180, 200, 235, 0.12),
+        0 8px 32px rgba(0, 0, 0, 0.35);
+    animation: home-fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--pillar-delay, 500ms);
+    transition: border-color 260ms ease, background 260ms ease, box-shadow 260ms ease;
+    isolation: isolate;
+    position: relative;
+    overflow: hidden;
+}
+
+.home-pillar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(210, 225, 255, 0.13) 0%, transparent 70%);
+    border-radius: inherit;
+    pointer-events: none;
+    transition: background 260ms ease;
+    z-index: 0;
+}
+
+.home-pillar:hover::before {
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(210, 225, 255, 0.22) 0%, transparent 70%);
+}
+
+.home-pillar>* {
+    position: relative;
+    z-index: 1;
+}
+
+.home-pillar:hover {
+    border-color: rgba(255, 255, 255, 0.38);
+    background: var(--surface-strong);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        0 0 0 1px rgba(200, 215, 240, 0.18),
+        0 0 28px 4px rgba(180, 200, 235, 0.22),
+        0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.home-pillar-icon {
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--pillar-accent, #7b9cf5);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.home-pillar h3 {
+    font-family: "Cinzel", "Times New Roman", serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-main);
+    margin: 0 0 0.65rem;
+}
+
+.home-pillar p {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+[data-theme="light"] .home-pillar {
+    border-color: rgba(26, 45, 67, 0.18);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.90),
+        0 0 0 1px rgba(26, 45, 67, 0.06),
+        0 0 18px 2px rgba(100, 130, 200, 0.10),
+        0 8px 32px rgba(26, 45, 67, 0.10);
+}
+
+[data-theme="light"] .home-pillar::before {
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(255, 255, 255, 0.70) 0%, transparent 70%);
+}
+
+[data-theme="light"] .home-pillar:hover {
+    border-color: rgba(26, 45, 67, 0.30);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 0 0 1px rgba(26, 45, 67, 0.10),
+        0 0 28px 4px rgba(100, 130, 200, 0.16),
+        0 12px 40px rgba(26, 45, 67, 0.14);
+}
+
+[data-theme="light"] .home-pillar:hover::before {
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(255, 255, 255, 0.85) 0%, transparent 70%);
+}
+
+/* ── Tech strip ─────────────────────────────────────────────────────────── */
+.home-tech-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem;
+    width: min(980px, calc(100% - 3.2rem));
+    margin: clamp(2rem, 4vw, 3rem) auto 0;
+    animation: home-fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 800ms;
+}
+
+.home-tag {
+    padding: 0.45rem 1rem;
+    background: var(--surface);
+    backdrop-filter: blur(80px) saturate(1.4) brightness(0.9);
+    -webkit-backdrop-filter: blur(80px) saturate(1.4) brightness(0.9);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 0 12px 1px rgba(180, 200, 235, 0.10),
+        0 2px 8px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+}
+
+.home-tag::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(210, 225, 255, 0.16) 0%, transparent 70%);
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.home-tag>* {
+    position: relative;
+    z-index: 1;
+}
+
+.home-tag:hover {
+    background: var(--surface-strong);
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        0 0 18px 3px rgba(180, 200, 235, 0.20),
+        0 2px 8px rgba(0, 0, 0, 0.30);
+}
+
+[data-theme="light"] .home-tag {
+    border-color: rgba(26, 45, 67, 0.18);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.90),
+        0 0 12px 1px rgba(100, 130, 200, 0.08),
+        0 2px 8px rgba(26, 45, 67, 0.08);
+}
+
+[data-theme="light"] .home-tag::before {
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(255, 255, 255, 0.70) 0%, transparent 70%);
+}
+
+[data-theme="light"] .home-tag:hover {
+    border-color: rgba(26, 45, 67, 0.30);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 0 18px 3px rgba(100, 130, 200, 0.14),
+        0 2px 8px rgba(26, 45, 67, 0.10);
+}
+
+@keyframes home-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .home-pillar,
+    .home-tech-strip {
+        animation: none;
+    }
+}
+
+@media (max-width: 860px) {
+    .home-pillars {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 861px) and (max-width: 1060px) {
+    .home-pillars {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .home-pillar h3 {
+        font-size: 0.76rem;
+    }
 }
 
 .home-bottom-line {
@@ -13,11 +312,31 @@
     margin: 2.4rem auto 0;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
     box-shadow: 0 0 28px rgba(255, 255, 255, 0.5);
+    animation: home-line-in 1200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 600ms;
+}
+
+@keyframes home-line-in {
+    from {
+        opacity: 0;
+        transform: scaleX(0.3);
+    }
+
+    to {
+        opacity: 1;
+        transform: scaleX(1);
+    }
 }
 
 [data-theme="light"] .home-bottom-line {
     background: linear-gradient(90deg, transparent, rgba(26, 45, 67, 0.6), transparent);
     box-shadow: 0 0 18px rgba(26, 45, 67, 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-bottom-line {
+        animation: none;
+    }
 }
 
 @media (max-width: 640px) {

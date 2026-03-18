@@ -16,7 +16,8 @@ const BASE_ENTRANCE_DELAY_MS = 0; // Start card entrance motion immediately
 const LERP_FACTOR_TILT = 0.24; // Tilt rotation responsiveness: higher = faster tracking
 const LERP_FACTOR = 0.24; // Glare/shadow responsiveness
 const LERP_FACTOR_POPOUT = 0.10; // Popout responsiveness — 0.10 exits RAF in ~620ms vs ~1050ms at 0.06
-const CLOSE_RETURN_MS = 720;
+// Match close teardown to opening flip duration for symmetric timing.
+const CLOSE_RETURN_MS = 1100;
 
 const POINTER_INITIAL_STATE = {
   isDown: false,
@@ -152,6 +153,7 @@ export default function TiltFlipCard({
   const [isFlipped, setIsFlipped] = useState(false);
   const [isReturning, setIsReturning] = useState(false);
   const [isBackdropVisible, setIsBackdropVisible] = useState(false);
+
   const [frontVisibleSrc, setFrontVisibleSrc] = useState(frontImg || null);
   const [backVisibleSrc, setBackVisibleSrc] = useState(backImg || null);
 
@@ -512,7 +514,7 @@ export default function TiltFlipCard({
   const closeInspectView = useCallback(() => {
     if (!isExpanded || isReturning) return;
 
-    suppressGlobalPointer(200);
+    suppressGlobalPointer(1);
 
     window.clearTimeout(closeReturnTimerRef.current);
 
@@ -595,11 +597,9 @@ export default function TiltFlipCard({
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = isExpanded ? "hidden" : "";
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
       cancelAnimationFrame(rafRef.current);
     };
   }, [isExpanded, closeInspectView]);

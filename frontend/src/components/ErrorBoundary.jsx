@@ -23,8 +23,7 @@ class ErrorBoundary extends Component {
                     <p>We encountered an unexpected error. Please try refreshing the page.</p>
                     <button
                         onClick={() => window.location.reload()}
-                        className="card-action-btn"
-                        style={{ marginTop: '1rem' }}
+                        className="card-action-btn error-retry-btn"
                     >
                         Refresh Page
                     </button>

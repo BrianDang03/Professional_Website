@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Sun, Moon } from 'lucide-react';
 import './ThemeToggle.css';
 
@@ -13,9 +13,9 @@ export default function ThemeToggle() {
         localStorage.setItem('theme', theme);
     }, [theme]);
 
-    const toggleTheme = () => {
+    const toggleTheme = useCallback(() => {
         setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-    };
+    }, []);
 
     return (
         <button

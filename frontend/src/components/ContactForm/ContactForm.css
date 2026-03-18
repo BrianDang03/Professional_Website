@@ -3,6 +3,19 @@
     max-width: 600px;
 }
 
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1.5rem;
+}
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -38,6 +51,7 @@
 
 [data-theme="light"] .form-group input:focus,
 [data-theme="light"] .form-group textarea:focus {
+    background: rgba(0, 0, 0, 0.04);
     box-shadow: 0 0 0 3px rgba(26, 45, 67, 0.1);
 }
 
@@ -49,6 +63,44 @@
 .submit-btn {
     width: 100%;
     border: none;
+    min-height: 48px;
+    background: linear-gradient(140deg, rgba(210, 220, 240, 0.92), rgba(155, 170, 200, 0.88));
+    color: #0e1420;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    touch-action: manipulation;
+    transition: filter 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+
+.submit-btn:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+
+@media (hover: none),
+(pointer: coarse) {
+    .submit-btn:hover {
+        filter: none;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .submit-btn {
+        transition: none;
+    }
+}
+
+[data-theme="light"] .submit-btn {
+    background: linear-gradient(140deg, #1a2d43, #253c58);
+    color: #ffffff;
+}
+
+[data-theme="light"] .submit-btn:hover {
+    filter: brightness(1.12);
 }
 
 .submit-btn:disabled {
@@ -62,6 +114,8 @@
     border-radius: 8px;
     font-size: 0.9rem;
     text-align: center;
+    /* Prevent long email addresses from overflowing on narrow screens */
+    overflow-wrap: break-word;
 }
 
 .form-status.success {
@@ -76,10 +130,26 @@
     color: #ef9a9a;
 }
 
-@media (max-width: 640px) {
+[data-theme="light"] .form-status.success {
+    color: #2e7d32;
+}
+
+[data-theme="light"] .form-status.error {
+    color: #c62828;
+}
+
+/* 16px minimum prevents iOS Safari from auto-zooming focused inputs.
+   Covers phones, phablets, and tablets up to iPad landscape. */
+@media (max-width: 900px) {
 
     .form-group input,
     .form-group textarea {
         font-size: 16px;
+    }
+
+    /* resize:vertical shows a drag handle on mobile — hard to use on touch
+       and causes accidental resizes. Lock it on all touch-sized viewports. */
+    .form-group textarea {
+        resize: none;
     }
 }

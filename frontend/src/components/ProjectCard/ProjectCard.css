@@ -5,18 +5,83 @@
     border-radius: 16px;
     background: var(--surface);
     overflow: hidden;
+    position: relative;
+    isolation: isolate;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 0 0 1px rgba(200, 215, 240, 0.10),
+        0 0 18px 2px rgba(180, 200, 235, 0.12),
+        0 8px 32px rgba(0, 0, 0, 0.35);
     transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    contain: layout style;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(210, 225, 255, 0.13) 0%, transparent 70%);
+    border-radius: inherit;
+    pointer-events: none;
+    transition: background 300ms ease;
+    z-index: 0;
+}
+
+.project-card:hover::before {
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(210, 225, 255, 0.22) 0%, transparent 70%);
+}
+
+.project-card>* {
+    position: relative;
+    z-index: 1;
 }
 
 .project-card:hover {
     border-color: var(--line-strong);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.32),
+        0 0 0 1px rgba(200, 215, 240, 0.18),
+        0 0 28px 4px rgba(180, 200, 235, 0.22),
+        0 12px 40px rgba(0, 0, 0, 0.45);
     transform: translateY(-3px);
 }
 
+[data-theme="light"] .project-card {
+    border-color: rgba(26, 45, 67, 0.18);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.90),
+        0 0 0 1px rgba(26, 45, 67, 0.06),
+        0 0 18px 2px rgba(100, 130, 200, 0.10),
+        0 8px 32px rgba(26, 45, 67, 0.10);
+}
+
+[data-theme="light"] .project-card::before {
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(255, 255, 255, 0.70) 0%, transparent 70%);
+}
+
+[data-theme="light"] .project-card:hover {
+    border-color: rgba(26, 45, 67, 0.30);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 0 0 1px rgba(26, 45, 67, 0.10),
+        0 0 28px 4px rgba(100, 130, 200, 0.16),
+        0 12px 40px rgba(26, 45, 67, 0.14);
+}
+
+[data-theme="light"] .project-card:hover::before {
+    background: radial-gradient(ellipse 70% 60% at 28% 8%, rgba(255, 255, 255, 0.85) 0%, transparent 70%);
+}
+
 /* Remove hover effects on touch devices — iOS/Android fire :hover on
-   scroll-touch and it stays "stuck", making elements flash as highlighted. */
-@media (hover: none), (pointer: coarse) {
+   scroll-touch and it stays "stuck", making elements flash as highlighted.
+   Also remove the transition itself so there's no animated flash even on
+   the momentary :hover that fires during a scroll gesture. */
+@media (hover: none),
+(pointer: coarse) {
+    .project-card {
+        transition: none;
+    }
+
     .project-card:hover {
         border-color: var(--line-soft);
         box-shadow: none;
@@ -25,6 +90,16 @@
 
     .project-card:hover .project-image img {
         transform: none;
+    }
+
+    .project-image img {
+        transition: none;
+    }
+
+    /* Remove transition on link buttons too — otherwise the snap-back
+       from hover to rest state is still an animated 250ms fade */
+    .project-link {
+        transition: none;
     }
 
     .project-link:hover {
@@ -38,6 +113,7 @@
     }
 }
 
+/* ── Image / Placeholder ─────────────────────────────────────────────────────*/
 .project-image {
     width: 100%;
     aspect-ratio: 16 / 10;
@@ -62,19 +138,84 @@
     transform: scale(1.05);
 }
 
+.project-image-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 30% 40%, rgba(123, 156, 245, 0.10) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 70%, rgba(100, 130, 220, 0.07) 0%, transparent 55%),
+        var(--bg-2);
+}
+
+.project-image-placeholder::before,
+.project-image-placeholder::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.project-image-placeholder::before {
+    width: 110px;
+    height: 110px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.project-image-placeholder::after {
+    width: 64px;
+    height: 64px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.project-placeholder-initial {
+    font-family: "Cinzel", "Times New Roman", serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.14);
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
+    user-select: none;
+}
+
+[data-theme="light"] .project-image-placeholder {
+    background:
+        radial-gradient(ellipse at 30% 40%, rgba(60, 100, 220, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 70%, rgba(40, 80, 180, 0.05) 0%, transparent 55%),
+        var(--bg-2);
+}
+
+[data-theme="light"] .project-placeholder-initial {
+    color: rgba(26, 45, 67, 0.18);
+}
+
 .project-content {
     padding: 1.5rem;
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 1;
 }
 
 .project-content h3 {
     margin: 0 0 0.75rem;
     font-family: "Cinzel", "Times New Roman", serif;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     letter-spacing: 0.04em;
     color: var(--text-main);
+    background: linear-gradient(135deg, var(--text-main) 60%, rgba(155, 180, 240, 0.85));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .project-description {
@@ -112,6 +253,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 1rem;
+    min-height: 44px;
     background: var(--mist);
     border: 1px solid var(--line-soft);
     border-radius: 8px;
@@ -119,6 +261,8 @@
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
+    /* Eliminate the 300ms tap delay on touch without disabling pinch-to-zoom */
+    touch-action: manipulation;
     transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }
 
@@ -130,4 +274,136 @@
 
 [data-theme="light"] .project-link:hover {
     background: rgba(26, 45, 67, 0.1);
+}
+
+.project-coming-soon {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 1rem;
+    background: var(--mist);
+    border: 1px dashed var(--line-soft);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.project-proprietary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 36px;
+    padding: 0 1rem;
+    background: rgba(180, 140, 60, 0.08);
+    border: 1px solid rgba(200, 160, 60, 0.28);
+    border-radius: 999px;
+    color: rgba(210, 175, 90, 0.85);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+[data-theme="light"] .project-proprietary {
+    background: rgba(160, 110, 20, 0.07);
+    border-color: rgba(160, 110, 20, 0.28);
+    color: rgba(130, 85, 10, 0.90);
+}
+
+.project-link.project-link-see-more {
+    background: rgba(123, 156, 245, 0.10);
+    border-color: rgba(123, 156, 245, 0.35);
+    color: rgba(165, 198, 255, 0.95);
+}
+
+.project-link.project-link-see-more:hover {
+    background: rgba(123, 156, 245, 0.18);
+    border-color: rgba(123, 156, 245, 0.55);
+}
+
+[data-theme="light"] .project-link.project-link-see-more {
+    background: rgba(60, 100, 220, 0.07);
+    border-color: rgba(60, 100, 220, 0.28);
+    color: rgba(30, 70, 180, 0.90);
+}
+
+[data-theme="light"] .project-link.project-link-see-more:hover {
+    background: rgba(60, 100, 220, 0.13);
+    border-color: rgba(60, 100, 220, 0.45);
+}
+
+.project-link.project-link-see-more {
+    background: rgba(123, 156, 245, 0.10);
+    border-color: rgba(123, 156, 245, 0.35);
+    color: rgba(165, 198, 255, 0.95);
+}
+
+.project-link.project-link-see-more:hover {
+    background: rgba(123, 156, 245, 0.18);
+    border-color: rgba(123, 156, 245, 0.55);
+}
+
+[data-theme="light"] .project-link.project-link-see-more {
+    background: rgba(60, 100, 220, 0.07);
+    border-color: rgba(60, 100, 220, 0.28);
+    color: rgba(30, 70, 180, 0.90);
+}
+
+[data-theme="light"] .project-link.project-link-see-more:hover {
+    background: rgba(60, 100, 220, 0.13);
+    border-color: rgba(60, 100, 220, 0.45);
+}
+
+/* Project title gradient light-mode override */
+[data-theme="light"] .project-content h3 {
+    background: linear-gradient(135deg, #0c1826 60%, #1b3465);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Tech badge color families ───────────────────────────────────────────────*/
+.tech-badge.badge-blue {
+    border-color: rgba(100, 145, 255, 0.32);
+    color: rgba(165, 198, 255, 0.95);
+}
+
+.tech-badge.badge-green {
+    border-color: rgba(55, 175, 115, 0.32);
+    color: rgba(110, 220, 165, 0.95);
+}
+
+.tech-badge.badge-purple {
+    border-color: rgba(155, 100, 255, 0.32);
+    color: rgba(200, 165, 255, 0.95);
+}
+
+.tech-badge.badge-amber {
+    border-color: rgba(220, 155, 55, 0.32);
+    color: rgba(255, 200, 105, 0.95);
+}
+
+[data-theme="light"] .tech-badge.badge-blue {
+    border-color: rgba(40, 85, 210, 0.28);
+    color: rgba(30, 68, 175, 0.9);
+}
+
+[data-theme="light"] .tech-badge.badge-green {
+    border-color: rgba(20, 125, 75, 0.28);
+    color: rgba(18, 105, 62, 0.9);
+}
+
+[data-theme="light"] .tech-badge.badge-purple {
+    border-color: rgba(100, 48, 195, 0.28);
+    color: rgba(82, 38, 168, 0.9);
+}
+
+[data-theme="light"] .tech-badge.badge-amber {
+    border-color: rgba(155, 95, 5, 0.28);
+    color: rgba(130, 78, 4, 0.9);
 }

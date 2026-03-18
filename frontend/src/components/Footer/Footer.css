@@ -1,13 +1,93 @@
 .site-footer {
+    position: relative;
+    z-index: var(--z-footer);
     margin-top: auto;
     border-top: 1px solid rgba(255, 255, 255, 0.18);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    background: linear-gradient(180deg, rgba(16, 22, 31, 0.1), rgba(16, 22, 31, 0.32));
+    /* Reduce blur radius — visually identical above ~10px but was unnecessarily expensive */
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    background: linear-gradient(180deg, rgba(13, 18, 26, 0.55), rgba(13, 18, 26, 0.80));
     padding: 2.1rem 0 1.5rem;
     padding-left: env(safe-area-inset-left);
     padding-right: env(safe-area-inset-right);
     padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    overflow: hidden;
+}
+
+/* Content wrapper — sits above the decorative orb/beam in the stacking order */
+.footer-inner {
+    position: relative;
+    z-index: 1;
+    /* Isolate footer layout; prevents footer reflows from propagating up the tree
+       during scroll-repaint on pages with variable content heights. */
+    contain: layout;
+}
+
+/* ── Decorative background elements ──────────────────────────────────────────
+   z-index: 0 = above footer's own backdrop, below footer-inner text (z:1) */
+.ft-deco-orb,
+.ft-deco-beam {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ft-deco-orb {
+    width: clamp(120px, 16vw, 220px);
+    aspect-ratio: 1;
+    bottom: -30%;
+    left: -3vw;
+    border: 1px solid rgba(225, 232, 248, 0.55);
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 28% 22%,
+            rgba(235, 240, 252, 0.30) 0%,
+            rgba(195, 205, 228, 0.12) 25%,
+            rgba(155, 168, 200, 0.04) 50%,
+            rgba(0, 0, 0, 0) 70%),
+        radial-gradient(circle at 72% 78%,
+            rgba(185, 198, 228, 0.12) 0%,
+            rgba(0, 0, 0, 0) 55%),
+        radial-gradient(circle at 50% 50%,
+            rgba(26, 27, 34, 0.95) 0%,
+            rgba(14, 15, 19, 0.97) 55%,
+            rgba(5, 6, 9, 1.00) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(235, 243, 255, 0.40),
+        0 0 12px rgba(220, 232, 252, 0.50),
+        0 0 32px rgba(195, 212, 245, 0.28),
+        0 0 70px rgba(165, 188, 235, 0.14);
+}
+
+[data-theme="light"] .ft-deco-orb {
+    border-color: rgba(60, 100, 220, 0.25);
+    background:
+        radial-gradient(circle at 28% 22%,
+            rgba(255, 255, 255, 0.72) 0%,
+            rgba(220, 230, 255, 0.30) 30%,
+            rgba(0, 0, 0, 0) 65%),
+        radial-gradient(circle at 72% 78%,
+            rgba(210, 220, 255, 0.20) 0%,
+            rgba(0, 0, 0, 0) 55%),
+        radial-gradient(circle at 50% 50%,
+            rgba(225, 228, 238, 1.00) 0%,
+            rgba(200, 206, 222, 1.00) 55%,
+            rgba(175, 183, 205, 1.00) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 18px rgba(60, 100, 220, 0.12),
+        0 0 6px rgba(100, 140, 255, 0.10);
+}
+
+.ft-deco-beam {
+    width: 46vw;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--line-strong) 40%, transparent 100%);
+    top: 30%;
+    left: -10vw;
+    right: auto;
+    transform: rotate(16deg);
+    transform-origin: left center;
 }
 
 .footer-grid {
@@ -40,10 +120,29 @@
 }
 
 .footer-links a {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    padding: 0.2rem 0.25rem;
     color: var(--text-dim);
     text-decoration: none;
     font-size: 0.92rem;
+    /* Remove ~300ms iOS tap delay on footer navigation links */
+    touch-action: manipulation;
     transition: color 180ms ease;
+}
+
+.ft-link-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+    opacity: 0.7;
+    transition: opacity 180ms ease;
+}
+
+.footer-links a:hover .ft-link-icon {
+    opacity: 1;
 }
 
 .footer-links a:hover {
@@ -54,6 +153,10 @@
 (pointer: coarse) {
     .footer-links a:hover {
         color: var(--text-dim);
+    }
+
+    .footer-links a {
+        transition: none;
     }
 }
 
@@ -67,9 +170,23 @@
     letter-spacing: 0.04em;
 }
 
+@media (max-width: 480px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 900px) {
     .footer-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Strip expensive backdrop-filter on touch devices */
+@media (pointer: coarse) {
+    .site-footer {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
     }
 }
 

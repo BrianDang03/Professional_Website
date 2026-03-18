@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import "./Navbar.css";
@@ -8,8 +8,12 @@ export default function Navbar() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const navLinkClass = ({ isActive }) =>
-        `nav-link ${isActive ? "is-active" : ""}`;
+    const navLinkClass = useCallback(({ isActive }) =>
+        `nav-link ${isActive ? "is-active" : ""}`, []);
+
+    const closeMenu = useCallback(() => {
+        setIsMenuOpen(false);
+    }, []);
 
     useEffect(() => {
         if (!isMenuOpen) {
@@ -60,11 +64,7 @@ export default function Navbar() {
         };
     }, [isMenuOpen]);
 
-    const closeMenu = () => {
-        setIsMenuOpen(false);
-    };
-
-    const handleContact = () => {
+    const handleContact = useCallback(() => {
         closeMenu();
         if (location.pathname === "/about") {
             // Already on the About page — scroll directly, no navigation needed
@@ -72,7 +72,7 @@ export default function Navbar() {
         } else {
             navigate("/about", { state: { scrollTo: "get-in-touch" } });
         }
-    };
+    }, [closeMenu, location.pathname, navigate]);
 
     return (
         <header className="site-header">

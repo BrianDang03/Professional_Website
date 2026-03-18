@@ -8,6 +8,8 @@ export default defineConfig({
   build: {
     target: 'es2015',
     reportCompressedSize: false,
+    // Skip injecting the ~2 KB module-preload polyfill — all target browsers support it natively
+    modulePreload: { polyfill: false },
     rollupOptions: {
       output: {
         manualChunks(id) {

@@ -1,51 +1,23 @@
-/* ── Wave background container ───────────────────────────────────────────────
-   Fixed container for the animated wave SVG. Sits furthest back (z=-4) so it
-   renders behind both shapes and page content. CSS filter is intentionally
-   omitted here — a filter creates a stacking context that forces the SVG into
-   a single GPU layer, causing full-layer invalidation on every RAF tick.
-   Brightness is applied directly on the SVG element via WaveLines.css instead. */
-.wave-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -4;
-    overflow: visible;
-    pointer-events: none;
-}
-
-.wave-bg.is-deferred {
-    opacity: 0.001;
-}
-
-.wave-bg.is-ready {
-    opacity: 1;
-    transition: opacity 220ms ease-out;
-}
-
 /* ── Shape containers ────────────────────────────────────────────────────────
-   Two absolute containers so the main-viewport shapes and footer shapes can
-   be positioned independently without conflicting stacking contexts.
-   Both sit at z=-3 (in front of waves, behind page content). */
+   .theme-bg has NO z-index intentionally — this prevents it from forming a
+   stacking context, which means each orb's z-index participates directly in
+   .app-root's stacking context. This lets nav-cut orbs reach z:12 globally
+   (above page content, below the navbar at z:15) while regular orbs stay at
+   their z:-2 (behind the wave layer at z:-1). */
 .theme-bg {
     position: absolute;
     inset: 0;
-    z-index: 1;
     overflow: visible;
     pointer-events: none;
     --nav-orb-left-x: -3.35vw;
     --nav-orb-left-y: 10vh;
-    --nav-orb-left-size: 15.1vw;
-    --nav-orb-small-size: 5vw;
-    --nav-orb-small-overlap-x: 3.96vw;
-    --nav-orb-small-overlap-y: 6.67vh;
+    --nav-orb-left-size: clamp(120px, 15.1vw, 220px);
+    --nav-orb-small-size: clamp(38px, 5vw, 72px);
+    --nav-orb-small-overlap-x: clamp(28px, 3.96vw, 57px);
+    --nav-orb-small-overlap-y: clamp(36px, 6.67vh, 60px);
 }
 
-.theme-bg-footer {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    overflow: visible;
-    pointer-events: none;
-}
+
 
 /* ── Shape entrance keyframes ────────────────────────────────────────────────
    All shapes slide in from slightly off-screen on first paint. The translate3d
@@ -115,24 +87,24 @@
    Containers start transparent (rendered but invisible during boot) then fade
    in. The is-locked class strips entrance animations after their intro window
    to free GPU composite layers. */
-.theme-bg.is-ready,
-.theme-bg-footer.is-ready {
+.theme-bg.is-ready {
     opacity: 1;
     transition: opacity 220ms ease-out;
 }
 
 .theme-bg.is-locked .orb,
-.theme-bg.is-locked .floating-plus,
-.theme-bg-footer.is-locked .orb,
-.theme-bg-footer.is-locked .floating-plus {
+.theme-bg.is-locked .floating-plus {
     animation: none !important;
 }
 
-/* Footer shapes need position: absolute so they anchor within .theme-bg-footer */
-.theme-bg-footer .orb,
-.theme-bg-footer .beam,
-.theme-bg-footer .floating-plus {
-    position: absolute;
+/* On touch devices each orb's backdrop-filter forces a separate GPU compositing layer
+   and runs a blur pass during the entrance animation. Strip it on coarse-pointer devices
+   (touch screens) to eliminate the unnecessary compositing overhead. */
+@media (pointer: coarse) {
+    .orb {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
 }
 
 /* ── Shared shape base styles ────────────────────────────────────────────────
@@ -157,9 +129,28 @@
    2.4s entrance animation. box-shadow is composited directly with no blur pass
    and produces an identical visual on border-radius:999px. */
 .orb {
-    border: 1px solid var(--line-soft);
+    border: 1.5px solid rgba(225, 232, 248, 0.72);
     border-radius: 999px;
-    box-shadow: 0 0 18px rgba(255, 255, 255, 0.18), 0 0 6px rgba(255, 255, 255, 0.08);
+    background:
+        radial-gradient(circle at 28% 22%,
+            rgba(235, 240, 252, 0.30) 0%,
+            rgba(195, 205, 228, 0.12) 25%,
+            rgba(155, 168, 200, 0.04) 50%,
+            rgba(0, 0, 0, 0) 70%),
+        radial-gradient(circle at 72% 78%,
+            rgba(185, 198, 228, 0.12) 0%,
+            rgba(0, 0, 0, 0) 55%),
+        radial-gradient(circle at 50% 50%,
+            rgba(26, 27, 34, 0.95) 0%,
+            rgba(14, 15, 19, 0.97) 55%,
+            rgba(5, 6, 9, 1.00) 100%);
+    backdrop-filter: blur(2px);
+    box-shadow:
+        inset 0 1px 0 rgba(235, 243, 255, 0.50),
+        0 0 12px rgba(220, 232, 252, 0.60),
+        0 0 32px rgba(195, 212, 245, 0.38),
+        0 0 70px rgba(165, 188, 235, 0.18),
+        0 0 120px rgba(140, 165, 220, 0.08);
     transform: translate3d(calc(var(--space-base-x, 0px) * 0.45), calc(var(--space-scroll-y, 0px) * 1.5), 0);
     animation: float-in-from-top 2.4s cubic-bezier(0.16, 0.84, 0.44, 1) backwards;
 }
@@ -172,13 +163,13 @@
     animation-name: float-in-from-right;
 }
 
-/* Orbs that overlap the navbar use a higher z-index so the nav blurs over them */
+/* Orbs that overlap the navbar use --z-shapes-nav-cut so the nav blurs over them */
 .orb-nav-cut {
-    z-index: 12;
+    z-index: var(--z-shapes-nav-cut);
 }
 
 .orb-nav-1 {
-    width: 10.9vw;
+    width: clamp(80px, 10.9vw, 160px);
     aspect-ratio: 1;
     top: 26vh;
     left: 64vw;
@@ -188,7 +179,7 @@
 }
 
 .orb-nav-2 {
-    width: 6.8vw;
+    width: clamp(52px, 6.8vw, 100px);
     aspect-ratio: 1;
     top: 28vh;
     left: 31vw;
@@ -198,7 +189,7 @@
 }
 
 .orb-left {
-    width: 15.1vw;
+    width: clamp(120px, 15.1vw, 220px);
     aspect-ratio: 1;
     top: 6vh;
     left: -3.65vw;
@@ -208,7 +199,7 @@
 }
 
 .orb-3 {
-    width: 6.875vw;
+    width: clamp(52px, 6.875vw, 100px);
     aspect-ratio: 1;
     top: 36vh;
     right: 4vw;
@@ -218,7 +209,7 @@
 }
 
 .orb-8 {
-    width: 5vw;
+    width: clamp(38px, 5vw, 72px);
     aspect-ratio: 1;
     top: 26vh;
     left: 8vw;
@@ -228,7 +219,7 @@
 }
 
 .orb-10 {
-    width: 6.875vw;
+    width: clamp(52px, 6.875vw, 100px);
     aspect-ratio: 1;
     bottom: 12vh;
     left: -2.1vw;
@@ -260,8 +251,8 @@
 .floating-plus {
     position: absolute;
     z-index: -2;
-    width: 1.05vw;
-    height: 1.05vw;
+    width: clamp(10px, 1.05vw, 16px);
+    height: clamp(10px, 1.05vw, 16px);
     margin: 0;
     padding: 0;
     transform: translate3d(calc(var(--space-base-x, 0px) * 0.85), calc(var(--space-scroll-y, 0px) * 1.95), 0);
@@ -280,11 +271,11 @@
 .floating-plus::after {
     content: "";
     position: absolute;
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(220, 230, 248, 0.85);
 }
 
 .floating-plus::before {
-    width: 0.12vw;
+    width: clamp(1px, 0.12vw, 2px);
     height: 100%;
     left: 45%;
     top: 0;
@@ -292,7 +283,7 @@
 
 .floating-plus::after {
     width: 100%;
-    height: 0.12vw;
+    height: clamp(1px, 0.12vw, 2px);
     left: 0;
     top: 45%;
 }
@@ -419,29 +410,52 @@
     left: 28vw;
 }
 
-/* ── Footer-anchored layout overrides ────────────────────────────────────────
-   Inside .theme-bg-footer, shapes are re-positioned near the bottom viewport band. */
-.theme-bg-footer .beam-two {
-    bottom: 6vh;
-    left: -10vw;
-    transform: rotate(16deg);
+
+/* On coarse-pointer devices each orb backdrop-filter adds a GPU compositor
+   layer. Strip the blur and rely on the solid opaque fill instead.
+   Also dial back the glow so the bloom doesn't bleed onto hero text. */
+@media (pointer: coarse) {
+    .orb {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        box-shadow:
+            inset 0 1px 0 rgba(235, 243, 255, 0.30),
+            0 0 8px rgba(220, 232, 252, 0.28),
+            0 0 18px rgba(195, 212, 245, 0.16),
+            0 0 40px rgba(165, 188, 235, 0.07);
+    }
 }
 
-.theme-bg-footer .orb-10 {
-    bottom: -3vh;
-    left: -1.77vw;
-}
+/* Respect reduced-motion: show shapes immediately without entrance translate. */
+@media (prefers-reduced-motion: reduce) {
 
-.theme-bg-footer .plus-7 {
-    bottom: 16vh;
-    right: 12vw;
-    top: auto;
+    .orb,
+    .floating-plus {
+        animation: none !important;
+        opacity: 1 !important;
+    }
 }
 
 /* ── Light theme overrides ───────────────────────────────────────────────────*/
 [data-theme="light"] .orb {
-    border-color: rgba(18, 34, 54, 0.44);
-    box-shadow: 0 0 18px rgba(18, 34, 54, 0.22);
+    border-color: rgba(60, 100, 220, 0.25);
+    background:
+        radial-gradient(circle at 28% 22%,
+            rgba(255, 255, 255, 0.72) 0%,
+            rgba(220, 230, 255, 0.30) 30%,
+            rgba(0, 0, 0, 0) 65%),
+        radial-gradient(circle at 72% 78%,
+            rgba(210, 220, 255, 0.20) 0%,
+            rgba(0, 0, 0, 0) 55%),
+        radial-gradient(circle at 50% 50%,
+            rgba(225, 228, 238, 1.00) 0%,
+            rgba(200, 206, 222, 1.00) 55%,
+            rgba(175, 183, 205, 1.00) 100%);
+    backdrop-filter: blur(2px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        0 0 18px rgba(60, 100, 220, 0.12),
+        0 0 6px rgba(100, 140, 255, 0.10);
 }
 
 [data-theme="light"] .beam {
@@ -456,12 +470,55 @@
 /* ── Mobile: disable entrance animations ─────────────────────────────────────
    background-attachment:fixed causes full-page repaints on scroll on mobile,
    so the parallax effect and its entrance animations are stripped. */
-@media (max-width: 900px), (pointer: coarse) {
+@media (max-width: 900px),
+(pointer: coarse) {
 
     .theme-bg .orb,
     .theme-bg .floating-plus,
     .theme-bg-footer .orb,
     .theme-bg-footer .floating-plus {
         animation: none;
+    }
+
+    /* Re-anchor nav orbs to sensible mobile positions */
+    .theme-bg .orb-left {
+        top: 8vh;
+        left: -12vw;
+    }
+
+    .theme-bg .orb-8 {
+        top: 18vh;
+        left: -5vw;
+    }
+
+    .theme-bg .orb-nav-1 {
+        top: 6vh;
+        left: 82vw;
+    }
+
+    .theme-bg .orb-nav-2 {
+        top: 8vh;
+        left: 94vw;
+    }
+
+    .theme-bg .orb-3 {
+        top: 72vh;
+        right: -4vw;
+        left: auto;
+    }
+
+    .theme-bg .plus-1 {
+        top: 10vh;
+        right: 10vw;
+    }
+
+    .theme-bg .plus-4 {
+        top: 38vh;
+        right: 6vw;
+    }
+
+    .theme-bg .plus-6 {
+        top: 18vh;
+        left: 20vw;
     }
 }

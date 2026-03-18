@@ -43,6 +43,10 @@
     box-shadow: var(--shadow-deep);
 }
 
+[data-theme="light"] .tilt-card-fallback {
+    border-color: var(--line-soft);
+}
+
 .card-copy-front h3,
 .card-copy-back h3 {
     font-family: "Cinzel", "Times New Roman", serif;
@@ -59,8 +63,11 @@
     border: 1px solid rgba(255, 255, 255, 0.38);
     border-radius: 0.65rem;
     background: rgba(22, 30, 40, 0.22);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    /* Reduce blur radius from 10px — 6px is visually identical but the GPU
+       kernel area is ~64% smaller (6² vs 10²), cutting compositing cost during
+       the 960ms entrance animations while all three cards are animating. */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
         0 8px 24px rgba(0, 0, 0, 0.35);
@@ -93,8 +100,8 @@
     border: 1px solid rgba(255, 255, 255, 0.34);
     border-radius: 0.65rem;
     background: rgba(22, 30, 40, 0.2);
-    backdrop-filter: blur(9px);
-    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.16),
         0 8px 20px rgba(0, 0, 0, 0.28);
@@ -124,12 +131,14 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 1rem;
+    min-height: 44px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #ffffff;
     text-decoration: none;
     font-size: 0.9rem;
+    touch-action: manipulation;
     transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
     cursor: pointer;
 }
@@ -193,4 +202,28 @@
         border-color: rgba(255, 255, 255, 0.2);
         transform: none;
     }
+
+    .social-icon-link {
+        transition: none;
+    }
+}
+
+/* ── Light mode (card back) ──────────────────────────────────────────────────*/
+[data-theme="light"] .card-copy-back h3 {
+    color: var(--text);
+}
+
+[data-theme="light"] .card-copy-back ul {
+    color: var(--text-sub);
+}
+
+[data-theme="light"] .social-icon-link {
+    background: rgba(80, 100, 145, 0.07);
+    border-color: rgba(80, 100, 145, 0.22);
+    color: var(--text);
+}
+
+[data-theme="light"] .social-icon-link:hover {
+    background: rgba(80, 100, 145, 0.14);
+    border-color: rgba(80, 100, 145, 0.38);
 }

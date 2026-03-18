@@ -33,7 +33,7 @@
   perspective-origin: center center;
   cursor: pointer;
   user-select: none;
-  touch-action: pan-y;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-drag: none;
   opacity: 0;
@@ -66,20 +66,20 @@
 }
 
 .tfc-scene.is-expanded {
-  z-index: 30;
+  z-index: var(--z-modal);
   pointer-events: none;
 }
 
-/* Drop returning card below the backdrop (z-index: 20) and any newly
-   opened card (z-index: 30) so it never bleeds through during close. */
+/* Drop returning card below the backdrop (--z-modal-backdrop: 20) and any newly
+   opened card (--z-modal: 30) so it never bleeds through during close. */
 .tfc-scene.is-expanded.is-returning {
-  z-index: 5;
+  z-index: var(--z-modal-returning);
 }
 
 /* Raise the hovered/active card above its siblings in flex/grid layouts
    so the 3D tilt pop-out doesn't get painted over by adjacent cards.
    Exclude expanded cards so the :hover rule (same specificity) doesn't
-   override .tfc-scene.is-expanded { z-index: 30 } and drop the card
+   override .tfc-scene.is-expanded { --z-modal: 30 } and drop the card
    behind the backdrop. */
 .tfc-scene:not(.is-expanded):hover {
   z-index: 1;
@@ -136,7 +136,7 @@
 .tfc-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: var(--z-modal-backdrop);
   background: var(--tfc-backdrop-bg);
   backdrop-filter: blur(6px);
   -webkit-user-drag: none;
@@ -157,6 +157,28 @@
   }
 }
 
+/* On coarse-pointer (touch) devices, animating backdrop-filter forces
+   a full GPU re-composite on every frame. Replace with a plain opacity
+   fade using a solid dark background instead. */
+@media (pointer: coarse) {
+  .tfc-backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(6, 10, 16, 0.72);
+    animation: tfc-fade-simple 900ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+}
+
+@keyframes tfc-fade-simple {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .tfc-tilt {
   position: relative;
   z-index: 1;
@@ -168,8 +190,11 @@
      transform-style:preserve-3d is set on the same element. The mask trick
      forces WebKit to composite the element on its own layer, where the
      border-radius clip is correctly applied before compositing children. */
-  -webkit-mask-image: -webkit-radial-gradient(white, black);
-  will-change: transform;
+  -webkit-mask-image: radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  /* will-change removed: the same reason it was removed from .tfc-scene —
+     permanently-promoted GPU layers for idle cards wastes memory on mobile.
+     The browser auto-promotes during active transform transitions/RAF loops. */
   transition:
     box-shadow 400ms cubic-bezier(0.19, 1, 0.22, 1) 1100ms,
     top 900ms cubic-bezier(0.19, 1, 0.22, 1),
@@ -191,7 +216,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 30;
+  z-index: var(--z-modal);
   width: var(--card-w);
   height: var(--card-h);
   transform-origin: top left;
@@ -215,11 +240,18 @@
      position:fixed can escape to the root stacking context in browsers
      where will-change:transform doesn't create a containing block, making
      z-index tricks ineffective. Absolute positioning guarantees the element
-     stays within the scene (z-index: 5) and never paints above a newly
-     opened card's backdrop (z-index: 20) or its scene (z-index: 30). */
+     stays within the scene (--z-modal-returning: 5) and never paints above a newly
+     opened card's backdrop (--z-modal-backdrop: 20) or its scene (--z-modal: 30). */
   position: absolute;
-  z-index: 5;
-  transition: transform 720ms cubic-bezier(0.2, 0.85, 0.2, 1);
+  z-index: var(--z-modal-returning);
+  transition: transform 900ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Promote tilt, expand, and flip to their own GPU layers only during active
+   interaction — not for every idle card sitting in the grid. */
+.tfc-scene:not(.is-expanded):hover .tfc-tilt,
+.tfc-tilt.is-expanded {
+  will-change: transform;
 }
 
 .tfc-flip {
@@ -228,11 +260,25 @@
   height: 100%;
   transition: transform 1100ms cubic-bezier(0.19, 1, 0.22, 1);
   transform-style: preserve-3d;
+  /* will-change removed: promoted only when flip is actively in progress */
+}
+
+/* Promote flip and glare only when they need to animate */
+.tfc-flip.is-flipped,
+.tfc-scene:not(.is-expanded):hover .tfc-flip {
   will-change: transform;
 }
 
 .tfc-flip.is-flipped {
   transform: rotateY(180deg);
+}
+
+.tfc-tilt.is-returning .tfc-flip {
+  transition: transform 1100ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.tfc-scene:not(.is-expanded):hover .tfc-glare {
+  will-change: opacity;
 }
 
 .tfc-face {
@@ -245,10 +291,10 @@
   border-radius: var(--tfc-radius);
 
   /* solid card shell */
-  background-color: rgba(34, 40, 49, 0.78);
+  background-color: rgba(16, 18, 23, 0.86);
   background-image: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.2),
-      rgba(255, 255, 255, 0.08));
+      rgba(195, 205, 225, 0.22),
+      rgba(155, 168, 198, 0.07));
 
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -334,7 +380,7 @@
   /* NO CSS transition here — animateLerp drives opacity via --glare-o at
      60fps. A CSS transition on opacity fires on every RAF frame update,
      permanently interrupting itself and preventing the glare from rendering. */
-  will-change: opacity;
+  /* will-change removed from base — promoted by .tfc-scene:hover .tfc-glare above */
 }
 
 .card-bg-image {
@@ -408,7 +454,6 @@
   background: linear-gradient(var(--tfc-overlay-front),
       var(--tfc-overlay-back));
   text-align: left;
-  -webkit-overflow-scrolling: touch;
   -webkit-touch-callout: none;
   -webkit-user-drag: none;
   user-select: none;
@@ -426,8 +471,8 @@
 
 .tfc-close-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: max(12px, calc(env(safe-area-inset-top) + 8px));
+  right: max(12px, calc(env(safe-area-inset-right) + 8px));
   z-index: 20;
   display: flex;
   align-items: center;
@@ -520,6 +565,7 @@
 }
 
 @media (hover: none) and (pointer: coarse) {
+
   /* backdrop-filter freezes and blurs all pixels behind the element — very
      expensive on mobile GPUs. Use a more-opaque solid overlay instead. */
   .tfc-backdrop {
@@ -545,5 +591,68 @@
     box-shadow:
       var(--shadow-x, 0px) var(--shadow-y, 0px) var(--shadow-blur, 20px) rgba(0, 0, 0, 0.24),
       0 calc(var(--hover, 0) * 18px) calc(var(--hover, 0) * 24px) rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tfc-scene {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .tfc-backdrop {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .tfc-close-btn {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Disable the infinite shimmer on loading card images — it plays
+     on every card face mount for users who prefer reduced motion. */
+  .tfc-face::before {
+    animation: none !important;
+  }
+}
+
+/* ── Light mode ──────────────────────────────────────────────────────────────*/
+[data-theme="light"] .tfc-back.tfc-face {
+  background-color: rgba(240, 244, 252, 0.97);
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(215, 225, 245, 0.5));
+}
+
+[data-theme="light"] .back-overlay {
+  background: linear-gradient(rgba(245, 248, 255, 0.55), rgba(232, 238, 252, 0.7));
+}
+
+[data-theme="light"] .tfc-backdrop {
+  background: rgba(160, 180, 215, 0.32);
+}
+
+[data-theme="light"] .tfc-close-btn {
+  border-color: rgba(80, 100, 145, 0.28);
+  background: linear-gradient(160deg, rgba(238, 242, 252, 0.94), rgba(228, 235, 250, 0.8));
+  color: var(--text);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .tfc-close-btn:hover {
+  background: linear-gradient(160deg, rgba(228, 235, 250, 0.98), rgba(218, 228, 248, 0.9));
+}
+
+@media (hover: none) and (pointer: coarse) {
+  [data-theme="light"] .tfc-backdrop {
+    background: rgba(160, 180, 215, 0.7);
+  }
+
+  [data-theme="light"] .tfc-close-btn {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: linear-gradient(160deg, rgba(238, 242, 252, 0.98), rgba(228, 235, 250, 0.96));
   }
 }

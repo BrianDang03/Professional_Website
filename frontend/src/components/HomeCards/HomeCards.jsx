@@ -36,7 +36,7 @@ export default function HomeCards() {
           <div className="card-copy-back">
             <h3>Core Profile</h3>
             <ul>
-              <li>M.S. Computer Science at Colorado School of Mines.</li>
+              <li>Pursuing M.S. Computer Science at Colorado School of Mines.</li>
               <li>Learns new tools quickly and delivers under pressure.</li>
               <li>Mission driven, motivated by building tools that make a real difference.</li>
             </ul>

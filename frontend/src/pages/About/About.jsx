@@ -91,15 +91,15 @@ export default function About() {
                 <div className="about-edu-header">
                   <span className="about-edu-degree">M.S. Computer Science</span>
                   <span className="about-edu-dash">—</span>
-                  <span className="about-edu-year">2026 – 2028</span>
+                  <span className="about-edu-year">Aug 2026 – May 2028</span>
                 </div>
                 <span className="about-edu-school">Colorado School of Mines</span>
               </div>
               <div className="about-edu-card">
                 <div className="about-edu-header">
-                  <span className="about-edu-degree">B.S. Computer Science</span>
+                  <span className="about-edu-degree">B.A. Computer Science</span>
                   <span className="about-edu-dash">—</span>
-                  <span className="about-edu-year">2022 – 2026</span>
+                  <span className="about-edu-year">Aug 2022 – May 2026</span>
                 </div>
                 <span className="about-edu-school">University of Colorado Denver</span>
               </div>

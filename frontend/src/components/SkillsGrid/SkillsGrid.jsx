@@ -4,10 +4,10 @@ import { shouldUseSimpleMotion } from '../../utils/motionProfile';
 import "./SkillsGrid.css";
 
 const skills = {
-    "Languages": ["JavaScript", "TypeScript", "Python", "C#", "Java", "C++"],
-    "Frontend": ["React", "Vue", "HTML/CSS", "Tailwind", "Framer Motion"],
-    "Backend": ["Node.js", "Express", "Django", "REST APIs", "GraphQL"],
-    "Tools & Other": ["Git", "Docker", "AWS", "Unity", "Unreal Engine", "Agile"]
+    "Languages": ["C/C++", "C#", "Python", "JavaScript"],
+    "Frontend": ["React", "HTML/CSS"],
+    "Backend": ["Node.js", "Express", "REST APIs"],
+    "Tools & Other": ["Git", "Docker", "Unity", "Unreal Engine", "Jira", "Agile"]
 };
 
 const containerVariants = {

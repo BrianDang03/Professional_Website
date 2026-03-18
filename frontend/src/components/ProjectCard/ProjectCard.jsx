@@ -6,19 +6,26 @@ import { shouldUseSimpleMotion } from '../../utils/motionProfile';
 import "./ProjectCard.css";
 
 const TECH_COLORS = {
+    // Data / database
+    MongoDB: 'badge-amber',
     // Frontend / web
     React: 'badge-blue', 'Vue.js': 'badge-blue', TypeScript: 'badge-blue',
     JavaScript: 'badge-blue', CSS3: 'badge-blue', 'HTML/CSS': 'badge-blue',
     'Framer Motion': 'badge-blue', Vite: 'badge-blue', 'D3.js': 'badge-blue',
     // Backend / runtime
     'Node.js': 'badge-green', Express: 'badge-green', Django: 'badge-green',
-    GraphQL: 'badge-green', 'REST APIs': 'badge-green', WebSocket: 'badge-green',
+    GraphQL: 'badge-green', 'REST APIs': 'badge-green', REST: 'badge-green',
+    'Verizon Thingspace API': 'badge-green', WebSocket: 'badge-green',
     // Systems / native
     'C#': 'badge-purple', Unity: 'badge-purple', 'C++': 'badge-purple',
     'System Architecture': 'badge-purple', 'Unreal Engine': 'badge-purple',
+    'Numerical Linear Algebra': 'badge-purple', CMake: 'badge-purple',
+    'CI/CD Pipeline': 'badge-purple',
     // Data / infra / AI
     Python: 'badge-amber', TensorFlow: 'badge-amber', PostgreSQL: 'badge-amber',
     Stripe: 'badge-amber', Docker: 'badge-amber', AWS: 'badge-amber',
+    Playwright: 'badge-amber', 'Browser Automation': 'badge-amber',
+    'Open Source': 'badge-amber',
 };
 
 const cardVariants = {

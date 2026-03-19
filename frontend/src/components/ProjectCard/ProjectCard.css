@@ -296,11 +296,11 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    height: 36px;
-    padding: 0 1rem;
+    min-height: 44px;
+    padding: 0.6rem 1rem;
     background: rgba(180, 140, 60, 0.08);
     border: 1px solid rgba(200, 160, 60, 0.28);
-    border-radius: 999px;
+    border-radius: 8px;
     color: rgba(210, 175, 90, 0.85);
     font-size: 0.75rem;
     font-weight: 500;

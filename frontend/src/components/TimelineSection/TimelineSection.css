@@ -43,6 +43,7 @@
 .tl-track {
     position: relative;
     height: clamp(520px, 68vh, 620px);
+    height: clamp(520px, 68svh, 620px); /* iOS Safari: svh excludes address bar for stable sizing */
     flex: none;
 }
 
@@ -59,6 +60,7 @@
 .tl-rail__bg {
     position: absolute;
     inset: 0;
+    background: rgba(200, 210, 228, 0.12); /* fallback: Safari < 16.2 doesn't support color-mix */
     background: color-mix(in srgb, var(--text) 12%, transparent);
     border-radius: inherit;
 }
@@ -116,7 +118,9 @@
     flex: 1;
     min-width: 0;
     will-change: transform, opacity;
+    background: var(--surface, rgba(18,20,26,.75)); /* fallback: Safari < 16.2 doesn't support color-mix */
     background: color-mix(in srgb, var(--entry-color, #fff) 8%, var(--surface, rgba(18,20,26,.75)));
+    border: 1px solid rgba(255, 255, 255, 0.25); /* fallback: Safari < 16.2 doesn't support color-mix */
     border: 1px solid color-mix(in srgb, var(--entry-color, #fff) 25%, transparent);
     border-left: 3px solid var(--entry-color, #fff);
     border-radius: 10px;
@@ -238,7 +242,9 @@
     background: rgba(0,0,0,0.12);
 }
 [data-theme="light"] .tl-content {
+    background: #ffffff; /* fallback: Safari < 16.2 doesn't support color-mix */
     background: color-mix(in srgb, var(--entry-color, #000) 6%, #ffffff);
+    border-color: rgba(0, 0, 0, 0.25); /* fallback: Safari < 16.2 doesn't support color-mix */
     border-color: color-mix(in srgb, var(--entry-color, #000) 30%, transparent);
     box-shadow: 0 2px 10px rgba(0,0,0,.08);
 }

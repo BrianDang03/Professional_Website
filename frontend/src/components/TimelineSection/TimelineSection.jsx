@@ -141,6 +141,11 @@ export default function TimelineSection() {
 
             const railRect = rail.getBoundingClientRect();
             const h        = isH();
+            // Guard: Safari can return 0 dimensions before first paint; wait for valid layout
+            if (h ? railRect.width < 2 : railRect.height < 2) {
+                rafRef.current = requestAnimationFrame(tick);
+                return;
+            }
 
             // ── Advance displayFill / displaySlide ──────────────────────
             if (isAutoPlayingRef.current) {
@@ -275,6 +280,12 @@ export default function TimelineSection() {
         rafRef.current = requestAnimationFrame(tick);
 
         function onResize() {
+            // iOS Safari fires resize when the address bar hides/shows (height-only change).
+            // Ignore those to prevent the animation from resetting mid-scroll.
+            const newW = window.innerWidth;
+            if (newW === prevW) return;
+            prevW = newW;
+
             // If autoplay was running, abort it cleanly and restart it
             if (isAutoPlayingRef.current) {
                 isAutoPlayingRef.current = false;
@@ -313,6 +324,7 @@ export default function TimelineSection() {
             isAutoPlayingRef.current = true;
         }
 
+        let prevW = window.innerWidth;
         window.addEventListener('resize', onResize, { passive: true });
 
         // ── Intro auto-play: one continuous sweep when section enters view ──

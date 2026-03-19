@@ -1,0 +1,282 @@
+/* ================================================================
+   Timeline Section  mobile-first
+   Mobile  (<1024px) : vertical sticky carousel, rail on the left
+   Desktop (>=1024px): horizontal sticky carousel, rail across middle
+   ================================================================ */
+
+/*  Driver: scroll-space container (height set by JS)  */
+.tl-driver {
+    position: relative;
+    margin-top: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+/*  Sticky section  */
+/* top/height account for the sticky navbar: 68px mobile (<900px), 76px wider */
+.tl-section {
+    position: sticky;
+    top: 68px;
+    height: calc(100vh - 68px);
+    width: calc(100% - 2rem);
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+@media (min-width: 900px) {
+    .tl-section {
+        top: 76px;
+        height: calc(100vh - 76px);
+    }
+}
+
+/*  Header  */
+.tl-header {
+    flex: none;
+    padding: clamp(1.5rem, 4vh, 3rem) 0 0;
+}
+.tl-kicker {
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 .3rem;
+}
+.tl-heading {
+    font-size: clamp(1.5rem, 4vw, 2.4rem);
+    font-weight: 700;
+    margin: 0 0 1rem;
+    color: var(--text);
+}
+
+/*  Track: grows to fill remaining height  */
+.tl-track {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+/*  Rail (mobile = vertical, left side)  */
+.tl-rail {
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    overflow: hidden;
+    border-radius: 1px;
+}
+.tl-rail__bg {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--text) 12%, transparent);
+    border-radius: inherit;
+}
+/* Mobile fill: top → bottom, stops 32px before the end */
+.tl-rail__fill {
+    position: absolute;
+    inset: 0;
+    bottom: 32px;
+    background: linear-gradient(
+        to bottom,
+        #a87bf5 0%,
+        #7b9cf5 33%,
+        #4abf8e 66%,
+        #f5a97b 100%
+    );
+    transform: scaleY(0);
+    transform-origin: top center;
+    border-radius: inherit;
+    will-change: transform;
+}
+
+/*  Entries container: clips the carousel  */
+.tl-entries {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+/*  Single entry: JS sets top + height  */
+.tl-entry {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 48px;
+    overflow: hidden;
+}
+
+/*  Dot: on the vertical rail  */
+.tl-dot {
+    position: absolute;
+    left: 15px;   /* centre of 2px rail at left:20px = 21px, minus half of 12px dot */
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    transform: translateY(-50%) scale(0.25);
+    will-change: transform, opacity, box-shadow;
+    transition: none;
+}
+
+/*  Content  */
+.tl-content {
+    flex: 1;
+    min-width: 0;
+    will-change: transform, opacity;
+}
+.tl-meta {
+    display: flex;
+    align-items: baseline;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-bottom: .2rem;
+}
+.tl-company {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.tl-year {
+    font-size: .7rem;
+    color: var(--text-muted, #888);
+}
+.tl-title {
+    font-size: clamp(.88rem, 2.2vw, 1rem);
+    font-weight: 700;
+    margin: 0 0 .25rem;
+    color: var(--text);
+}
+.tl-desc {
+    font-size: .8rem;
+    line-height: 1.5;
+    color: var(--text-muted, #999);
+    margin: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/*  Reduced-motion  */
+@media (prefers-reduced-motion: reduce) {
+    .tl-rail__fill,
+    .tl-dot,
+    .tl-content { transition: none; }
+}
+
+/* ================================================================
+   DESKTOP OVERRIDES  (>= 1024px)  horizontal carousel
+   ================================================================ */
+@media (min-width: 1024px) {
+    .tl-section {
+        top: 76px;
+        height: calc(100vh - 76px);
+        width: min(1200px, calc(100% - 3.2rem));
+        flex-direction: column;
+        justify-content: center;
+    }
+    .tl-header { padding: 0; }
+    .tl-heading { margin-bottom: 2rem; font-size: clamp(1.6rem, 4vw, 2.4rem); }
+
+    /* Fixed-height track  no flex growth */
+    .tl-track {
+        height: 380px;
+        flex: none;
+    }
+
+    /* Horizontal rail */
+    .tl-rail {
+        left: 0;
+        right: 0;
+        top: 50%;
+        bottom: auto;
+        width: auto;
+        height: 2px;
+        transform: translateY(-50%);
+    }
+    .tl-rail__fill {
+        inset: 0;          /* reset mobile's bottom: 32px */
+        right: 32px;       /* stops 32px before the trailing end on desktop */
+        bottom: 0;
+        background: linear-gradient(
+            to right,
+            #a87bf5 0%,
+            #7b9cf5 33%,
+            #4abf8e 66%,
+            #f5a97b 100%
+        );
+        transform: scaleX(0);
+        transform-origin: left center;
+    }
+
+    /* Entry: JS sets left + width; block so content can be abs-positioned */
+    .tl-entry {
+        top: 0;
+        bottom: 0;
+        display: block;
+        padding-left: 0;
+    }
+
+    /* Dot: centred on horizontal rail */
+    .tl-dot {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(0.25);
+    }
+
+    /* Content: absolutely positioned above / below rail */
+    .tl-content {
+        position: absolute;
+        left: .6rem;
+        right: .6rem;
+        text-align: center;
+    }
+    .tl-entry--above .tl-content {
+        bottom: calc(50% + 22px);
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    .tl-entry--below .tl-content {
+        top: calc(50% + 22px);
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .tl-meta { justify-content: center; }
+    .tl-desc {
+        max-width: none;
+        -webkit-line-clamp: unset;
+        display: block;
+        overflow: visible;
+    }
+    .tl-title { font-size: clamp(1rem, 2.5vw, 1.1rem); }
+
+    /* Thin connector lines between content and dot */
+    .tl-entry--above .tl-content::after {
+        content: '';
+        display: block;
+        width: 1px;
+        height: 18px;
+        background: var(--text-muted, #888);
+        margin: 4px auto 0;
+        opacity: .4;
+    }
+    .tl-entry--below .tl-content::before {
+        content: '';
+        display: block;
+        width: 1px;
+        height: 18px;
+        background: var(--text-muted, #888);
+        margin: 0 auto 4px;
+        opacity: .4;
+    }
+}

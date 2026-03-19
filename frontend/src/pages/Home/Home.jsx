@@ -3,6 +3,7 @@ import SEO from "../../components/SEO";
 import PageTransition from "../../components/PageTransition";
 import HeroBlock from "../../components/HeroBlock/HeroBlock";
 import HomeCards from "../../components/HomeCards/HomeCards";
+import TimelineSection from "../../components/TimelineSection/TimelineSection";
 import "./Home.css";
 
 const PILLARS = [
@@ -61,7 +62,7 @@ export default function Home({ name, job }) {
           ))}
         </div>
 
-        {/* Tech strip */}
+        {/* Skills & beam */}
         <div className="home-tech-strip" aria-label="Technologies">
           {TECH.map((t) => (
             <span key={t} className="home-tag">{t}</span>
@@ -69,6 +70,9 @@ export default function Home({ name, job }) {
         </div>
 
         <div className="home-bottom-line" aria-hidden="true" />
+
+        {/* Career timeline */}
+        <TimelineSection />
       </section>
 
     </PageTransition>
